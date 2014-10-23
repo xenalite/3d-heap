@@ -1,0 +1,5 @@
+# Compiled source #
+###################
+
+*.class
+heap3d/build/*
