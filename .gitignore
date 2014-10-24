@@ -1,5 +1,7 @@
-# Compiled source #
-###################
-
+# Compiled source
 *.class
 heap3d/build/*
+
+# Eclipse files
+.classpath
+.project
