@@ -1,6 +1,7 @@
 package com.heap3d.ui.controllers;
 
 import com.heap3d.ui.viewmodels.ActionTabViewModel;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -52,6 +53,6 @@ public class ActionsTabController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-//        Bindings.bindBidirectional(breakpoint.textProperty(), _viewModel.getNewBreakpointProperty());
+        Bindings.bindBidirectional(breakpoint.textProperty(), _viewModel.getBreakpointProperty());
     }
 }
