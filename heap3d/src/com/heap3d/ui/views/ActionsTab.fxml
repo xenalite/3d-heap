@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="476.0" prefWidth="765.0"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.heap3d.ui.controllers.ActionsTabController">
+   <children>
+      <VBox layoutX="26.0" layoutY="19.0" prefHeight="285.0" prefWidth="191.0" spacing="10.0">
+         <children>
+            <Button fx:id="pause" layoutX="54.0" layoutY="29.0" mnemonicParsing="false" onAction="#pause" text="Pause" />
+            <Button fx:id="resume" layoutX="54.0" layoutY="72.0" mnemonicParsing="false" onAction="#resume" text="Resume" />
+            <Button fx:id="step" layoutX="54.0" layoutY="119.0" mnemonicParsing="false" onAction="#step" text="Step" />
+         </children>
+      </VBox>
+      <SplitPane dividerPositions="0.5, 0.5, 0.5" layoutX="112.0" layoutY="15.0" orientation="VERTICAL" prefHeight="357.0" prefWidth="501.0">
+         <items>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Watchpoints: w:&lt;class-name&gt;:&lt;field-name&gt;" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Breakpoints: b:&lt;class-name&gt;:&lt;method-name&gt;:&lt;line&gt;" />
+            <ListView fx:id="breakpoints" layoutX="366.0" layoutY="78.0" prefHeight="200.0" prefWidth="200.0" />
+            <ToolBar layoutX="347.0" layoutY="284.0">
+               <items>
+                  <TextField fx:id="breakpoint" layoutX="328.0" layoutY="292.0" prefHeight="25.0" prefWidth="425.0" />
+                  <Button fx:id="add" layoutX="519.0" layoutY="292.0" mnemonicParsing="false" onAction="#add" text="Add" />
+               </items>
+            </ToolBar>
+         </items>
+      </SplitPane>
+   </children>
+</AnchorPane>
