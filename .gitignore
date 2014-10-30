@@ -3,6 +3,8 @@
 Graphics/build/*
 Graphics/bin/*
 out/
+Layout/build/*
+Layout/bin/*
 
 # Eclipse files
 .classpath
