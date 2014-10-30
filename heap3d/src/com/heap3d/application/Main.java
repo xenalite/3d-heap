@@ -1,5 +1,8 @@
 package com.heap3d.application;
 
+import com.heap3d.application.utilities.ControllerFactory;
+import com.heap3d.application.utilities.IVirtualMachineProvider;
+import com.heap3d.application.utilities.VirtualMachineProvider;
 import com.heap3d.ui.controllers.ActionsTabController;
 import com.heap3d.ui.controllers.MainWindowController;
 import com.heap3d.ui.controllers.ProcessTabController;
@@ -11,8 +14,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.picocontainer.Characteristics;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
+import org.picocontainer.behaviors.Cached;
+import org.picocontainer.behaviors.OptInCaching;
 
 public class Main extends Application {
 
@@ -23,7 +29,7 @@ public class Main extends Application {
     private static String WINDOW_TITLE = "3D HEAP VISUALISER";
     private static int MIN_WINDOW_HEIGHT = 510;
     private static int MIN_WINDOW_WIDTH = 705;
-    private MutablePicoContainer _injector = new DefaultPicoContainer();
+    private MutablePicoContainer _injector = new DefaultPicoContainer(new OptInCaching());
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -39,6 +45,8 @@ public class Main extends Application {
     }
 
     private void registerTypes() {
+        _injector.as(Characteristics.CACHE).addComponent(VirtualMachineProvider.class);
+
         _injector.addComponent(MainWindowController.class);
         _injector.addComponent(ActionsTabController.class);
         _injector.addComponent(ProcessTabController.class);
