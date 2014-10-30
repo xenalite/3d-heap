@@ -1,6 +1,7 @@
 # Compiled source
 *.class
-heap3d/build/*
+Graphics/build/*
+Graphics/bin/*
 out/
 
 # Eclipse files
