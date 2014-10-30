@@ -1,8 +1,8 @@
 package com.graphics.shaders;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -32,7 +32,7 @@ public abstract class ShaderProgram {
 	
 	protected abstract void getAllUniformLocations();
 	
-	protected  int getUniformLocation(String uniformName){
+	protected int getUniformLocation(String uniformName){
 		return GL20.glGetUniformLocation(programID, uniformName);
 	}
 	
@@ -81,7 +81,8 @@ public abstract class ShaderProgram {
 	private static int loadShader(String file, int type){
 		StringBuilder shaderSource = new StringBuilder();
 		try{
-			BufferedReader reader = new BufferedReader(new FileReader(file));
+			InputStreamReader r = new InputStreamReader(ShaderProgram.class.getClassLoader().getResourceAsStream(file));
+			BufferedReader reader = new BufferedReader(r);
 			String line;
 			while((line = reader.readLine()) != null)
 				shaderSource.append(line).append("\n");
