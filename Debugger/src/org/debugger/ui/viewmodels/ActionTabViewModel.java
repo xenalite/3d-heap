@@ -1,6 +1,6 @@
-package com.debugger.ui.viewmodels;
+package org.debugger.ui.viewmodels;
 
-import com.debugger.application.utilities.IVirtualMachineProvider;
+import org.debugger.application.utilities.IVirtualMachineProvider;
 import com.sun.jdi.VirtualMachine;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Text?>
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="476.0" prefWidth="765.0"
             xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.debugger.ui.controllers.ActionsTabController">
+            fx:controller="org.debugger.ui.controllers.ActionsTabController">
    <children>
       <VBox layoutX="26.0" layoutY="19.0" prefHeight="285.0" prefWidth="191.0" spacing="10.0">
          <children>

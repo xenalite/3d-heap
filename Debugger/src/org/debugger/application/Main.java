@@ -1,13 +1,13 @@
-package com.debugger.application;
+package org.debugger.application;
 
-import com.debugger.application.utilities.ControllerFactory;
-import com.debugger.application.utilities.VirtualMachineProvider;
-import com.debugger.ui.controllers.ActionsTabController;
-import com.debugger.ui.controllers.MainWindowController;
-import com.debugger.ui.controllers.ProcessTabController;
-import com.debugger.ui.viewmodels.ActionTabViewModel;
-import com.debugger.ui.viewmodels.MainWindowViewModel;
-import com.debugger.ui.viewmodels.ProcessTabViewModel;
+import org.debugger.application.utilities.ControllerFactory;
+import org.debugger.application.utilities.VirtualMachineProvider;
+import org.debugger.ui.controllers.ActionsTabController;
+import org.debugger.ui.controllers.MainWindowController;
+import org.debugger.ui.controllers.ProcessTabController;
+import org.debugger.ui.viewmodels.ActionTabViewModel;
+import org.debugger.ui.viewmodels.MainWindowViewModel;
+import org.debugger.ui.viewmodels.ProcessTabViewModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

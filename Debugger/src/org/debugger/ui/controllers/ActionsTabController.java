@@ -1,6 +1,6 @@
-package com.debugger.ui.controllers;
+package org.debugger.ui.controllers;
 
-import com.debugger.ui.viewmodels.ActionTabViewModel;
+import org.debugger.ui.viewmodels.ActionTabViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;

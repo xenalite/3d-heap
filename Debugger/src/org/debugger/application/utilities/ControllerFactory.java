@@ -1,4 +1,4 @@
-package com.debugger.application.utilities;
+package org.debugger.application.utilities;
 
 import javafx.util.Callback;
 import org.picocontainer.PicoContainer;

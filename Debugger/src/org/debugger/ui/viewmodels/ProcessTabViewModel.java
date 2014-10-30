@@ -1,6 +1,6 @@
-package com.debugger.ui.viewmodels;
+package org.debugger.ui.viewmodels;
 
-import com.debugger.application.utilities.IVirtualMachineProvider;
+import org.debugger.application.utilities.IVirtualMachineProvider;
 import javafx.beans.property.*;
 
 /**

@@ -1,6 +1,6 @@
-package com.debugger.ui.controllers;
+package org.debugger.ui.controllers;
 
-import com.debugger.ui.viewmodels.ProcessTabViewModel;
+import org.debugger.ui.viewmodels.ProcessTabViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;

@@ -1,6 +1,6 @@
-package com.debugger.ui.controllers;
+package org.debugger.ui.controllers;
 
-import com.debugger.ui.viewmodels.MainWindowViewModel;
+import org.debugger.ui.viewmodels.MainWindowViewModel;
 
 /**
  * Created by oskar on 29/10/14.

@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="510.0" prefWidth="705.0"
             xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.debugger.ui.controllers.MainWindowController">
+            fx:controller="org.debugger.ui.controllers.MainWindowController">
    <children>
       <TabPane prefHeight="509.0" prefWidth="701.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>

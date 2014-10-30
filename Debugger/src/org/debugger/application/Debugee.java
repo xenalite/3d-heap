@@ -1,4 +1,4 @@
-package com.debugger.application;
+package org.debugger.application;
 
 /**
  * Created by oskar on 29/10/14.

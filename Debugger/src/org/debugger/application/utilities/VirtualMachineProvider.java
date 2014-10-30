@@ -1,4 +1,4 @@
-package com.debugger.application.utilities;
+package org.debugger.application.utilities;
 
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.VirtualMachine;

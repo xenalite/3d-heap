@@ -1,4 +1,4 @@
-package com.debugger.ui.viewmodels;
+package org.debugger.ui.viewmodels;
 
 /**
  * Created by oskar on 29/10/14.
