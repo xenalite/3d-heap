@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="702.0"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.debugger.ui.controllers.ProcessTabController">
+   <children>
+      <SplitPane dividerPositions="0.5" layoutX="276.0" layoutY="4.0" orientation="VERTICAL" prefHeight="467.0" prefWidth="415.0">
+         <items>
+            <Text layoutX="549.0" layoutY="73.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Source code" />
+            <TextArea fx:id="sourceCode" layoutX="549.0" layoutY="103.0" prefHeight="376.0" prefWidth="413.0" />
+         </items>
+      </SplitPane>
+      <VBox layoutX="9.0" layoutY="11.0" spacing="10.0">
+         <children>
+            <HBox alignment="CENTER" layoutX="79.3271484375" layoutY="45.0" spacing="10.0">
+               <children>
+                  <Text layoutX="80.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="JDK Path" />
+                  <TextField fx:id="jdkPath" layoutX="195.0" layoutY="45.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="75.0" layoutY="81.0" spacing="10.0">
+               <children>
+                  <Text layoutX="80.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Classpath" />
+                  <TextField fx:id="classPath" layoutX="195.0" layoutY="45.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="69.0" layoutY="108.0" spacing="10.0">
+               <children>
+                  <Text layoutX="80.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Class name" />
+                  <TextField fx:id="className" layoutX="195.0" layoutY="45.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="81.0" layoutY="151.0" spacing="10.0">
+               <children>
+                  <Text layoutX="80.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Port" />
+                  <TextField fx:id="port" layoutX="195.0" layoutY="45.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="69.0" layoutY="187.0" spacing="10.0">
+               <children>
+                  <Text layoutX="80.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Status" />
+                  <TextField fx:id="status" layoutX="195.0" layoutY="45.0" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <Button fx:id="startButton" layoutX="18.0" layoutY="184.0" mnemonicParsing="false" onAction="#start" text="Start" />
+      <Button fx:id="stopButton" layoutX="113.0" layoutY="184.0" mnemonicParsing="false" onAction="#stop" text="Stop" />
+   </children>
+</AnchorPane>
