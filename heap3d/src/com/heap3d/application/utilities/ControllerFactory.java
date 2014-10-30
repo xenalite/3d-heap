@@ -1,4 +1,4 @@
-package com.heap3d.application;
+package com.heap3d.application.utilities;
 
 import javafx.util.Callback;
 import org.picocontainer.PicoContainer;

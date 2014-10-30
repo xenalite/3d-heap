@@ -19,7 +19,7 @@ public class ActionsTabController implements Initializable {
     @FXML
     private Button add;
     @FXML
-    private ListView breakpoints;
+    private ListView<String> breakpoints;
     @FXML
     private TextField breakpoint;
     @FXML
@@ -53,6 +53,7 @@ public class ActionsTabController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Bindings.bindBidirectional(breakpoint.textProperty(), _viewModel.getBreakpointProperty());
+        breakpoint.textProperty().bindBidirectional(_viewModel.getBreakpointProperty());
+        breakpoints.itemsProperty().bindBidirectional(_viewModel.getBreakpointsProperty());
     }
 }
