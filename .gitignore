@@ -1,7 +1,17 @@
 # Compiled source
 *.class
-heap3d/build/*
+Graphics/build/*
+Graphics/bin/*
+out/
 
 # Eclipse files
 .classpath
 .project
+
+#IntelliJ files
+*.iml
+*.idea
+
+#Temp files
+*~
+.*~
