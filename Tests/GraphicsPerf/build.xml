@@ -32,7 +32,15 @@
 
     <target name="run" depends="jar">
         <java fork="true" classname="${main-class}">
-            <jvmarg value="-Djava.library.path=lib/native/lwjgl/windows" />
+			<condition property="isMac">
+				<jvmarg value="-Djava.library.path=lib/native/lwjgl/macosx" />
+			</condition>
+			<condition property="isWindows">
+				<jvmarg value="-Djava.library.path=lib/native/lwjgl/windows" />
+			</condition>
+			<condition property="isUnix">
+				<jvmarg value="-Djava.library.path=lib/native/lwjgl/linux" />
+			</condition>
             <classpath>
                 <path refid="classpath"/>
                 <path location="${jar.dir}/${ant.project.name}.jar"/>
