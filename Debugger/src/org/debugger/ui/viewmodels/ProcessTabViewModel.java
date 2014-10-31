@@ -7,6 +7,8 @@ import org.debugger.application.utilities.IVirtualMachineProvider;
 import javafx.beans.property.*;
 
 import javax.swing.event.ChangeEvent;
+import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,13 +32,12 @@ public class ProcessTabViewModel {
     public ProcessTabViewModel(IVirtualMachineProvider virtualMachineProvider, EventBus eventBus,
                                EventHandler eventHandler) {
         _eventHandler = eventHandler;
-        ExecutorService service = Executors.newSingleThreadExecutor();
-        service.submit(_eventHandler::runEventLoop);
+
         _virtualMachineProvider = virtualMachineProvider;
         _eventBus = eventBus;
         _eventBus.register(this);
-        _className = new SimpleStringProperty(this, "className", "");
-        _classPath = new SimpleStringProperty(this, "classpath", "");
+        _className = new SimpleStringProperty(this, "className", "org.debugger.application.Debugee");
+        _classPath = new SimpleStringProperty(this, "classpath", "~/workspace/3d-heap/Debugger/out/production/Debugger/");
         _jdkPath = new SimpleStringProperty(this, "jdkPath", System.getProperty("java.home"));
         _status = new SimpleStringProperty(this, "status", "NOT RUNNING");
         _port = new SimpleIntegerProperty(this, "port", DEFAULT_PORT);
@@ -53,8 +54,31 @@ public class ProcessTabViewModel {
 
     public void startAction() {
         _status.set("RUNNING");
-        _eventBus.post(_port.get());
-        notifyAll();
+        StringBuilder sb = new StringBuilder();
+        sb.append(_jdkPath.get());
+        sb.append(System.getProperty("file.separator"));
+        sb.append("bin");
+        sb.append(System.getProperty("file.separator"));
+        sb.append("java");
+        sb.append(" ");
+        sb.append("-agentlib:jdwp=transport=dt_socket,address=");
+        sb.append(_port.get());
+        sb.append(",server=y,suspend=y");
+        sb.append(" -cp ");
+        sb.append(_classPath.get());
+        sb.append(" ");
+        sb.append(_className.get());
+
+        try {
+            Runtime.getRuntime().exec(sb.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//        ExecutorService service = Executors.newSingleThreadExecutor();
+//        service.submit(() -> _eventHandler.runEventLoop(_port.get()));
+//        _eventBus.post(_port.get());
+//        notifyAll();
 //        _virtualMachineProvider.createAtPort(_port.get());
 //        System.out.println("...");
 //        _eventBus.post(new ChangeEvent(new MyEvent("event happened")));

@@ -3,6 +3,7 @@ package org.debugger.application.utilities;
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.VirtualMachineManager;
+import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.ListeningConnector;
@@ -32,17 +33,19 @@ public class VirtualMachineProvider implements IVirtualMachineProvider {
         }
     }
 
-    private ListeningConnector getConnector() {
+    private AttachingConnector getConnector() {
         VirtualMachineManager vmManager = Bootstrap.virtualMachineManager();
-        return vmManager.listeningConnectors().get(0);
+        return vmManager.attachingConnectors().get(0);
     }
 
-    private VirtualMachine connect(ListeningConnector connector, String port)
+    private VirtualMachine connect(AttachingConnector connector, String port)
             throws IllegalConnectorArgumentsException, IOException {
         Map<String, Connector.Argument> args = connector.defaultArguments();
         args.get("port").setValue(port);
 
-        connector.startListening(args);
-        return connector.accept(args);
+        return connector.attach(args);
+//
+//        connector.startListening(args);
+//        return connector.accept(args);
     }
 }

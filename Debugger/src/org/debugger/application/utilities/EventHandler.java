@@ -2,6 +2,11 @@ package org.debugger.application.utilities;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.sun.jdi.VirtualMachine;
+import com.sun.jdi.event.Event;
+import com.sun.jdi.event.EventQueue;
+import com.sun.jdi.event.EventSet;
+import com.sun.jdi.event.VMDeathEvent;
 
 /**
  * Created by oskar on 31/10/14.
@@ -22,14 +27,24 @@ public class EventHandler {
         _virtualMachineProvider.createAtPort(port);
     }
 
-    public void runEventLoop() {
+    public void runEventLoop(int port) {
+        _virtualMachineProvider.createAtPort(port);
+        VirtualMachine vm = _virtualMachineProvider.getVirtualMachine();
+        EventQueue queue = vm.eventQueue();
         while(true) {
             System.out.println("outer");
-            while(_virtualMachineProvider.getVirtualMachine() == null) {
-                try {
-                    System.out.println("waiting for vm");
-                    wait();
-                } catch (InterruptedException ignored) { ignored.printStackTrace(); }
+
+            EventSet set = null;
+            try {
+                set = queue.remove();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            for(Event e : set) {
+                System.out.println(e);
+               if(e instanceof VMDeathEvent) {
+                   return;
+               }
             }
         }
     }
