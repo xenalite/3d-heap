@@ -56,5 +56,7 @@ public class ProcessTabController implements Initializable {
         classPath.textProperty().bindBidirectional(_viewModel.getClassPathProperty());
         status.textProperty().bindBidirectional(_viewModel.getStatusProperty());
         port.textProperty().bindBidirectional(_viewModel.getPortProperty(), new NumberStringConverter());
+        startButton.disableProperty().bindBidirectional(_viewModel.getDisableStart());
+        stopButton.disableProperty().bind(_viewModel.getDisableStart().not());
     }
 }
