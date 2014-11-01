@@ -11,7 +11,11 @@ public class EventFactory {
         return new NewBreakpointEvent(definition);
     }
 
-    public static IEvent<StartDefinition> createNewStartDefinition(StartDefinition definition) {
+    public static IEvent<StartDefinition> createNewStartEvent(StartDefinition definition) {
         return new StartEvent(definition);
+    }
+
+    public static IEvent<String> createNewDestroyEvent() {
+        return new DestroyEvent();
     }
 }

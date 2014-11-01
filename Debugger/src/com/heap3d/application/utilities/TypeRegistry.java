@@ -5,6 +5,7 @@ import com.heap3d.ui.controllers.MainWindowController;
 import com.heap3d.ui.controllers.ProcessTabController;
 import com.heap3d.ui.viewmodels.ActionTabViewModel;
 import com.heap3d.ui.controllers.ActionsTabController;
+import com.heap3d.ui.viewmodels.EventHandlerFactory;
 import com.heap3d.ui.viewmodels.MainWindowViewModel;
 import com.heap3d.ui.viewmodels.ProcessTabViewModel;
 import org.picocontainer.Characteristics;
@@ -23,6 +24,7 @@ public class TypeRegistry {
     public TypeRegistry() {
         _injector = new DefaultPicoContainer(new OptInCaching());
 
+        _injector.as(Characteristics.CACHE).addComponent(EventHandlerFactory.class);
         _injector.as(Characteristics.CACHE).addComponent(VirtualMachineProvider.class);
         _injector.as(Characteristics.CACHE).addComponent(EventBus.class);
         _injector.as(Characteristics.CACHE).addComponent(EventHandler.class);
