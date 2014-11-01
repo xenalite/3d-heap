@@ -1,4 +1,4 @@
-package org.debugger.application.utilities;
+package com.heap3d.application.utilities;
 
 import com.sun.jdi.VirtualMachine;
 

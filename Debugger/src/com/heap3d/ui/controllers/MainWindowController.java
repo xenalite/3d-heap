@@ -1,6 +1,6 @@
-package org.debugger.ui.controllers;
+package com.heap3d.ui.controllers;
 
-import org.debugger.ui.viewmodels.MainWindowViewModel;
+import com.heap3d.ui.viewmodels.MainWindowViewModel;
 
 /**
  * Created by oskar on 29/10/14.

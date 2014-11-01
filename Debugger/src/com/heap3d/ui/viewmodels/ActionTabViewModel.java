@@ -1,8 +1,8 @@
-package org.debugger.ui.viewmodels;
+package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.debugger.application.utilities.IVirtualMachineProvider;
+import com.heap3d.application.utilities.IVirtualMachineProvider;
 import com.sun.jdi.VirtualMachine;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -32,23 +32,10 @@ public class ActionTabViewModel {
         _breakpoints = new SimpleObjectProperty<ObservableList<String>>(this, "breakpoints", FXCollections.observableList(new ArrayList<String>()));
     }
 
-    @Subscribe
-    public void handle(ChangeEvent e) {
-        System.out.println(e);
-    }
-
     public void pauseAction() {
-        VirtualMachine vm = _virtualMachineProvider.getVirtualMachine();
-        if(vm != null) {
-            vm.suspend();
-        }
     }
 
     public void resumeAction() {
-        VirtualMachine vm = _virtualMachineProvider.getVirtualMachine();
-        if(vm != null) {
-            vm.resume();
-        }
     }
 
     public void stepAction() {

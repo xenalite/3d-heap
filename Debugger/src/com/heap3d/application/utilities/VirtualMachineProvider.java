@@ -1,4 +1,4 @@
-package org.debugger.application.utilities;
+package com.heap3d.application.utilities;
 
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.VirtualMachine;
@@ -6,7 +6,6 @@ import com.sun.jdi.VirtualMachineManager;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
-import com.sun.jdi.connect.ListeningConnector;
 
 import java.io.IOException;
 import java.util.Map;

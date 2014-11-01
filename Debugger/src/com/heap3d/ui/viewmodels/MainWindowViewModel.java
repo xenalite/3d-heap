@@ -1,4 +1,4 @@
-package org.debugger.ui.viewmodels;
+package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 

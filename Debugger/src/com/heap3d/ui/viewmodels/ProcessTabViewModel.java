@@ -1,12 +1,15 @@
-package org.debugger.ui.viewmodels;
+package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.heap3d.application.events.MyEvent;
+import com.heap3d.application.utilities.EventHandler;
+import com.heap3d.application.utilities.IVirtualMachineProvider;
+import javafx.application.Platform;
 import javafx.beans.property.*;
-import org.debugger.application.utilities.CommandBuilder;
-import org.debugger.application.utilities.EventHandler;
-import org.debugger.application.utilities.IVirtualMachineProvider;
 
-import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by oskar on 29/10/14.
@@ -34,7 +37,7 @@ public class ProcessTabViewModel {
         _virtualMachineProvider = virtualMachineProvider;
         _eventBus = eventBus;
         _eventBus.register(this);
-        _className = new SimpleStringProperty(this, "className", "org.debugger.application.Debugee");
+        _className = new SimpleStringProperty(this, "className", "Debugee");
         _classPath = new SimpleStringProperty(this, "classpath", "~/workspace/3d-heap/Debugger/out/production/Debugger/");
         _jdkPath = new SimpleStringProperty(this, "jdkPath", System.getProperty("java.home"));
         _status = new SimpleStringProperty(this, "status", "NOT RUNNING");
@@ -61,12 +64,14 @@ public class ProcessTabViewModel {
         _status.set("RUNNING");
 
         _disableStart.set(true);
-        try {
-            _process = Runtime.getRuntime().exec(
-                    CommandBuilder.buildCommand(_jdkPath.get(), _classPath.get(), _className.get(), _port.get()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ExecutorService service = Executors.newSingleThreadExecutor();
+//        service.submit(() -> _eventHandler.doSomething());
+//        try {
+//            _process = Runtime.getRuntime().exec(
+//                    CommandBuilder.buildCommand(_jdkPath.get(), _classPath.get(), _className.get(), _port.get()));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public StringProperty getJdkPathProperty() {

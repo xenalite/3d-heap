@@ -1,12 +1,12 @@
-package org.debugger.application.utilities;
+package com.heap3d.application.utilities;
 
 import com.google.common.eventbus.EventBus;
-import org.debugger.ui.controllers.ActionsTabController;
-import org.debugger.ui.controllers.MainWindowController;
-import org.debugger.ui.controllers.ProcessTabController;
-import org.debugger.ui.viewmodels.ActionTabViewModel;
-import org.debugger.ui.viewmodels.MainWindowViewModel;
-import org.debugger.ui.viewmodels.ProcessTabViewModel;
+import com.heap3d.ui.controllers.MainWindowController;
+import com.heap3d.ui.controllers.ProcessTabController;
+import com.heap3d.ui.viewmodels.ActionTabViewModel;
+import com.heap3d.ui.controllers.ActionsTabController;
+import com.heap3d.ui.viewmodels.MainWindowViewModel;
+import com.heap3d.ui.viewmodels.ProcessTabViewModel;
 import org.picocontainer.Characteristics;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;

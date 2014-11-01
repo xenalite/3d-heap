@@ -1,12 +1,12 @@
-package org.debugger.application;
+package com.heap3d.application;
 
+import com.heap3d.application.utilities.ControllerFactory;
+import com.heap3d.application.utilities.TypeRegistry;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.debugger.application.utilities.TypeRegistry;
-import org.debugger.application.utilities.ControllerFactory;
 
 public class Main extends Application {
 

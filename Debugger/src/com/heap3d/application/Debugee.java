@@ -1,4 +1,4 @@
-package org.debugger.application;
+package com.heap3d.application;
 
 /**
  * Created by oskar on 29/10/14.
