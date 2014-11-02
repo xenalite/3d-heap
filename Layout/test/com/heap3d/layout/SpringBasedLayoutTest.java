@@ -108,4 +108,28 @@ public class SpringBasedLayoutTest {
         }
     }
 
+//    @Test
+//    public void testLayoutAdditionalEdgesFail() throws Exception {
+//
+//        SpringBasedLayout sl = new SpringBasedLayout();
+//
+//        Map<String, Node> graph = new HashMap<String, Node>();
+//        Node a = new LayoutNode("a", 0, 0, 0);
+//        Node b = new LayoutNode("b", 0, 0, 0);
+//        a.getChildren().add(b);
+//        b.getChildren().add(a);
+//        graph.put(a.getId(), a);
+//        graph.put(b.getId(), b);
+//        Map<String, LayoutNode> layout = sl.layout(graph);
+//
+//        for (Node n : graph.values()) {
+//            assertTrue(layout.containsKey(n.getId()));
+//            Node layoutNode = layout.get(n.getId());
+//            //Add a new edge that shouldn't exist
+//            layoutNode.getChildren().add(a);
+//            //this should fail
+//            assertFalse(areNodesEqual(n, layoutNode));
+//        }
+//    }
+
 }
