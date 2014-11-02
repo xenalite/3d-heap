@@ -1,6 +1,7 @@
 package com.heap3d.application.utilities;
 
 import com.google.common.eventbus.EventBus;
+import com.heap3d.application.EventHandler;
 import com.heap3d.ui.controllers.MainWindowController;
 import com.heap3d.ui.controllers.ProcessTabController;
 import com.heap3d.ui.viewmodels.ActionTabViewModel;

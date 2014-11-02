@@ -1,9 +1,9 @@
 package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.heap3d.application.utilities.IVirtualMachineProvider;
-import com.sun.jdi.VirtualMachine;
+import com.heap3d.application.events.EventUtils;
+import com.heap3d.application.events.IEvent;
+import com.heap3d.application.events.definitions.BreakpointDefinition;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,7 +11,6 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import javax.swing.event.ChangeEvent;
 import java.util.ArrayList;
 
 /**
@@ -19,32 +18,35 @@ import java.util.ArrayList;
  */
 public class ActionTabViewModel {
 
-    private IVirtualMachineProvider _virtualMachineProvider;
     private EventBus _eventBus;
     private StringProperty _breakpoint;
     private Property<ObservableList<String>> _breakpoints;
 
-    public ActionTabViewModel(IVirtualMachineProvider virtualMachineProvider, EventBus eventBus) {
-        _virtualMachineProvider = virtualMachineProvider;
+    public ActionTabViewModel(EventBus eventBus) {
         _eventBus = eventBus;
         _eventBus.register(this);
         _breakpoint = new SimpleStringProperty(this, "breakpoint", "");
-        _breakpoints = new SimpleObjectProperty<ObservableList<String>>(this, "breakpoints", FXCollections.observableList(new ArrayList<String>()));
+        _breakpoints = new SimpleObjectProperty<>(this, "breakpoints", FXCollections.observableList(new ArrayList<>()));
     }
 
     public void pauseAction() {
+        _eventBus.post(EventUtils.createNewPauseEvent());
     }
 
     public void resumeAction() {
+        _eventBus.post(EventUtils.createNewResumeEvent());
     }
 
     public void stepAction() {
-
     }
 
     public void addAction() {
         String currentBreakpoint = _breakpoint.getValue();
         if(isValidBreakpoint(currentBreakpoint)) {
+            String[] split = currentBreakpoint.split(":");
+            BreakpointDefinition bd = new BreakpointDefinition(split[1], split[2], Integer.parseInt(split[3]));
+            IEvent<BreakpointDefinition> nbe = EventUtils.createNewBreakpointEvent(bd);
+            _eventBus.post(nbe);
             _breakpoints.getValue().add(currentBreakpoint);
             _breakpoint.set("");
         }

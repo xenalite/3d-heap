@@ -1,6 +1,6 @@
 package com.heap3d.application.events;
 
-import com.heap3d.application.utilities.BreakpointDefinition;
+import com.heap3d.application.events.definitions.BreakpointDefinition;
 
 /**
  * Created by oskar on 01/11/14.

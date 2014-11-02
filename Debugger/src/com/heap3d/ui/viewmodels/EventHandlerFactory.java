@@ -1,7 +1,7 @@
 package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
-import com.heap3d.application.utilities.EventHandler;
+import com.heap3d.application.EventHandler;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
 
 /**

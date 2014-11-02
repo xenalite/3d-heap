@@ -7,7 +7,5 @@ import com.sun.jdi.VirtualMachine;
  */
 public interface IVirtualMachineProvider {
 
-    public VirtualMachine getVirtualMachine();
-
-    public void createAtPort(int port);
+    public VirtualMachine connect(int port);
 }

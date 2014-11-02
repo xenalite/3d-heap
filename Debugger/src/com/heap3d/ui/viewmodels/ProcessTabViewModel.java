@@ -2,10 +2,9 @@ package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.heap3d.application.events.DestroyEvent;
-import com.heap3d.application.events.EventFactory;
-import com.heap3d.application.events.StartDefinition;
-import com.heap3d.application.utilities.EventHandler;
+import com.heap3d.application.events.EventUtils;
+import com.heap3d.application.events.definitions.StartDefinition;
+import com.heap3d.application.EventHandler;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 
@@ -52,15 +51,17 @@ public class ProcessTabViewModel {
         return _sourceCode;
     }
 
+//    private int i = 0;
+
     @Subscribe
     public void handleChangeEvent(ChangeEvent e) {
-        Platform.runLater(() -> _sourceCode.set(_sourceCode.get() + System.lineSeparator() + e.getSource()));
+        Platform.runLater(() -> _sourceCode.set(e.getSource().toString()));
     }
 
     public void stopAction() {
         _status.set("NOT RUNNING");
         _disableStart.set(false);
-        _eventBus.post(EventFactory.createNewDestroyEvent());
+        _eventBus.post(EventUtils.createNewDestroyEvent());
     }
 
     public void startAction() {
@@ -69,7 +70,7 @@ public class ProcessTabViewModel {
         _disableStart.set(true);
         _currentHandler = _eventHandlerFactory.create();
 
-        _eventBus.post(EventFactory.createNewStartEvent(new StartDefinition(
+        _eventBus.post(EventUtils.createNewStartEvent(new StartDefinition(
                 _jdkPath.get(), _classPath.get(), _className.get(), _port.get()
         )));
 

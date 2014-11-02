@@ -1,5 +1,7 @@
 package com.heap3d.application.events;
 
+import com.heap3d.application.events.definitions.StartDefinition;
+
 /**
  * Created by oskar on 01/11/14.
  */

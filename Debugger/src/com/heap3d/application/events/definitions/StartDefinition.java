@@ -1,4 +1,4 @@
-package com.heap3d.application.events;
+package com.heap3d.application.events.definitions;
 
 /**
  * Created by oskar on 01/11/14.

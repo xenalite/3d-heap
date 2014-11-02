@@ -15,19 +15,13 @@ import java.util.Map;
  */
 public class VirtualMachineProvider implements IVirtualMachineProvider {
 
-    private VirtualMachine _instance;
-
     @Override
-    public VirtualMachine getVirtualMachine() {
-        return _instance;
-    }
-
-    @Override
-    public void createAtPort(int port) {
+    public VirtualMachine connect(int port) {
         try {
-            _instance = connect(getConnector(), Integer.toString(port));
+            return connect(getConnector(), Integer.toString(port));
         }
         catch(IOException | IllegalConnectorArgumentsException e) {
+            e.printStackTrace();
             throw new IllegalStateException(e);
         }
     }
@@ -43,8 +37,5 @@ public class VirtualMachineProvider implements IVirtualMachineProvider {
         args.get("port").setValue(port);
 
         return connector.attach(args);
-//
-//        connector.startListening(args);
-//        return connector.accept(args);
     }
 }
