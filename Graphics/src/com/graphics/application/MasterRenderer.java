@@ -43,4 +43,20 @@ public class MasterRenderer {
 		shader.cleanUP();
 	}
 	
+	public void setBackR(float backR) {
+		renderer.setBackR(backR);
+	}
+
+	public void setBackG(float backG) {
+		renderer.setBackG(backG);
+	}
+
+	public void setBackB(float backB) {
+		renderer.setBackB(backB);
+	}
+
+	public void setBackA(float backA) {
+		renderer.setBackA(backA);
+	}
+	
 }

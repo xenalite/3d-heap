@@ -7,8 +7,8 @@ import com.graphics.utils.Maths;
 
 public class StaticShader extends ShaderProgram{
 
-	private static final String VERTEX_FILE = "src/com/graphics/shaders/vertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/com/graphics/shaders/fragmentShader.txt";
+	private static final String VERTEX_FILE = "shaders/complexVertexShader.txt";
+	private static final String FRAGMENT_FILE = "shaders/complexFragmentShader.txt";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
@@ -62,5 +62,4 @@ public class StaticShader extends ShaderProgram{
 		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
 		super.loadMatrix(location_viewMatrix, viewMatrix);
 	}
-
 }

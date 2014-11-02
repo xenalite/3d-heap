@@ -1,7 +1,7 @@
 package com.graphics.models;
 
 /**
- * Re[resents a 3D model stored in memory
+ * Represents a 3D model stored in memory
  * @author Stephen James
  */
 public class RawModel {

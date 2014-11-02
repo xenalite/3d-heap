@@ -23,6 +23,7 @@ public class Renderer {
 	
 	private Matrix4f projectionMatrix;
 	private StaticShader shader;
+	private float backR, backG, backB, backA;
 	
 	public Renderer(StaticShader shader){
 		this.shader = shader;
@@ -37,7 +38,7 @@ public class Renderer {
 	public void prepare(){
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		
-		GL11.glClearColor(1, 0, 0, 1);
+		GL11.glClearColor(backR, backG, backB, backA);
 	}
 	
 	public void render(Map<TexturedModel, List<Entity>> entities){
@@ -65,6 +66,7 @@ public class Renderer {
 		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureID());
+		
 	}
 	
 	private void unbindTexturedModel(){
@@ -93,5 +95,21 @@ public class Renderer {
 		projectionMatrix.m23 = -1;
 		projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
 		projectionMatrix.m33 = 0;
+	}
+
+	public void setBackR(float backR) {
+		this.backR = backR;
+	}
+
+	public void setBackG(float backG) {
+		this.backG = backG;
+	}
+
+	public void setBackB(float backB) {
+		this.backB = backB;
+	}
+
+	public void setBackA(float backA) {
+		this.backA = backA;
 	}
 }
