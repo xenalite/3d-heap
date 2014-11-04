@@ -1,62 +1,76 @@
 package com.heap3d.ui.controllers;
 
-import com.heap3d.ui.viewmodels.ProcessTabViewModel;
+/**
+ * Created by oskar on 04/11/14.
+ */
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.util.converter.NumberStringConverter;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+public class ProcessTabController {
 
-/**
- * Created by oskar on 29/10/14.
- */
-public class ProcessTabController implements Initializable {
+    @FXML
+    private TextArea jvmArgs;
+
+    @FXML
+    private TextArea jdkPath;
+
+    @FXML
+    private Button pauseButton;
+
+    @FXML
+    private Button startButton;
+
+    @FXML
+    private TextArea debugeeOut;
+
+    @FXML
+    private TextArea classPath;
 
     @FXML
     private Button stopButton;
+
     @FXML
-    private Button startButton;
+    private Button resumeButton;
+
     @FXML
-    private TextField status;
+    private TextArea debuggerOut;
+
     @FXML
-    private TextField port;
+    private Button stepButton;
+
     @FXML
     private TextField className;
+
     @FXML
-    private TextField classPath;
+    private TextField status;
+
     @FXML
-    private TextField jdkPath;
+    void start() {
+
+    }
+
     @FXML
-    private TextArea sourceCode;
+    void stop() {
 
-    private final ProcessTabViewModel _viewModel;;
-
-    public ProcessTabController(ProcessTabViewModel viewModel) {
-        _viewModel = viewModel;
     }
 
-    public void start() {
-        _viewModel.startAction();
+    @FXML
+    void pause() {
+
     }
 
-    public void stop() {
-        _viewModel.stopAction();
+    @FXML
+    void resume() {
+
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        sourceCode.textProperty().bindBidirectional(_viewModel.getSourceCodeProperty());
+    @FXML
+    void step() {
 
-        jdkPath.textProperty().bindBidirectional(_viewModel.getJdkPathProperty());
-        className.textProperty().bindBidirectional(_viewModel.getClassNameProperty());
-        classPath.textProperty().bindBidirectional(_viewModel.getClassPathProperty());
-        status.textProperty().bindBidirectional(_viewModel.getStatusProperty());
-        port.textProperty().bindBidirectional(_viewModel.getPortProperty(), new NumberStringConverter());
-        startButton.disableProperty().bindBidirectional(_viewModel.getDisableStart());
-        stopButton.disableProperty().bind(_viewModel.getDisableStart().not());
     }
+
 }
+
+

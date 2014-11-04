@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane prefHeight="695.0" prefWidth="1017.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.heap3d.ui.controllers.ProcessTabController">
+   <children>
+      <SplitPane dividerPositions="0.5" orientation="VERTICAL" GridPane.rowIndex="2">
+         <items>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Debugger output" GridPane.rowIndex="2" />
+            <TextArea fx:id="debuggerOut" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2" />
+         </items>
+      </SplitPane>
+      <SplitPane dividerPositions="0.5" orientation="VERTICAL" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <items>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Debugee output" GridPane.rowIndex="2" />
+            <TextArea fx:id="debugeeOut" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2" />
+         </items>
+      </SplitPane>
+      <VBox layoutX="7.0" layoutY="7.0" prefHeight="265.0" prefWidth="512.0" spacing="25.0" GridPane.rowSpan="2">
+         <children>
+            <GridPane layoutX="127.0" layoutY="247.0">
+               <children>
+                  <Text layoutX="86.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Class Path" />
+                  <TextArea fx:id="classPath" prefHeight="64.0" prefWidth="200.0" GridPane.columnIndex="1" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+            <GridPane layoutX="31.0" layoutY="86.0">
+               <children>
+                  <TextField fx:id="className" layoutX="227.0" layoutY="39.0" GridPane.columnIndex="1" />
+                  <Text layoutX="86.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Class Name" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+            <GridPane layoutX="185.0" layoutY="153.0">
+               <children>
+                  <TextField fx:id="status" layoutX="227.0" layoutY="39.0" GridPane.columnIndex="1" />
+                  <Text layoutX="86.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Status" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+            <GridPane>
+               <children>
+                  <Text layoutX="86.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="JDK Path" />
+                  <TextArea fx:id="jdkPath" prefHeight="64.0" prefWidth="200.0" GridPane.columnIndex="1" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+            <GridPane>
+               <children>
+                  <Text layoutX="86.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="JVM Args" />
+                  <TextArea fx:id="jvmArgs" prefHeight="64.0" prefWidth="200.0" GridPane.columnIndex="1" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+         </children>
+         <padding>
+            <Insets left="15.0" top="15.0" />
+         </padding>
+      </VBox>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowSpan="2">
+         <children>
+            <VBox layoutX="224.0" layoutY="40.0" spacing="40.0">
+               <children>
+                  <Button fx:id="startButton" layoutX="225.0" layoutY="40.0" mnemonicParsing="false" onAction="#start" prefWidth="80.0" text="Start" />
+                  <Button fx:id="stopButton" layoutX="225.0" layoutY="94.0" mnemonicParsing="false" onAction="#stop" prefWidth="80.0" text="Stop" />
+                  <Button fx:id="pauseButton" layoutX="224.0" layoutY="141.0" mnemonicParsing="false" onAction="#pause" prefWidth="80.0" text="Pause" />
+                  <Button fx:id="resumeButton" layoutX="226.0" layoutY="189.0" mnemonicParsing="false" onAction="#resume" prefWidth="80.0" text="Resume" />
+                  <Button fx:id="stepButton" layoutX="225.0" layoutY="239.0" mnemonicParsing="false" onAction="#step" prefWidth="80.0" text="Step" />
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+   </children>
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+</GridPane>
