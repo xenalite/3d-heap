@@ -1,10 +1,8 @@
 package com.heap3d.layout;
 
 import com.heap3d.Node;
-import org.gephi.graph.api.DirectedGraph;
-import org.gephi.graph.api.GraphController;
-import org.gephi.graph.api.GraphFactory;
-import org.gephi.graph.api.GraphModel;
+import org.gephi.graph.api.*;
+import org.gephi.graph.spi.LayoutData;
 import org.gephi.layout.plugin.fruchterman.FruchtermanReingold;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.impl.ProjectImpl;
@@ -17,6 +15,11 @@ import java.util.Map;
 public class SpringBasedLayout implements LayoutService {
     @Override
     public Map<String, LayoutNode> layout(Map<String, Node> nodes) {
+        return layout(nodes, null);
+    }
+
+    @Override
+    public Map<String, LayoutNode> layout(Map<String, Node> nodes, String rootNodeId) {
 
         Workspace ws = new WorkspaceImpl(new ProjectImpl());
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(ws);
@@ -27,6 +30,15 @@ public class SpringBasedLayout implements LayoutService {
         for (Node hn : nodes.values()) {
             org.gephi.graph.api.Node node = factory.newNode(hn.getId());
             graph.addNode(node);
+        }
+
+        if(rootNodeId != null)
+        {
+            org.gephi.graph.api.Node root = graph.getNode(rootNodeId);
+            NodeData nd = root.getNodeData();
+            nd.setFixed(true);
+            nd.setX(0.0f);
+            nd.setY(0.0f);
         }
 
         //Add all the edges between nodes
