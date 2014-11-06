@@ -124,9 +124,8 @@ public class ProcessTabViewModel {
     }
 
     public int getRandomPort() {
-        final int RANGE = 2000;
-        final int MINIMUM = 8000;
-//        return 10000;
+        final int RANGE = 10000;
+        final int MINIMUM = 30000;
         return ((int) Math.ceil(Math.random() * RANGE)) + MINIMUM;
     }
 }
