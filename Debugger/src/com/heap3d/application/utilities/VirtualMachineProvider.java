@@ -10,6 +10,7 @@ import com.sun.jdi.connect.ListeningConnector;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * Created by oskar on 29/10/14.
@@ -39,7 +40,6 @@ public class VirtualMachineProvider implements IVirtualMachineProvider {
             throws IllegalConnectorArgumentsException, IOException {
         Map<String, Connector.Argument> args = connector.defaultArguments();
         args.get("port").setValue(port);
-        args.get("hostname").setValue("localhost");
 
         return connector.attach(args);
     }
@@ -47,9 +47,9 @@ public class VirtualMachineProvider implements IVirtualMachineProvider {
     // --- Listening connector
 
     @Override
-    public VirtualMachine establish(int port) {
+    public ConnectedProcess establish(int port, Callable<Process> p) {
         try {
-            return establish(getListeningConnector(), Integer.toString(port));
+            return establish(getListeningConnector(), Integer.toString(port), p);
         }
         catch(IOException | IllegalConnectorArgumentsException e) {
             e.printStackTrace();
@@ -63,13 +63,18 @@ public class VirtualMachineProvider implements IVirtualMachineProvider {
         return vmManager.listeningConnectors().get(0);
     }
 
-    private VirtualMachine establish(ListeningConnector connector, String port)
+    private ConnectedProcess establish(ListeningConnector connector, String port, Callable<Process> p)
             throws IllegalConnectorArgumentsException, IOException {
         Map<String, Connector.Argument> args = connector.defaultArguments();
         args.get("port").setValue(port);
 
         connector.startListening(args);
-        VirtualMachine vm = connector.accept(args);
-        return vm;
+        Process pr = null;
+        try {
+            pr = p.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ConnectedProcess(connector.accept(args), pr);
     }
 }

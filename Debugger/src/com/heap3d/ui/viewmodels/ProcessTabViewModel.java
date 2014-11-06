@@ -76,7 +76,7 @@ public class ProcessTabViewModel {
         sb.append(" ");
         sb.append("-agentlib:jdwp=transport=dt_socket,address=");
         sb.append(port);
-        sb.append(",server=y,suspend=y");
+        sb.append(",server=n,suspend=y");
         sb.append(" -cp ");
         sb.append(_classPath.get());
         sb.append(" ");
@@ -124,8 +124,8 @@ public class ProcessTabViewModel {
     }
 
     public int getRandomPort() {
-        final int RANGE = 10000;
-        final int MINIMUM = 40000;
+        final int RANGE = 2000;
+        final int MINIMUM = 8000;
 //        return 10000;
         return ((int) Math.ceil(Math.random() * RANGE)) + MINIMUM;
     }

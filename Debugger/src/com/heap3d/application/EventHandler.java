@@ -4,12 +4,12 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.heap3d.application.events.EventDTO;
 import com.heap3d.application.events.StartDefinition;
+import com.heap3d.application.utilities.ConnectedProcess;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
 import com.sun.jdi.VirtualMachine;
-import com.sun.jdi.event.Event;
-import com.sun.jdi.event.EventQueue;
-import com.sun.jdi.event.EventSet;
-import com.sun.jdi.event.VMDeathEvent;
+import com.sun.jdi.event.*;
+import com.sun.jdi.request.ClassPrepareRequest;
+import com.sun.jdi.request.EventRequestManager;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -55,20 +55,29 @@ public class EventHandler {
                     if(e instanceof VMDeathEvent) {
                         return;
                     }
-
+                    else if(e instanceof VMStartEvent) {
+//                        requestBreakpoint();
+                    }
+                    else if(e instanceof ClassPrepareEvent) {
+                        System.out.println(((ClassPrepareEvent) e).referenceType());
+                    }
                 }
                 set.resume();
             }
         }
     }
 
-    private boolean handleControlQueueItem(EventDTO e) throws IOException {
+    private boolean handleControlQueueItem(EventDTO e) throws IOException, InterruptedException {
         System.out.println(e.type);
         switch (e.type) {
             case START: {
                 System.out.println("creating @" + _definition.port);
-                _process = createProcess();
-                _virtualMachineInstance = _virtualMachineProvider.connect(_definition.port);
+
+                ConnectedProcess cp = _virtualMachineProvider.establish(_definition.port, this::createProcess);
+                _virtualMachineInstance = cp.virtualMachine;
+                _process = cp.process;
+                System.out.println("attached @" + _definition.port);
+                requestBreakpoint();
             }
             break;
             case STOP: {
@@ -94,6 +103,13 @@ public class EventHandler {
             break;
         }
         return true;
+    }
+
+    private void requestBreakpoint() {
+        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+        ClassPrepareRequest cpr = erm.createClassPrepareRequest();
+        cpr.addClassFilter(_definition.className);
+        cpr.setEnabled(true);
     }
 
     private Process createProcess() throws IOException {
