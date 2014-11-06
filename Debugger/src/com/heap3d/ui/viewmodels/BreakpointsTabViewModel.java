@@ -2,11 +2,10 @@ package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.heap3d.application.events.Event;
+import com.heap3d.application.events.EventDTO;
 import com.heap3d.application.events.EventType;
 import com.heap3d.application.events.EventUtils;
 import com.heap3d.application.utilities.ProcessState;
-import com.sun.xml.internal.fastinfoset.stax.events.EventBase;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,8 +25,8 @@ public class BreakpointsTabViewModel {
     private StringProperty _breakpoint;
     private StringProperty _watchpoint;
 
-    private Vector<Event> _cachedBreakpoints;
-    private Vector<Event> _cachedWatchpoints;
+    private Vector<EventDTO> _cachedBreakpoints;
+    private Vector<EventDTO> _cachedWatchpoints;
 
     private Property<ObservableList<String>> _breakpoints;
     private Property<ObservableList<String>> _watchpoints;
@@ -46,7 +45,7 @@ public class BreakpointsTabViewModel {
     }
 
     @Subscribe
-    public void handleEvent(Event e) {
+    public void handleEvent(EventDTO e) {
         if(e.type == EventType.START) {
             _state = ProcessState.RUNNING;
             send();
@@ -85,7 +84,7 @@ public class BreakpointsTabViewModel {
         }
     }
 
-    private Event createEvent(EventType type, String candidate) {
+    private EventDTO createEvent(EventType type, String candidate) {
         String[] values = candidate.split(":");
 
         return (type == EventType.BREAKPOINT) ?

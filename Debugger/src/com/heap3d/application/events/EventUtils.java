@@ -5,19 +5,15 @@ package com.heap3d.application.events;
  */
 public class EventUtils {
 
-    public static Event createControlEvent(EventType type) {
-        return new Event(type, null, null);
+    public static EventDTO createControlEvent(EventType type) {
+        return new EventDTO(type, null, null);
     }
 
-    public static Event createStartEvent(String className, String command) {
-        return new Event(EventType.START, className, command);
+    public static EventDTO createBreakpointEvent(String className, String methodName) {
+        return new EventDTO(EventType.BREAKPOINT, className, methodName);
     }
 
-    public static Event createBreakpointEvent(String className, String methodName) {
-        return new Event(EventType.BREAKPOINT, className, methodName);
-    }
-
-    public static Event createWatchpointEvent(String className, String fieldName) {
-        return new Event(EventType.WATCHPOINT, className, fieldName);
+    public static EventDTO createWatchpointEvent(String className, String fieldName) {
+        return new EventDTO(EventType.WATCHPOINT, className, fieldName);
     }
 }

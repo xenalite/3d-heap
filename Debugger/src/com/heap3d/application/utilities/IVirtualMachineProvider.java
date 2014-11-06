@@ -8,4 +8,6 @@ import com.sun.jdi.VirtualMachine;
 public interface IVirtualMachineProvider {
 
     public VirtualMachine connect(int port);
+
+    public VirtualMachine establish(int port);
 }

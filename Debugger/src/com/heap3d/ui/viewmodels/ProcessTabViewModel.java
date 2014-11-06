@@ -5,11 +5,16 @@ import com.heap3d.application.EventHandler;
 import com.heap3d.application.events.EventUtils;
 import com.heap3d.application.events.StartDefinition;
 import com.heap3d.application.utilities.EventHandlerFactory;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static com.heap3d.application.events.EventType.*;
 
 /**
  * Created by oskar on 29/10/14.
@@ -24,7 +29,7 @@ public class ProcessTabViewModel {
     private StringProperty _className;
     private SimpleStringProperty _debuggerOutput;
     private StringProperty _jvmArgs;
-    private BooleanProperty _disableButtons;
+    private BooleanProperty _enableButtons;
 
     public ProcessTabViewModel(EventBus eventBus, EventHandlerFactory eventHandlerFactory) {
         _eventHandlerFactory = eventHandlerFactory;
@@ -36,28 +41,30 @@ public class ProcessTabViewModel {
         _status = new SimpleStringProperty(this, "status", "NOT RUNNING");
         _debuggerOutput = new SimpleStringProperty("this", "debuggerOutput", "");
         _jvmArgs = new SimpleStringProperty(this, "jvmArgs", "");
-        _disableButtons = new SimpleBooleanProperty(this, "disableStart", true);
+        _enableButtons = new SimpleBooleanProperty(this, "disableStart", true);
     }
 
     public void stopAction() {
         _status.set("STOPPED");
-        _disableButtons.set(false);
+        _enableButtons.set(true);
+        _eventBus.post(EventUtils.createControlEvent(STOP));
     }
 
     public void startAction() {
         _status.set("RUNNING");
+        _enableButtons.set(false);
 
-        _disableButtons.set(true);
         int port = getRandomPort();
         StartDefinition sd = new StartDefinition(_className.get(), buildCommand(port), port);
         EventHandler handler = _eventHandlerFactory.create(sd);
+        _eventBus.post(EventUtils.createControlEvent(START));
 
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.submit(() -> {
             try {
                 handler.run();
             } catch (IOException | InterruptedException e) {
-                appendToOutput(e);
+                e.printStackTrace();
             }
         });
         service.shutdown();
@@ -67,7 +74,7 @@ public class ProcessTabViewModel {
         StringBuilder sb = new StringBuilder();
         sb.append(_javaPath.get());
         sb.append(" ");
-        sb.append("-agentlib:jdwp=transport=dt_socket,adress=");
+        sb.append("-agentlib:jdwp=transport=dt_socket,address=");
         sb.append(port);
         sb.append(",server=y,suspend=y");
         sb.append(" -cp ");
@@ -82,7 +89,7 @@ public class ProcessTabViewModel {
     }
 
     public BooleanProperty getDisableButtons() {
-        return _disableButtons;
+        return _enableButtons;
     }
 
     public StringProperty getJvmArgs() {
@@ -106,20 +113,20 @@ public class ProcessTabViewModel {
     public StringProperty getDebuggerOutput() { return _debuggerOutput; }
 
     public void pauseAction() {
-
+        _eventBus.post(EventUtils.createControlEvent(PAUSE));
     }
 
     public void resumeAction() {
-
+        _eventBus.post(EventUtils.createControlEvent(RESUME));
     }
 
     public void stepAction() {
-
     }
 
     public int getRandomPort() {
-        final int RANGE = 100;
-        final int MINIMUM = 10000;
+        final int RANGE = 10000;
+        final int MINIMUM = 40000;
+//        return 10000;
         return ((int) Math.ceil(Math.random() * RANGE)) + MINIMUM;
     }
 }
