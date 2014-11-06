@@ -11,6 +11,7 @@ public class Debugee {
 
         for(int i = 0; i < 3; ++i) {
             debugee.foo = i;
+            System.out.println(debugee.foo);
         }
     }
 }
