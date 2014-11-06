@@ -1,14 +1,12 @@
 package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.heap3d.application.EventHandler;
 import com.heap3d.application.events.EventUtils;
+import com.heap3d.application.events.StartDefinition;
 import com.heap3d.application.utilities.EventHandlerFactory;
-import javafx.application.Platform;
 import javafx.beans.property.*;
 
-import javax.swing.event.ChangeEvent;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,7 +16,6 @@ import java.util.concurrent.Executors;
  */
 public class ProcessTabViewModel {
 
-    private EventHandler _currentHandler;
     private EventHandlerFactory _eventHandlerFactory;
     private EventBus _eventBus;
     private StringProperty _status;
@@ -51,33 +48,31 @@ public class ProcessTabViewModel {
         _status.set("RUNNING");
 
         _disableButtons.set(true);
-        _currentHandler = _eventHandlerFactory.create();
-
-        String command = buildCommand();
-        appendToOutput(command);
-
-        _eventBus.post(EventUtils.createStartEvent(_className.get(), command));
+        int port = getRandomPort();
+        StartDefinition sd = new StartDefinition(_className.get(), buildCommand(port), port);
+        EventHandler handler = _eventHandlerFactory.create(sd);
 
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.submit(() -> {
             try {
-                _currentHandler.run();
+                handler.run();
+            } catch (IOException | InterruptedException e) {
+                appendToOutput(e);
             }
-            catch(IOException | InterruptedException e) { appendToOutput(e);}
         });
         service.shutdown();
     }
 
-    private String buildCommand() {
+    private String buildCommand(int port) {
         StringBuilder sb = new StringBuilder();
         sb.append(_javaPath.get());
         sb.append(" ");
         sb.append("-agentlib:jdwp=transport=dt_socket,adress=");
-        sb.append(8000);
-//        sb.append(((int) Math.ceil(Math.random() * 100)) + 10000);
+        sb.append(port);
         sb.append(",server=y,suspend=y");
         sb.append(" -cp ");
         sb.append(_classPath.get());
+        sb.append(" ");
 
         return sb.toString();
     }
@@ -120,5 +115,11 @@ public class ProcessTabViewModel {
 
     public void stepAction() {
 
+    }
+
+    public int getRandomPort() {
+        final int RANGE = 100;
+        final int MINIMUM = 10000;
+        return ((int) Math.ceil(Math.random() * RANGE)) + MINIMUM;
     }
 }

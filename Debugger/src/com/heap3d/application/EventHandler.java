@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.heap3d.application.events.Event;
 import com.heap3d.application.events.EventType;
+import com.heap3d.application.events.StartDefinition;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
 import com.sun.jdi.VirtualMachine;
 
@@ -17,16 +18,19 @@ import static com.heap3d.application.events.EventType.START;
  */
 public class EventHandler {
 
-    private Process _currentProcess;
+    private StartDefinition _definition;
+    private Process _process;
     private EventBus _eventBus;
     private VirtualMachine _virtualMachineInstance;
     private IVirtualMachineProvider _virtualMachineProvider;
     private ConcurrentLinkedDeque<Event> _controlEventQueue;
 
-    public EventHandler(IVirtualMachineProvider virtualMachineProvider, EventBus eventBus) {
+
+    public EventHandler(StartDefinition definition, IVirtualMachineProvider virtualMachineProvider, EventBus eventBus) {
+        _definition = definition;
         _virtualMachineProvider = virtualMachineProvider;
-        _eventBus = eventBus;
         _controlEventQueue = new ConcurrentLinkedDeque<>();
+        _eventBus = eventBus;
         _eventBus.register(this);
     }
 
@@ -44,7 +48,7 @@ public class EventHandler {
                 switch (e.type) {
                     case START: {
 
-                        _currentProcess = createProcess(e);
+                        _process = createProcess(e);
                         _virtualMachineInstance = _virtualMachineProvider.connect(Integer.valueOf(e.argument));
                     }
                     break;
@@ -93,7 +97,7 @@ public class EventHandler {
     private void dispose() {
         _virtualMachineInstance.exit(0);
         _virtualMachineInstance = null;
-        _currentProcess.destroy();
+        _process.destroy();
         _eventBus.unregister(this);
     }
 }

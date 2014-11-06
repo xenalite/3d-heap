@@ -2,6 +2,7 @@ package com.heap3d.application.utilities;
 
 import com.google.common.eventbus.EventBus;
 import com.heap3d.application.EventHandler;
+import com.heap3d.application.events.StartDefinition;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
 
 /**
@@ -17,7 +18,7 @@ public class EventHandlerFactory {
         _eventBus = eventBus;
     }
 
-    public EventHandler create() {
-        return new EventHandler(_virtualMachineProvider, _eventBus);
+    public EventHandler create(StartDefinition sd) {
+        return new EventHandler(sd, _virtualMachineProvider, _eventBus);
     }
 }
