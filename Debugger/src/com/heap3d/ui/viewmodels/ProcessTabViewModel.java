@@ -2,13 +2,14 @@ package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.heap3d.application.events.EventUtils;
 import com.heap3d.application.EventHandler;
+import com.heap3d.application.events.EventUtils;
 import com.heap3d.application.utilities.EventHandlerFactory;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 
 import javax.swing.event.ChangeEvent;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,88 +18,107 @@ import java.util.concurrent.Executors;
  */
 public class ProcessTabViewModel {
 
-    private static final int DEFAULT_PORT = 8000;
-
     private EventHandler _currentHandler;
     private EventHandlerFactory _eventHandlerFactory;
     private EventBus _eventBus;
     private StringProperty _status;
-    private StringProperty _jdkPath;
+    private StringProperty _javaPath;
     private StringProperty _classPath;
     private StringProperty _className;
-    private IntegerProperty _port;
-    private StringProperty _sourceCode;
-    private BooleanProperty _disableStart;
+    private SimpleStringProperty _debuggerOutput;
+    private StringProperty _jvmArgs;
+    private BooleanProperty _disableButtons;
 
     public ProcessTabViewModel(EventBus eventBus, EventHandlerFactory eventHandlerFactory) {
         _eventHandlerFactory = eventHandlerFactory;
         _eventBus = eventBus;
         _eventBus.register(this);
-        _className = new SimpleStringProperty(this, "className", "Debugee");
+        _className = new SimpleStringProperty(this, "className", "com.heap3d.application.Debugee");
         _classPath = new SimpleStringProperty(this, "classpath", "~/workspace/3d-heap/Debugger/out/production/Debugger/");
-        _jdkPath = new SimpleStringProperty(this, "jdkPath", System.getProperty("java.home"));
+        _javaPath = new SimpleStringProperty(this, "jdkPath", System.getProperty("java.home") + "/bin/java");
         _status = new SimpleStringProperty(this, "status", "NOT RUNNING");
-        _port = new SimpleIntegerProperty(this, "port", DEFAULT_PORT);
-        _sourceCode = new SimpleStringProperty(this, "SourceCode", "No source attached");
-        _disableStart = new SimpleBooleanProperty(this, "disableStart", false);
-    }
-
-    public BooleanProperty getDisableStart() {
-        return _disableStart;
-    }
-
-    public StringProperty getSourceCodeProperty() {
-        return _sourceCode;
-    }
-
-    @Subscribe
-    public void handleChangeEvent(ChangeEvent e) {
-        Platform.runLater(() -> _sourceCode.set(e.getSource().toString()));
+        _debuggerOutput = new SimpleStringProperty("this", "debuggerOutput", "");
+        _jvmArgs = new SimpleStringProperty(this, "jvmArgs", "");
+        _disableButtons = new SimpleBooleanProperty(this, "disableStart", true);
     }
 
     public void stopAction() {
-        _status.set("NOT RUNNING");
-        _disableStart.set(false);
-//        _eventBus.post(EventUtils.createNewDestroyEvent());
+        _status.set("STOPPED");
+        _disableButtons.set(false);
     }
 
     public void startAction() {
         _status.set("RUNNING");
 
-        _disableStart.set(true);
+        _disableButtons.set(true);
         _currentHandler = _eventHandlerFactory.create();
 
-//        _eventBus.post(EventUtils.createNewStartEvent(new StartDefinition(
-//                _jdkPath.get(), _classPath.get(), _className.get(), _port.get()
-//        )));
+        String command = buildCommand();
+        appendToOutput(command);
+
+        _eventBus.post(EventUtils.createStartEvent(_className.get(), command));
 
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.submit(() -> {
             try {
                 _currentHandler.run();
             }
-            catch(InterruptedException ignored) {}
+            catch(IOException | InterruptedException e) { appendToOutput(e);}
         });
         service.shutdown();
     }
 
-    public StringProperty getJdkPathProperty() {
-        return _jdkPath;
+    private String buildCommand() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(_javaPath.get());
+        sb.append(" ");
+        sb.append("-agentlib:jdwp=transport=dt_socket,adress=");
+        sb.append(8000);
+//        sb.append(((int) Math.ceil(Math.random() * 100)) + 10000);
+        sb.append(",server=y,suspend=y");
+        sb.append(" -cp ");
+        sb.append(_classPath.get());
+
+        return sb.toString();
     }
 
-    public StringProperty getClassPathProperty() {
+    private void appendToOutput(Object value) {
+        _debuggerOutput.set(_debuggerOutput.get() + System.lineSeparator() + value);
+    }
+
+    public BooleanProperty getDisableButtons() {
+        return _disableButtons;
+    }
+
+    public StringProperty getJvmArgs() {
+        return _jvmArgs;
+    }
+
+    public StringProperty getJavaPath() { return _javaPath; }
+
+    public StringProperty getClassPath() {
         return _classPath;
     }
 
-    public StringProperty getClassNameProperty() {
+    public StringProperty getClassName() {
         return _className;
     }
 
-    public StringProperty getStatusProperty() {
+    public StringProperty getStatus() {
         return _status;
     }
 
-    public IntegerProperty getPortProperty() {
-        return _port;
+    public StringProperty getDebuggerOutput() { return _debuggerOutput; }
+
+    public void pauseAction() {
+
+    }
+
+    public void resumeAction() {
+
+    }
+
+    public void stepAction() {
+
     }
 }
