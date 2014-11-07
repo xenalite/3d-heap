@@ -6,19 +6,19 @@ import com.heap3d.application.events.EventDTO;
 import com.heap3d.application.events.StartDefinition;
 import com.heap3d.application.utilities.ConnectedProcess;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
-import com.sun.jdi.ClassNotLoadedException;
-import com.sun.jdi.Method;
+import com.sun.jdi.Field;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.ClassPrepareRequest;
 import com.sun.jdi.request.EventRequestManager;
-import com.sun.jdi.request.MethodEntryRequest;
+import com.sun.jdi.request.ModificationWatchpointRequest;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.concurrent.Callable;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -32,11 +32,13 @@ public class EventHandler {
     private VirtualMachine _virtualMachineInstance;
     private IVirtualMachineProvider _virtualMachineProvider;
     private ConcurrentLinkedDeque<EventDTO> _controlEventQueue;
+    private Map<String,List<String>> _cachedWatchpoints;
 
     public EventHandler(StartDefinition definition, IVirtualMachineProvider virtualMachineProvider, EventBus eventBus) {
         _definition = definition;
         _virtualMachineProvider = virtualMachineProvider;
         _controlEventQueue = new ConcurrentLinkedDeque<>();
+        _cachedWatchpoints = new HashMap<>();
         _eventBus = eventBus;
         _eventBus.register(this);
     }
@@ -62,12 +64,15 @@ public class EventHandler {
                     if(e instanceof VMDeathEvent) {
                         return;
                     }
-                    else if(e instanceof VMStartEvent) {
-//                        requestBreakpoint();
-                    }
                     else if(e instanceof ClassPrepareEvent) {
-                        ClassPrepareEvent cpe = (ClassPrepareEvent) e;
-                        System.out.println(((ClassPrepareEvent) e).referenceType());
+                      ReferenceType rtype = ((ClassPrepareEvent) e).referenceType();
+                        if(_cachedWatchpoints.containsKey(rtype.name())) {
+                            List<String> watchpoints = _cachedWatchpoints.get(rtype.name());
+                            for(String watchpoint : watchpoints) {
+                                addWatchpoint(rtype, watchpoint);
+                            }
+                        }
+
                     }
                 }
                 set.resume();
@@ -75,11 +80,17 @@ public class EventHandler {
         }
     }
 
+    private void addWatchpoint(ReferenceType rtype, String watchpoint) {
+        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+        Field f = rtype.fieldByName(watchpoint);
+        ModificationWatchpointRequest mwe = erm.createModificationWatchpointRequest(f);
+        mwe.setEnabled(true);
+    }
+
     public int getRandomPort() {
         final int RANGE = 10000;
         final int MINIMUM = 30000;
         return ((int) Math.ceil(Math.random() * RANGE)) + MINIMUM;
-//        return 10000;
     }
 
     private boolean handleControlQueueItem(EventDTO e) throws IOException, InterruptedException {
@@ -87,14 +98,9 @@ public class EventHandler {
         switch (e.type) {
             case START: {
                 int port = getRandomPort();
-                System.out.println("creating @" + port);
-
-                ConnectedProcess cp = _virtualMachineProvider.establish(port, () -> createProcess(port));
+                ConnectedProcess cp = _virtualMachineProvider.establish(port, () -> _definition.buildProcess(port));
                 _virtualMachineInstance = cp.virtualMachine;
                 _process = cp.process;
-                System.out.println("attached @" + port);
-
-                requestBreakpoint();
             }
             break;
             case STOP: {
@@ -115,28 +121,25 @@ public class EventHandler {
             }
             break;
             case WATCHPOINT: {
-
+                handleWatchpoint(e);
             }
             break;
         }
         return true;
     }
 
-    private void requestBreakpoint() {
+    private void handleWatchpoint(EventDTO e) {
         EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
         ClassPrepareRequest cpr = erm.createClassPrepareRequest();
-        cpr.addClassFilter(_definition.className);
+        cpr.addClassFilter(e.className);
         cpr.setEnabled(true);
 
-        MethodEntryRequest mer = erm.createMethodEntryRequest();
-        mer.addClassFilter(_definition.className);
-        mer.setEnabled(true);
-    }
+        List<String> watchpoints = _cachedWatchpoints.containsKey(e.className)
+                ? _cachedWatchpoints.get(e.className)
+                : new LinkedList<>();
 
-    private Process createProcess(int port) throws IOException {
-//        String command = _definition.command + _definition.className;
-//        return Runtime.getRuntime().exec(command);
-        return _definition.buildProcess(port);
+        watchpoints.add(e.argument);
+        _cachedWatchpoints.put(e.className, watchpoints);
     }
 
     public void run() throws InterruptedException, IOException {

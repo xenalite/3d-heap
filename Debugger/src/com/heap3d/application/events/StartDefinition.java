@@ -24,7 +24,6 @@ public class StartDefinition {
         ProcessBuilder pb = new ProcessBuilder(javaPath, jvmArgument, "-cp", classpath, className);
         pb.inheritIO();
 
-        System.out.println(pb.command());
         return pb.start();
     }
 }

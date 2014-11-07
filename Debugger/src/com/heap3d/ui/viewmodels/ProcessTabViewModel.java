@@ -51,7 +51,6 @@ public class ProcessTabViewModel {
     }
 
     public void startAction() {
-//        System.getProperties().entrySet().forEach(System.out::println);
         _status.set("RUNNING");
         _enableButtons.set(false);
 
