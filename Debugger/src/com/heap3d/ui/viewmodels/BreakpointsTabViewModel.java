@@ -52,6 +52,18 @@ public class BreakpointsTabViewModel {
         }
         else if(e.type == EventType.STOP) {
             _state = ProcessState.STOPPED;
+            cache();
+        }
+    }
+
+    private void cache() {
+        _cachedBreakpoints.clear();
+        _cachedWatchpoints.clear();
+        for(String bpoint : _breakpoints.getValue()) {
+            _cachedBreakpoints.add(createEvent(EventType.BREAKPOINT, bpoint));
+        }
+        for(String wpoint : _watchpoints.getValue()) {
+            _cachedWatchpoints.add(createEvent(EventType.WATCHPOINT, wpoint));
         }
     }
 

@@ -13,7 +13,9 @@ import com.sun.jdi.event.*;
 import com.sun.jdi.request.ClassPrepareRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.ModificationWatchpointRequest;
+import org.apache.commons.io.IOUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -148,9 +150,8 @@ public class EventHandler {
     }
 
     private void dispose() {
-        _virtualMachineInstance.exit(0);
-        _virtualMachineInstance = null;
         _process.destroy();
+        _virtualMachineInstance.exit(0);
         _eventBus.unregister(this);
     }
 }
