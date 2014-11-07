@@ -1,17 +1,30 @@
 package com.heap3d.application.events;
 
+import java.io.IOException;
+
 /**
  * Created by oskar on 06/11/14.
  */
 public class StartDefinition {
 
+    public final String javaPath;
     public final String className;
-    public final String command;
-    public final int port;
+    public final String jvmArgumentFormat;
+    public final String classpath;
 
-    public StartDefinition(String className, String command, int port) {
+    public StartDefinition(String javaPath, String className, String jvmArgumentFormat, String classpath) {
+        this.javaPath = javaPath;
         this.className = className;
-        this.command = command;
-        this.port = port;
+        this.jvmArgumentFormat = jvmArgumentFormat;
+        this.classpath = classpath;
+    }
+
+    public Process buildProcess(int port) throws IOException {
+        String jvmArgument = String.format(jvmArgumentFormat, port);
+        ProcessBuilder pb = new ProcessBuilder(javaPath, jvmArgument, "-cp", classpath, className);
+        pb.inheritIO();
+
+        System.out.println(pb.command());
+        return pb.start();
     }
 }

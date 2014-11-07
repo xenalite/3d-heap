@@ -36,7 +36,7 @@ public class ProcessTabViewModel {
         _eventBus = eventBus;
         _eventBus.register(this);
         _className = new SimpleStringProperty(this, "className", "com.heap3d.application.Debugee");
-        _classPath = new SimpleStringProperty(this, "classpath", "~/workspace/3d-heap/Debugger/out/production/Debugger/");
+        _classPath = new SimpleStringProperty(this, "classpath", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
         _javaPath = new SimpleStringProperty(this, "jdkPath", System.getProperty("java.home") + "/bin/java");
         _status = new SimpleStringProperty(this, "status", "NOT RUNNING");
         _debuggerOutput = new SimpleStringProperty("this", "debuggerOutput", "");
@@ -51,11 +51,12 @@ public class ProcessTabViewModel {
     }
 
     public void startAction() {
+//        System.getProperties().entrySet().forEach(System.out::println);
         _status.set("RUNNING");
         _enableButtons.set(false);
 
-        int port = getRandomPort();
-        StartDefinition sd = new StartDefinition(_className.get(), buildCommand(port), port);
+        String jvmFormat = "-agentlib:jdwp=transport=dt_socket,address=%d,server=n,suspend=y";
+        StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), jvmFormat, _classPath.get());
         EventHandler handler = _eventHandlerFactory.create(sd);
         _eventBus.post(EventUtils.createControlEvent(START));
 
@@ -68,20 +69,6 @@ public class ProcessTabViewModel {
             }
         });
         service.shutdown();
-    }
-
-    private String buildCommand(int port) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(_javaPath.get());
-        sb.append(" ");
-        sb.append("-agentlib:jdwp=transport=dt_socket,address=");
-        sb.append(port);
-        sb.append(",server=n,suspend=y");
-        sb.append(" -cp ");
-        sb.append(_classPath.get());
-        sb.append(" ");
-
-        return sb.toString();
     }
 
     private void appendToOutput(Object value) {
@@ -121,11 +108,5 @@ public class ProcessTabViewModel {
     }
 
     public void stepAction() {
-    }
-
-    public int getRandomPort() {
-        final int RANGE = 10000;
-        final int MINIMUM = 30000;
-        return ((int) Math.ceil(Math.random() * RANGE)) + MINIMUM;
     }
 }
