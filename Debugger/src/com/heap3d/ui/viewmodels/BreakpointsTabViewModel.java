@@ -2,9 +2,9 @@ package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.heap3d.application.events.EventDTO;
+import com.heap3d.application.events.ControlEvent;
 import com.heap3d.application.events.EventType;
-import com.heap3d.application.events.EventUtils;
+import com.heap3d.application.events.ControlEventFactory;
 import com.heap3d.application.utilities.ProcessState;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -25,8 +25,8 @@ public class BreakpointsTabViewModel {
     private StringProperty _breakpoint;
     private StringProperty _watchpoint;
 
-    private Vector<EventDTO> _cachedBreakpoints;
-    private Vector<EventDTO> _cachedWatchpoints;
+    private Vector<ControlEvent> _cachedBreakpoints;
+    private Vector<ControlEvent> _cachedWatchpoints;
 
     private Property<ObservableList<String>> _breakpoints;
     private Property<ObservableList<String>> _watchpoints;
@@ -45,7 +45,7 @@ public class BreakpointsTabViewModel {
     }
 
     @Subscribe
-    public void handleEvent(EventDTO e) {
+    public void handleEvent(ControlEvent e) {
         if(e.type == EventType.START) {
             _state = ProcessState.RUNNING;
             send();
@@ -94,12 +94,12 @@ public class BreakpointsTabViewModel {
         }
     }
 
-    private EventDTO createEvent(EventType type, String candidate) {
+    private ControlEvent createEvent(EventType type, String candidate) {
         String[] values = candidate.split(":");
 
         return (type == EventType.BREAKPOINT) ?
-                EventUtils.createBreakpointEvent(values[0], values[1]) :
-                EventUtils.createWatchpointEvent(values[0], values[1]);
+                ControlEventFactory.createBreakpointEvent(values[0], values[1]) :
+                ControlEventFactory.createWatchpointEvent(values[0], values[1]);
     }
 
     private boolean isValid(String candidate) {

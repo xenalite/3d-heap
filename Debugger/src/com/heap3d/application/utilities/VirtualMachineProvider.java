@@ -47,7 +47,7 @@ public class VirtualMachineProvider implements IVirtualMachineProvider {
     // --- Listening connector
 
     @Override
-    public ConnectedProcess establish(int port, Callable<Process> p) {
+    public DebuggedProcess establish(int port, Callable<Process> p) {
         try {
             return establish(getListeningConnector(), Integer.toString(port), p);
         }
@@ -63,7 +63,7 @@ public class VirtualMachineProvider implements IVirtualMachineProvider {
         return vmManager.listeningConnectors().get(0);
     }
 
-    private ConnectedProcess establish(ListeningConnector connector, String port, Callable<Process> p)
+    private DebuggedProcess establish(ListeningConnector connector, String port, Callable<Process> p)
             throws IllegalConnectorArgumentsException, IOException {
         Map<String, Connector.Argument> args = connector.defaultArguments();
         args.get("port").setValue(port);
@@ -75,6 +75,6 @@ public class VirtualMachineProvider implements IVirtualMachineProvider {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ConnectedProcess(connector.accept(args), pr);
+        return new DebuggedProcess(connector.accept(args), pr);
     }
 }

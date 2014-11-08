@@ -2,9 +2,9 @@ package com.heap3d.application;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.heap3d.application.events.EventDTO;
+import com.heap3d.application.events.ControlEvent;
 import com.heap3d.application.events.StartDefinition;
-import com.heap3d.application.utilities.ConnectedProcess;
+import com.heap3d.application.utilities.DebuggedProcess;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
 import com.heap3d.application.utilities.ProcessState;
 import com.sun.jdi.*;
@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static com.heap3d.application.utilities.ProcessState.PAUSED;
 import static com.heap3d.application.utilities.ProcessState.RUNNING;
+import static com.heap3d.application.utilities.ProcessState.STOPPED;
 import static java.util.AbstractMap.SimpleImmutableEntry;
 import static java.util.Map.Entry;
 
@@ -36,7 +37,7 @@ public class EventHandler {
     private EventBus _eventBus;
     private VirtualMachine _virtualMachineInstance;
     private IVirtualMachineProvider _virtualMachineProvider;
-    private ConcurrentLinkedDeque<EventDTO> _controlEventQueue;
+    private ConcurrentLinkedDeque<ControlEvent> _controlEventQueue;
     private Map<String, Entry<Vector<String>, Vector<String>>> _cachedBWPoints;
 
     public EventHandler(StartDefinition definition, IVirtualMachineProvider virtualMachineProvider, EventBus eventBus) {
@@ -50,7 +51,7 @@ public class EventHandler {
     }
 
     @Subscribe
-    public void handleEvent(EventDTO e) {
+    public void handleEvent(ControlEvent e) {
         _controlEventQueue.add(e);
     }
 
@@ -80,12 +81,16 @@ public class EventHandler {
                                 addBreakpoint(classReference, breakpoint);
                         }
                     }
+                    else if(e instanceof ModificationWatchpointEvent) {
+                        _state = PAUSED;
+                        ModificationWatchpointEvent mwe = (ModificationWatchpointEvent) e;
+                        _eventBus.post(String.format("Variable %s in %s modified! Old:%s, New:%s",
+                                mwe.field(), mwe.location(), mwe.valueCurrent(), mwe.valueToBe()));
+                    }
                     else if(e instanceof BreakpointEvent) {
                         _state = PAUSED;
-                        try {
-                            System.out.println(((BreakpointEvent) e).thread().frame(0).visibleVariables());
-                        } catch (AbsentInformationException | IncompatibleThreadStateException ignored) {
-                        }
+                        BreakpointEvent be = (BreakpointEvent) e;
+                        _eventBus.post(String.format("Breakpoint hit @%s", be.location()));
                     }
                 }
                 if(_state == RUNNING)
@@ -114,76 +119,78 @@ public class EventHandler {
         return ((int) Math.ceil(Math.random() * RANGE)) + MINIMUM;
     }
 
-    private boolean handleControlQueueItem(EventDTO e) throws IOException, InterruptedException {
-        System.out.println(e.type);
+    private boolean handleControlQueueItem(ControlEvent e) throws IOException, InterruptedException {
         switch (e.type) {
             case START: {
-                int port = getRandomPort();
-                ConnectedProcess cp = _virtualMachineProvider.establish(port, () -> _definition.buildProcess(port));
-                _virtualMachineInstance = cp.virtualMachine;
-                _process = cp.process;
-                _state = RUNNING;
+                runProcessAndEstablishConnection();
             }
             break;
             case STOP: {
                 return false;
             }
             case PAUSE: {
-                if (_virtualMachineInstance != null) {
+                if (_virtualMachineInstance != null && _state == RUNNING) {
                     _state = PAUSED;
                     _virtualMachineInstance.suspend();
                 }
             }
             break;
             case RESUME: {
-                if (_virtualMachineInstance != null) {
+                if (_virtualMachineInstance != null && _state == PAUSED) {
                     _state = RUNNING;
                     _virtualMachineInstance.resume();
                 }
             }
             break;
             case BREAKPOINT: {
-                handleBreakpoint(e);
+                cacheBreakpointUntilClassIsLoaded(e);
             }
             break;
             case WATCHPOINT: {
-                handleWatchpoint(e);
+                cacheWatchpointUntilClassIsLoaded(e);
             }
             break;
         }
         return true;
     }
 
-    private void handleWatchpoint(EventDTO e) {
-        Vector<String> watchpoints;
-        if (_cachedBWPoints.containsKey(e.className)) {
-            watchpoints = _cachedBWPoints.get(e.className).getValue();
-        } else {
-            EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
-            ClassPrepareRequest cpr = erm.createClassPrepareRequest();
-            cpr.addClassFilter(e.className);
-            cpr.setEnabled(true);
-
-            watchpoints = new Vector<>();
-            _cachedBWPoints.put(e.className, new SimpleImmutableEntry<>(new Vector<>(), watchpoints));
-        }
-        watchpoints.add(e.argument);
+    private void runProcessAndEstablishConnection() {
+        int port = getRandomPort();
+        DebuggedProcess cp = _virtualMachineProvider.establish(port, () -> _definition.buildProcess(port));
+        _virtualMachineInstance = cp.virtualMachine;
+        _process = cp.process;
+        _state = RUNNING;
     }
 
-    private void handleBreakpoint(EventDTO e) {
-        Vector<String> breakpoints;
+    private void cacheWatchpointUntilClassIsLoaded(ControlEvent e) {
+        Vector<String> entries;
         if (_cachedBWPoints.containsKey(e.className)) {
-            breakpoints = _cachedBWPoints.get(e.className).getKey();
+            entries = _cachedBWPoints.get(e.className).getValue();
         } else {
-            EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
-            ClassPrepareRequest cpr = erm.createClassPrepareRequest();
-            cpr.addClassFilter(e.className);
-            cpr.setEnabled(true);
-
-            breakpoints = new Vector<>();
-            _cachedBWPoints.put(e.className, new SimpleImmutableEntry<>(breakpoints, new Vector<>()));
+            createClassPrepareRequest(e.className);
+            entries = new Vector<>();
+            _cachedBWPoints.put(e.className, new SimpleImmutableEntry<>(new Vector<>(), entries));
         }
-        breakpoints.add(e.argument);
+        entries.add(e.argument);
+    }
+
+    private void cacheBreakpointUntilClassIsLoaded(ControlEvent e) {
+        Vector<String> entries;
+        if (_cachedBWPoints.containsKey(e.className)) {
+            entries = _cachedBWPoints.get(e.className).getKey();
+        } else {
+            createClassPrepareRequest(e.className);
+            entries = new Vector<>();
+            _cachedBWPoints.put(e.className, new SimpleImmutableEntry<>(entries, new Vector<>()));
+        }
+        entries.add(e.argument);
+    }
+
+    private void createClassPrepareRequest(String filter) {
+        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+        ClassPrepareRequest cpr = erm.createClassPrepareRequest();
+        cpr.addClassFilter(filter);
+        cpr.setEnabled(true);
     }
 
     public void run() throws InterruptedException, IOException {
@@ -192,8 +199,10 @@ public class EventHandler {
     }
 
     private void dispose() {
+        _state = STOPPED;
         _process.destroy();
         _virtualMachineInstance.exit(0);
+        _eventBus.post(_state);
         _eventBus.unregister(this);
     }
 }
