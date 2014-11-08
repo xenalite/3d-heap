@@ -13,9 +13,7 @@ import com.sun.jdi.event.*;
 import com.sun.jdi.request.ClassPrepareRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.ModificationWatchpointRequest;
-import org.apache.commons.io.IOUtils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -131,17 +129,20 @@ public class EventHandler {
     }
 
     private void handleWatchpoint(EventDTO e) {
-        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
-        ClassPrepareRequest cpr = erm.createClassPrepareRequest();
-        cpr.addClassFilter(e.className);
-        cpr.setEnabled(true);
+        List<String> watchpoints;
+        if(_cachedWatchpoints.containsKey(e.className)) {
+            watchpoints = _cachedWatchpoints.get(e.className);
+        }
+        else {
+            EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+            ClassPrepareRequest cpr = erm.createClassPrepareRequest();
+            cpr.addClassFilter(e.className);
+            cpr.setEnabled(true);
 
-        List<String> watchpoints = _cachedWatchpoints.containsKey(e.className)
-                ? _cachedWatchpoints.get(e.className)
-                : new LinkedList<>();
-
+           watchpoints = new LinkedList<>();
+            _cachedWatchpoints.put(e.className, watchpoints);
+        }
         watchpoints.add(e.argument);
-        _cachedWatchpoints.put(e.className, watchpoints);
     }
 
     public void run() throws InterruptedException, IOException {
