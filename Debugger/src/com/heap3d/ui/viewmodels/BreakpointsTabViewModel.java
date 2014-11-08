@@ -59,12 +59,10 @@ public class BreakpointsTabViewModel {
     private void cache() {
         _cachedBreakpoints.clear();
         _cachedWatchpoints.clear();
-        for(String bpoint : _breakpoints.getValue()) {
+        for(String bpoint : _breakpoints.getValue())
             _cachedBreakpoints.add(createEvent(EventType.BREAKPOINT, bpoint));
-        }
-        for(String wpoint : _watchpoints.getValue()) {
+        for(String wpoint : _watchpoints.getValue())
             _cachedWatchpoints.add(createEvent(EventType.WATCHPOINT, wpoint));
-        }
     }
 
     public void addBreakpointAction() {

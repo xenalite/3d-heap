@@ -6,20 +6,24 @@ import com.heap3d.application.events.EventDTO;
 import com.heap3d.application.events.StartDefinition;
 import com.heap3d.application.utilities.ConnectedProcess;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
-import com.sun.jdi.Field;
-import com.sun.jdi.ReferenceType;
-import com.sun.jdi.VirtualMachine;
+import com.heap3d.application.utilities.ProcessState;
+import com.sun.jdi.*;
 import com.sun.jdi.event.*;
+import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.ClassPrepareRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.ModificationWatchpointRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedDeque;
+
+import static com.heap3d.application.utilities.ProcessState.PAUSED;
+import static com.heap3d.application.utilities.ProcessState.RUNNING;
+import static java.util.AbstractMap.SimpleImmutableEntry;
+import static java.util.Map.Entry;
 
 /**
  * Created by oskar on 31/10/14.
@@ -28,17 +32,19 @@ public class EventHandler {
 
     private StartDefinition _definition;
     private Process _process;
+    private ProcessState _state;
     private EventBus _eventBus;
     private VirtualMachine _virtualMachineInstance;
     private IVirtualMachineProvider _virtualMachineProvider;
     private ConcurrentLinkedDeque<EventDTO> _controlEventQueue;
-    private Map<String,List<String>> _cachedWatchpoints;
+    private Map<String, Entry<Vector<String>, Vector<String>>> _cachedBWPoints;
 
     public EventHandler(StartDefinition definition, IVirtualMachineProvider virtualMachineProvider, EventBus eventBus) {
         _definition = definition;
+        _state = ProcessState.STOPPED;
         _virtualMachineProvider = virtualMachineProvider;
         _controlEventQueue = new ConcurrentLinkedDeque<>();
-        _cachedWatchpoints = new HashMap<>();
+        _cachedBWPoints = new HashMap<>();
         _eventBus = eventBus;
         _eventBus.register(this);
     }
@@ -49,14 +55,13 @@ public class EventHandler {
     }
 
     public void loop() throws InterruptedException, IOException {
-        boolean stop = false;
-        while (!stop) {
+        while (true) {
 
             while (!_controlEventQueue.isEmpty())
                 if(!handleControlQueueItem(_controlEventQueue.removeFirst()))
                     return;
 
-            if(_virtualMachineInstance != null) {
+            if(_virtualMachineInstance != null && _state == RUNNING) {
                 EventQueue vmQueue = _virtualMachineInstance.eventQueue();
                 EventSet set = vmQueue.remove();
                 for(Event e : set) {
@@ -65,24 +70,40 @@ public class EventHandler {
                         return;
                     }
                     else if(e instanceof ClassPrepareEvent) {
-                      ReferenceType rtype = ((ClassPrepareEvent) e).referenceType();
-                        if(_cachedWatchpoints.containsKey(rtype.name())) {
-                            List<String> watchpoints = _cachedWatchpoints.get(rtype.name());
-                            for(String watchpoint : watchpoints) {
-                                addWatchpoint(rtype, watchpoint);
-                            }
+                      ReferenceType classReference = ((ClassPrepareEvent) e).referenceType();
+                        if(_cachedBWPoints.containsKey(classReference.name())) {
+                            Vector<String> watchpoints = _cachedBWPoints.get(classReference.name()).getValue();
+                            for(String watchpoint : watchpoints)
+                                addWatchpoint(classReference, watchpoint);
+                            Vector<String> breakpoints = _cachedBWPoints.get(classReference.name()).getKey();
+                            for(String breakpoint : breakpoints)
+                                addBreakpoint(classReference, breakpoint);
                         }
-
+                    }
+                    else if(e instanceof BreakpointEvent) {
+                        _state = PAUSED;
+                        try {
+                            System.out.println(((BreakpointEvent) e).thread().frame(0).visibleVariables());
+                        } catch (AbsentInformationException | IncompatibleThreadStateException ignored) {
+                        }
                     }
                 }
-                set.resume();
+                if(_state == RUNNING)
+                    set.resume();
             }
         }
     }
 
-    private void addWatchpoint(ReferenceType rtype, String watchpoint) {
+    private void addBreakpoint(ReferenceType classReference, String breakpoint) {
         EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
-        Field f = rtype.fieldByName(watchpoint);
+        Location l = classReference.methodsByName(breakpoint).get(0).location();
+        BreakpointRequest br = erm.createBreakpointRequest(l);
+        br.setEnabled(true);
+    }
+
+    private void addWatchpoint(ReferenceType classReference, String watchpoint) {
+        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+        Field f = classReference.fieldByName(watchpoint);
         ModificationWatchpointRequest mwe = erm.createModificationWatchpointRequest(f);
         mwe.setEnabled(true);
     }
@@ -101,23 +122,28 @@ public class EventHandler {
                 ConnectedProcess cp = _virtualMachineProvider.establish(port, () -> _definition.buildProcess(port));
                 _virtualMachineInstance = cp.virtualMachine;
                 _process = cp.process;
+                _state = RUNNING;
             }
             break;
             case STOP: {
                 return false;
             }
             case PAUSE: {
-                if (_virtualMachineInstance != null)
+                if (_virtualMachineInstance != null) {
+                    _state = PAUSED;
                     _virtualMachineInstance.suspend();
+                }
             }
             break;
             case RESUME: {
-                if (_virtualMachineInstance != null)
+                if (_virtualMachineInstance != null) {
+                    _state = RUNNING;
                     _virtualMachineInstance.resume();
+                }
             }
             break;
             case BREAKPOINT: {
-
+                handleBreakpoint(e);
             }
             break;
             case WATCHPOINT: {
@@ -129,20 +155,35 @@ public class EventHandler {
     }
 
     private void handleWatchpoint(EventDTO e) {
-        List<String> watchpoints;
-        if(_cachedWatchpoints.containsKey(e.className)) {
-            watchpoints = _cachedWatchpoints.get(e.className);
-        }
-        else {
+        Vector<String> watchpoints;
+        if (_cachedBWPoints.containsKey(e.className)) {
+            watchpoints = _cachedBWPoints.get(e.className).getValue();
+        } else {
             EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
             ClassPrepareRequest cpr = erm.createClassPrepareRequest();
             cpr.addClassFilter(e.className);
             cpr.setEnabled(true);
 
-           watchpoints = new LinkedList<>();
-            _cachedWatchpoints.put(e.className, watchpoints);
+            watchpoints = new Vector<>();
+            _cachedBWPoints.put(e.className, new SimpleImmutableEntry<>(new Vector<>(), watchpoints));
         }
         watchpoints.add(e.argument);
+    }
+
+    private void handleBreakpoint(EventDTO e) {
+        Vector<String> breakpoints;
+        if (_cachedBWPoints.containsKey(e.className)) {
+            breakpoints = _cachedBWPoints.get(e.className).getKey();
+        } else {
+            EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+            ClassPrepareRequest cpr = erm.createClassPrepareRequest();
+            cpr.addClassFilter(e.className);
+            cpr.setEnabled(true);
+
+            breakpoints = new Vector<>();
+            _cachedBWPoints.put(e.className, new SimpleImmutableEntry<>(breakpoints, new Vector<>()));
+        }
+        breakpoints.add(e.argument);
     }
 
     public void run() throws InterruptedException, IOException {
