@@ -20,9 +20,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import static com.heap3d.application.utilities.ProcessState.PAUSED;
-import static com.heap3d.application.utilities.ProcessState.RUNNING;
-import static com.heap3d.application.utilities.ProcessState.STOPPED;
+import static com.heap3d.application.utilities.ProcessState.*;
 import static java.util.AbstractMap.SimpleImmutableEntry;
 import static java.util.Map.Entry;
 
@@ -201,7 +199,6 @@ public class EventHandler {
     private void dispose() {
         _state = STOPPED;
         _process.destroy();
-        _virtualMachineInstance.exit(0);
         _eventBus.post(_state);
         _eventBus.unregister(this);
     }

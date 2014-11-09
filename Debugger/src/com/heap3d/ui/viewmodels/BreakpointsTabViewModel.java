@@ -16,6 +16,8 @@ import javafx.collections.ObservableList;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import static com.heap3d.application.utilities.ProcessState.STOPPED;
+
 /**
  * Created by oskar on 29/10/14.
  */
@@ -35,7 +37,7 @@ public class BreakpointsTabViewModel {
     public BreakpointsTabViewModel(EventBus eventBus) {
         _eventBus = eventBus;
         _eventBus.register(this);
-        _state = ProcessState.STOPPED;
+        _state = STOPPED;
         _breakpoint = new SimpleStringProperty(this, "breakpoint", "");
         _watchpoint = new SimpleStringProperty(this, "watchpoint", "");
         _breakpoints = new SimpleObjectProperty<>(this, "breakpoints", FXCollections.observableList(new ArrayList<>()));
@@ -51,12 +53,20 @@ public class BreakpointsTabViewModel {
             send();
         }
         else if(e.type == EventType.STOP) {
-            _state = ProcessState.STOPPED;
+            _state = STOPPED;
             cache();
         }
     }
 
-    private void cache() {
+    @Subscribe
+    public void handleEvent2(ProcessState s) {
+        if(s == STOPPED) {
+            _state = s;
+            cache();
+        }
+    }
+
+    private synchronized void cache() {
         _cachedBreakpoints.clear();
         _cachedWatchpoints.clear();
         for(String bpoint : _breakpoints.getValue())
