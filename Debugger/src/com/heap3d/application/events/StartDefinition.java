@@ -22,8 +22,7 @@ public class StartDefinition {
     public Process buildProcess(int port) throws IOException {
         String jvmArgument = String.format(jvmArgumentFormat, port);
         ProcessBuilder pb = new ProcessBuilder(javaPath, jvmArgument, "-cp", classpath, className);
-        pb.inheritIO();
-
-        return pb.start();
+        Process p = pb.start();
+        return p;
     }
 }

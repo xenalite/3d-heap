@@ -53,27 +53,27 @@ public class ProcessTabController implements Initializable {
 
     @FXML
     void start() {
-        _viewModel.startAction();
+        _viewModel.getStartActionCommand().execute();
     }
 
     @FXML
     void stop() {
-        _viewModel.stopAction();
+        _viewModel.getStopActionCommand().execute();
     }
 
     @FXML
     void pause() {
-        _viewModel.pauseAction();
+        _viewModel.getPauseActionCommand().execute();
     }
 
     @FXML
     void resume() {
-        _viewModel.resumeAction();
+        _viewModel.getResumeActionCommand().execute();
     }
 
     @FXML
     void step() {
-        _viewModel.stepAction();
+        _viewModel.getStepActionCommand().execute();
     }
 
     private final ProcessTabViewModel _viewModel;
@@ -84,11 +84,11 @@ public class ProcessTabController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        startButton.disableProperty().bind(_viewModel.getDisableButtons().not());
-        stopButton.disableProperty().bindBidirectional(_viewModel.getDisableButtons());
-        pauseButton.disableProperty().bindBidirectional(_viewModel.getDisableButtons());
-        resumeButton.disableProperty().bindBidirectional(_viewModel.getDisableButtons());
-        stepButton.disableProperty().bindBidirectional(_viewModel.getDisableButtons());
+        startButton.disableProperty().bind(_viewModel.getStartActionCommand().canExecute().not());
+        stopButton.disableProperty().bind(_viewModel.getStopActionCommand().canExecute().not());
+        pauseButton.disableProperty().bind(_viewModel.getPauseActionCommand().canExecute().not());
+        resumeButton.disableProperty().bind(_viewModel.getResumeActionCommand().canExecute().not());
+        stepButton.disableProperty().bind(_viewModel.getStepActionCommand().canExecute().not());
 
         classPath.textProperty().bindBidirectional(_viewModel.getClassPath());
         className.textProperty().bindBidirectional(_viewModel.getClassName());
@@ -96,6 +96,7 @@ public class ProcessTabController implements Initializable {
         jvmArgs.textProperty().bindBidirectional(_viewModel.getJvmArgs());
         status.textProperty().bindBidirectional(_viewModel.getStatus());
         debuggerOut.textProperty().bindBidirectional(_viewModel.getDebuggerOutput());
+        debugeeOut.textProperty().bindBidirectional(_viewModel.getDebuggeeOutput());
     }
 }
 

@@ -2,10 +2,7 @@ package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.heap3d.application.events.EventDTO;
-import com.heap3d.application.events.EventType;
-import com.heap3d.application.events.EventUtils;
-import com.heap3d.application.utilities.ProcessState;
+import com.heap3d.application.events.*;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,7 +11,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
+
+import static com.heap3d.application.events.EventType.BREAKPOINT;
+import static com.heap3d.application.events.EventType.WATCHPOINT;
 
 /**
  * Created by oskar on 29/10/14.
@@ -22,99 +23,110 @@ import java.util.Vector;
 public class BreakpointsTabViewModel {
 
     private EventBus _eventBus;
-    private StringProperty _breakpoint;
-    private StringProperty _watchpoint;
+    private StringProperty _breakpointClass;
+    private StringProperty _breakpointMethod;
+    private StringProperty _watchpointClass;
+    private StringProperty _watchpointField;
 
-    private Vector<EventDTO> _cachedBreakpoints;
-    private Vector<EventDTO> _cachedWatchpoints;
-
+    private Vector<ControlEvent> _cachedElements;
     private Property<ObservableList<String>> _breakpoints;
     private Property<ObservableList<String>> _watchpoints;
-    private ProcessState _state;
+    private boolean _cacheEnabled;
 
     public BreakpointsTabViewModel(EventBus eventBus) {
         _eventBus = eventBus;
         _eventBus.register(this);
-        _state = ProcessState.STOPPED;
-        _breakpoint = new SimpleStringProperty(this, "breakpoint", "");
-        _watchpoint = new SimpleStringProperty(this, "watchpoint", "");
+        _cacheEnabled = true;
+        _breakpointClass = new SimpleStringProperty(this, "breakpointClass", "");
+        _breakpointMethod = new SimpleStringProperty(this, "breakpointMethod", "");
+        _watchpointClass = new SimpleStringProperty(this, "watchpointClass", "");
+        _watchpointField = new SimpleStringProperty(this, "watchpointField", "");
         _breakpoints = new SimpleObjectProperty<>(this, "breakpoints", FXCollections.observableList(new ArrayList<>()));
         _watchpoints = new SimpleObjectProperty<>(this, "watchpoints", FXCollections.observableList(new ArrayList<>()));
-        _cachedBreakpoints = new Vector<>();
-        _cachedWatchpoints = new Vector<>();
+        _cachedElements = new Vector<>();
     }
 
     @Subscribe
-    public void handleEvent(EventDTO e) {
+    public void handleEvent(ControlEvent e) {
         if(e.type == EventType.START) {
-            _state = ProcessState.RUNNING;
+            _cacheEnabled = false;
             send();
         }
         else if(e.type == EventType.STOP) {
-            _state = ProcessState.STOPPED;
+            _cacheEnabled = true;
             cache();
         }
     }
 
-    private void cache() {
-        _cachedBreakpoints.clear();
-        _cachedWatchpoints.clear();
-        for(String bpoint : _breakpoints.getValue()) {
-            _cachedBreakpoints.add(createEvent(EventType.BREAKPOINT, bpoint));
+    @Subscribe
+    public void handleProcessEvent(ProcessEvent pe) {
+        if(pe.type == ProcessEventType.STOPPED)
+        {
+            _cacheEnabled = true;
+            cache();
         }
-        for(String wpoint : _watchpoints.getValue()) {
-            _cachedWatchpoints.add(createEvent(EventType.WATCHPOINT, wpoint));
+    }
+
+    private synchronized void cache() {
+        addToCache(_breakpoints.getValue(), BREAKPOINT);
+        addToCache(_watchpoints.getValue(), WATCHPOINT);
+    }
+
+    private void addToCache(List<String> list, EventType type) {
+        _cachedElements.clear();
+        for(String contents : list) {
+            String[] values = contents.split(":");
+            _cachedElements.add(createEvent(type, values[0], values[1]));
         }
     }
 
     public void addBreakpointAction() {
-        String candidate = _breakpoint.get();
-        if(isValid(candidate)) {
-            _breakpoints.getValue().add(candidate);
-            _breakpoint.set("");
-            _cachedBreakpoints.add(createEvent(EventType.BREAKPOINT, candidate));
-            send();
-        }
+        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
     }
 
     public void addWatchpointAction() {
-        String candidate = _watchpoint.get();
-        if(isValid(candidate)) {
-            _watchpoints.getValue().add(candidate);
-            _watchpoint.set("");
-            _cachedWatchpoints.add(createEvent(EventType.WATCHPOINT, candidate));
+        addElement(_watchpointClass, _watchpointField, _watchpoints.getValue(), WATCHPOINT);
+    }
+
+    private void addElement(StringProperty classNameProperty, StringProperty pointProperty,
+                            List<String> list, EventType type) {
+        String className = classNameProperty.get();
+        String point = pointProperty.get();
+        if(isValid(className, point)) {
+            list.add(className + ":" + point);
+            classNameProperty.set("");
+            pointProperty.set("");
+            _cachedElements.add(createEvent(type, className, point));
             send();
         }
     }
 
     private void send() {
-        if(_state == ProcessState.RUNNING) {
-            _cachedBreakpoints.forEach(_eventBus::post);
-            _cachedWatchpoints.forEach(_eventBus::post);
-            _cachedBreakpoints.clear();
-            _cachedWatchpoints.clear();
+        if(!_cacheEnabled) {
+            _cachedElements.forEach(_eventBus::post);
+            _cachedElements.clear();
         }
     }
 
-    private EventDTO createEvent(EventType type, String candidate) {
-        String[] values = candidate.split(":");
-
-        return (type == EventType.BREAKPOINT) ?
-                EventUtils.createBreakpointEvent(values[0], values[1]) :
-                EventUtils.createWatchpointEvent(values[0], values[1]);
+    private ControlEvent createEvent(EventType type, String className, String point) {
+        return (type == BREAKPOINT) ?
+                ControlEventFactory.createBreakpointEvent(className, point) :
+                ControlEventFactory.createWatchpointEvent(className, point);
     }
 
-    private boolean isValid(String candidate) {
-        return !candidate.isEmpty();
+    private boolean isValid(String className, String point) {
+        return !className.isEmpty() && !point.isEmpty();
     }
 
-    public StringProperty getBreakpointProperty() {
-        return _breakpoint;
+    public StringProperty getBreakpointClassProperty() {
+        return _breakpointClass;
     }
+    public StringProperty getBreakpointMethodProperty() { return _breakpointMethod; }
     public Property<ObservableList<String>> getBreakpointsProperty() {
         return _breakpoints;
     }
 
-    public StringProperty getWatchpointProperty() { return _watchpoint; }
+    public StringProperty getWatchpointClassProperty() { return _watchpointClass; }
+    public StringProperty getWatchpointFieldProperty() { return _watchpointField; }
     public Property<ObservableList<String>> getWatchpointsProperty() { return _watchpoints; }
 }
