@@ -6,5 +6,6 @@ package com.heap3d.application.utilities;
 public enum ProcessState {
 
     RUNNING,
+    PAUSED,
     STOPPED
 }

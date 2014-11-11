@@ -4,14 +4,23 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.heap3d.application.events.EventDTO;
 import com.heap3d.application.events.StartDefinition;
+import com.heap3d.application.utilities.ConnectedProcess;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
+import com.sun.jdi.Field;
+import com.sun.jdi.ReferenceType;
 import com.sun.jdi.VirtualMachine;
-import com.sun.jdi.event.Event;
-import com.sun.jdi.event.EventQueue;
-import com.sun.jdi.event.EventSet;
-import com.sun.jdi.event.VMDeathEvent;
+import com.sun.jdi.event.*;
+import com.sun.jdi.request.ClassPrepareRequest;
+import com.sun.jdi.request.EventRequestManager;
+import com.sun.jdi.request.ModificationWatchpointRequest;
+import org.apache.commons.io.IOUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -25,11 +34,13 @@ public class EventHandler {
     private VirtualMachine _virtualMachineInstance;
     private IVirtualMachineProvider _virtualMachineProvider;
     private ConcurrentLinkedDeque<EventDTO> _controlEventQueue;
+    private Map<String,List<String>> _cachedWatchpoints;
 
     public EventHandler(StartDefinition definition, IVirtualMachineProvider virtualMachineProvider, EventBus eventBus) {
         _definition = definition;
         _virtualMachineProvider = virtualMachineProvider;
         _controlEventQueue = new ConcurrentLinkedDeque<>();
+        _cachedWatchpoints = new HashMap<>();
         _eventBus = eventBus;
         _eventBus.register(this);
     }
@@ -55,20 +66,43 @@ public class EventHandler {
                     if(e instanceof VMDeathEvent) {
                         return;
                     }
+                    else if(e instanceof ClassPrepareEvent) {
+                      ReferenceType rtype = ((ClassPrepareEvent) e).referenceType();
+                        if(_cachedWatchpoints.containsKey(rtype.name())) {
+                            List<String> watchpoints = _cachedWatchpoints.get(rtype.name());
+                            for(String watchpoint : watchpoints) {
+                                addWatchpoint(rtype, watchpoint);
+                            }
+                        }
 
+                    }
                 }
                 set.resume();
             }
         }
     }
 
-    private boolean handleControlQueueItem(EventDTO e) throws IOException {
+    private void addWatchpoint(ReferenceType rtype, String watchpoint) {
+        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+        Field f = rtype.fieldByName(watchpoint);
+        ModificationWatchpointRequest mwe = erm.createModificationWatchpointRequest(f);
+        mwe.setEnabled(true);
+    }
+
+    public int getRandomPort() {
+        final int RANGE = 10000;
+        final int MINIMUM = 30000;
+        return ((int) Math.ceil(Math.random() * RANGE)) + MINIMUM;
+    }
+
+    private boolean handleControlQueueItem(EventDTO e) throws IOException, InterruptedException {
         System.out.println(e.type);
         switch (e.type) {
             case START: {
-                System.out.println("creating @" + _definition.port);
-                _process = createProcess();
-                _virtualMachineInstance = _virtualMachineProvider.connect(_definition.port);
+                int port = getRandomPort();
+                ConnectedProcess cp = _virtualMachineProvider.establish(port, () -> _definition.buildProcess(port));
+                _virtualMachineInstance = cp.virtualMachine;
+                _process = cp.process;
             }
             break;
             case STOP: {
@@ -89,16 +123,25 @@ public class EventHandler {
             }
             break;
             case WATCHPOINT: {
-
+                handleWatchpoint(e);
             }
             break;
         }
         return true;
     }
 
-    private Process createProcess() throws IOException {
-        String command = _definition.command + _definition.className;
-        return Runtime.getRuntime().exec(command);
+    private void handleWatchpoint(EventDTO e) {
+        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+        ClassPrepareRequest cpr = erm.createClassPrepareRequest();
+        cpr.addClassFilter(e.className);
+        cpr.setEnabled(true);
+
+        List<String> watchpoints = _cachedWatchpoints.containsKey(e.className)
+                ? _cachedWatchpoints.get(e.className)
+                : new LinkedList<>();
+
+        watchpoints.add(e.argument);
+        _cachedWatchpoints.put(e.className, watchpoints);
     }
 
     public void run() throws InterruptedException, IOException {
@@ -107,9 +150,8 @@ public class EventHandler {
     }
 
     private void dispose() {
-        _virtualMachineInstance.exit(0);
-        _virtualMachineInstance = null;
         _process.destroy();
+        _virtualMachineInstance.exit(0);
         _eventBus.unregister(this);
     }
 }
