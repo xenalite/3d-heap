@@ -48,5 +48,19 @@ public class LayoutNode implements Node, Spatial {
     }
 
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.getId().equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return id + " (" + x+","+y+","+z+")";
+    }
 }
 

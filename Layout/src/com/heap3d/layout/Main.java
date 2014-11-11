@@ -17,19 +17,31 @@ import java.util.Map;
 
 public class Main {
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         System.out.println("Running Layout");
-        LayoutService layout = new SpringBasedLayout();
+//        LayoutService layout = new SpringBasedLayout();
+//        LayoutService layout = new IterativeSpringBasedLayout();
+        LayoutService layout = new FRLayout();
 
         Map<String, com.heap3d.Node> graph = randomGraph(100);
 
-        Map<String, LayoutNode> laidOutNodes = layout.layout(graph);
+        Map<String, LayoutNode> laidOutNodes = layout.layout(graph, "1");
 
+        if (laidOutNodes != null) {
+
+            float maxDistance = 0;
+            for (LayoutNode n : laidOutNodes.values()) {
+                float x = n.x();
+                float y = n.y();
+                System.out.println(String.format("Node: %s at (%f,%f)", n.getId(), x, y));
+                maxDistance = Math.max(x * x + y * y, maxDistance);
+
+            }
+            System.out.println("Max distance = " + (Math.sqrt(maxDistance)));
+        }
     }
 
-    public static Map<String, com.heap3d.Node> randomGraph(int numberOfNodes)
-    {
+    public static Map<String, com.heap3d.Node> randomGraph(int numberOfNodes) {
         //Init a project - and therefore a workspace
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         pc.newProject();
@@ -52,18 +64,16 @@ public class Main {
 
         Map<String, com.heap3d.Node> nodes = new HashMap<String, com.heap3d.Node>();
         NodeIterable ni = graph.getNodes();
-        for(Node n : ni)
-        {
+        for (Node n : ni) {
             LayoutNode newNode = new LayoutNode(
-                    n.getNodeData().getId(),
-                    n.getNodeData().x(),
-                    n.getNodeData().y(),
-                    n.getNodeData().z() );
+                    n.getNodeData().getId(), 0f, 0f, 0f);
+//                    n.getNodeData().x(),
+//                    n.getNodeData().y(),
+//                    n.getNodeData().z() );
             nodes.put(n.getNodeData().getId(), newNode);
         }
 
-        for(Edge e : graph.getEdges())
-        {
+        for (Edge e : graph.getEdges()) {
             com.heap3d.Node source = nodes.get(e.getSource().getNodeData().getId());
             com.heap3d.Node target = nodes.get(e.getTarget().getNodeData().getId());
             source.getChildren().add(target);
