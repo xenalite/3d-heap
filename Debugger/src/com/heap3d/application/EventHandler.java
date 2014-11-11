@@ -140,6 +140,10 @@ public class EventHandler {
                 }
             }
             break;
+            case STEP: {
+
+            }
+            break;
             case BREAKPOINT: {
                 cacheBreakpointUntilClassIsLoaded(e);
             }

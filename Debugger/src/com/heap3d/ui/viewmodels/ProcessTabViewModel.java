@@ -53,7 +53,7 @@ public class ProcessTabViewModel {
         _resumeActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(RESUME)));
         _stepActionCommand = new RelayCommand(() -> {});
 
-        _className = new SimpleStringProperty(this, "className", "com.heap3d.application.Debugee");
+        _className = new SimpleStringProperty(this, "className", "test.Debugee");
         _classPath = new SimpleStringProperty(this, "classpath", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
         _javaPath = new SimpleStringProperty(this, "jdkPath", System.getProperty("java.home") + "/bin/java");
         _status = new SimpleStringProperty(this, "status", "NOT RUNNING");

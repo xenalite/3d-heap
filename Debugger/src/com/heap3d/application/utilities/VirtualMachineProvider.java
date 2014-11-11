@@ -25,8 +25,7 @@ public class VirtualMachineProvider implements IVirtualMachineProvider {
             return connect(getAttachingConnector(), Integer.toString(port));
         }
         catch(IOException | IllegalConnectorArgumentsException e) {
-//            e.printStackTrace();
-            System.out.println("refused @" + port);
+            e.printStackTrace();
             throw new IllegalStateException(e);
         }
     }
@@ -53,7 +52,6 @@ public class VirtualMachineProvider implements IVirtualMachineProvider {
         }
         catch(IOException | IllegalConnectorArgumentsException e) {
             e.printStackTrace();
-
             throw new IllegalStateException(e);
         }
     }

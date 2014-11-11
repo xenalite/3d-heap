@@ -60,8 +60,10 @@ public class BreakpointsTabController implements Initializable {
         breakpoints.itemsProperty().bindBidirectional(_viewModel.getBreakpointsProperty());
         watchpoints.itemsProperty().bindBidirectional(_viewModel.getWatchpointsProperty());
 
-        breakpointClassName.textProperty().bindBidirectional(_viewModel.getBreakpointProperty());
-        watchpointClassName.textProperty().bindBidirectional(_viewModel.getWatchpointProperty());
+        breakpointClassName.textProperty().bindBidirectional(_viewModel.getBreakpointClassProperty());
+        breakpointMethodName.textProperty().bindBidirectional(_viewModel.getBreakpointMethodProperty());
+        watchpointClassName.textProperty().bindBidirectional(_viewModel.getWatchpointClassProperty());
+        watchpointFieldName.textProperty().bindBidirectional(_viewModel.getWatchpointFieldProperty());
     }
 }
 
