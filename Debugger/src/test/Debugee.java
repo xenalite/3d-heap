@@ -1,4 +1,4 @@
-package com.heap3d.application;
+package test;
 
 /**
  * Created by oskar on 29/10/14.

@@ -1,20 +1,17 @@
 package com.heap3d.application.events;
 
-import com.heap3d.application.events.definitions.EventType;
-
 /**
- * Created by oskar on 02/11/14.
+ * Created by oskar on 04/11/14.
  */
-public class ControlEvent implements IEvent<EventType> {
+public class ControlEvent {
 
-    private final EventType _eventType;
+    public final EventType type;
+    public final String className;
+    public final String argument;
 
-    public ControlEvent(EventType eventType) {
-        _eventType = eventType;
-    }
-
-    @Override
-    public EventType getContent() {
-        return _eventType;
+    public ControlEvent(EventType type, String className, String argument) {
+        this.type = type;
+        this.className = className;
+        this.argument = argument;
     }
 }

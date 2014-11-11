@@ -15,8 +15,8 @@ public class Main extends Application {
 	}
 
     private static String WINDOW_TITLE = "3D HEAP VISUALISER";
-    private static int MIN_WINDOW_HEIGHT = 510;
-    private static int MIN_WINDOW_WIDTH = 705;
+    private static int MIN_WINDOW_HEIGHT = 768;
+    private static int MIN_WINDOW_WIDTH = 1024;
     private final TypeRegistry _typeRegistry = new TypeRegistry();
 
     @Override

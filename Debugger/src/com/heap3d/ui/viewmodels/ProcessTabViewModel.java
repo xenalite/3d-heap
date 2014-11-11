@@ -2,105 +2,161 @@ package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.heap3d.application.events.EventUtils;
-import com.heap3d.application.events.definitions.StartDefinition;
 import com.heap3d.application.EventHandler;
+import com.heap3d.application.events.ControlEventFactory;
+import com.heap3d.application.events.ProcessEvent;
+import com.heap3d.application.events.StartDefinition;
+import com.heap3d.application.utilities.ICommand;
+import com.heap3d.application.utilities.IVirtualMachineProvider;
+import com.heap3d.application.utilities.RelayCommand;
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
-import javax.swing.event.ChangeEvent;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static com.heap3d.application.events.EventType.*;
 
 /**
  * Created by oskar on 29/10/14.
  */
 public class ProcessTabViewModel {
 
-    private static final int DEFAULT_PORT = 8000;
-
-    private EventHandler _currentHandler;
-    private EventHandlerFactory _eventHandlerFactory;
     private EventBus _eventBus;
+    private IVirtualMachineProvider _VMProvider;
+
+    private ICommand _resumeActionCommand;
+    private ICommand _pauseActionCommand;
+    private ICommand _stepActionCommand;
+    private ICommand _startActionCommand;
+    private ICommand _stopActionCommand;
+
     private StringProperty _status;
-    private StringProperty _jdkPath;
+    private StringProperty _javaPath;
     private StringProperty _classPath;
     private StringProperty _className;
-    private IntegerProperty _port;
-    private StringProperty _sourceCode;
-    private BooleanProperty _disableStart;
+    private SimpleStringProperty _debuggerOutput;
+    private SimpleStringProperty _debuggeeOutput;
+    private StringProperty _jvmArguments;
 
-    public ProcessTabViewModel(EventBus eventBus, EventHandlerFactory eventHandlerFactory) {
-        _eventHandlerFactory = eventHandlerFactory;
+    public ProcessTabViewModel(EventBus eventBus, IVirtualMachineProvider VMProvider) {
+        _VMProvider = VMProvider;
         _eventBus = eventBus;
         _eventBus.register(this);
-        _className = new SimpleStringProperty(this, "className", "Debugee");
-        _classPath = new SimpleStringProperty(this, "classpath", "~/workspace/3d-heap/Debugger/out/production/Debugger/");
-        _jdkPath = new SimpleStringProperty(this, "jdkPath", System.getProperty("java.home"));
+
+        _startActionCommand = new RelayCommand(this::startAction);
+        _startActionCommand.canExecute().set(true);
+        _stopActionCommand = new RelayCommand(this::stopAction);
+        _pauseActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(PAUSE)));
+        _resumeActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(RESUME)));
+        _stepActionCommand = new RelayCommand(() -> {});
+
+        _className = new SimpleStringProperty(this, "className", "test.Debugee");
+        _classPath = new SimpleStringProperty(this, "classpath", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
+        _javaPath = new SimpleStringProperty(this, "jdkPath", System.getProperty("java.home") + "/bin/java");
         _status = new SimpleStringProperty(this, "status", "NOT RUNNING");
-        _port = new SimpleIntegerProperty(this, "port", DEFAULT_PORT);
-        _sourceCode = new SimpleStringProperty(this, "SourceCode", "No source attached");
-        _disableStart = new SimpleBooleanProperty(this, "disableStart", false);
+        _debuggerOutput = new SimpleStringProperty("this", "debuggerOutput", "");
+        _debuggeeOutput = new SimpleStringProperty("this", "debuggeeOutput", "");
+        _jvmArguments = new SimpleStringProperty(this, "jvmArgs", "");
     }
-
-    public BooleanProperty getDisableStart() {
-        return _disableStart;
-    }
-
-    public StringProperty getSourceCodeProperty() {
-        return _sourceCode;
-    }
-
-//    private int i = 0;
 
     @Subscribe
-    public void handleChangeEvent(ChangeEvent e) {
-        Platform.runLater(() -> _sourceCode.set(e.getSource().toString()));
+    public void handleProcessStopped(ProcessEvent pe) {
+        switch(pe.type) {
+            case STARTED: {
+
+            }
+            break;
+            case STOPPED: {
+                Platform.runLater(this::setButtonsOnStop);
+            }
+            break;
+            case DEBUG_MSG: {
+                Platform.runLater(() -> _debuggerOutput.set(_debuggerOutput.get()
+                + System.lineSeparator() + pe.message));
+            }
+            break;
+            case PROCESS_MSG: {
+                Platform.runLater(() -> _debuggeeOutput.set(_debuggeeOutput.get()
+                + System.lineSeparator() + pe.message));
+            }
+            break;
+        }
     }
 
-    public void stopAction() {
-        _status.set("NOT RUNNING");
-        _disableStart.set(false);
-        _eventBus.post(EventUtils.createNewDestroyEvent());
+    private void setButtonsOnStop() {
+        _status.set("STOPPED");
+        _startActionCommand.canExecute().set(true);
+        _stopActionCommand.canExecute().set(false);
+        _stepActionCommand.canExecute().set(false);
+        _pauseActionCommand.canExecute().set(false);
+        _resumeActionCommand.canExecute().set(false);
     }
 
-    public void startAction() {
+    private void stopAction() {
+        setButtonsOnStop();
+        _eventBus.post(ControlEventFactory.createEventOfType(STOP));
+    }
+
+    private void startAction() {
         _status.set("RUNNING");
+        _debuggeeOutput.set("");
+        _debuggerOutput.set("");
+        _startActionCommand.canExecute().set(false);
+        _stopActionCommand.canExecute().set(true);
+        _stepActionCommand.canExecute().set(true);
+        _pauseActionCommand.canExecute().set(true);
+        _resumeActionCommand.canExecute().set(true);
 
-        _disableStart.set(true);
-        _currentHandler = _eventHandlerFactory.create();
+        String jvmFormat = "-agentlib:jdwp=transport=dt_socket,address=%d,server=n,suspend=y";
 
-        _eventBus.post(EventUtils.createNewStartEvent(new StartDefinition(
-                _jdkPath.get(), _classPath.get(), _className.get(), _port.get()
-        )));
+        StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), jvmFormat, _classPath.get());
+        EventHandler handler = new EventHandler(sd, _VMProvider, _eventBus);
+        _eventBus.post(ControlEventFactory.createEventOfType(START));
 
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.submit(() -> {
             try {
-                _currentHandler.run();
+                handler.run();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
             }
-            catch(InterruptedException ignored) {}
         });
         service.shutdown();
     }
 
-    public StringProperty getJdkPathProperty() {
-        return _jdkPath;
+    //region Properties
+    public StringProperty getJvmArgs() {
+        return _jvmArguments;
     }
 
-    public StringProperty getClassPathProperty() {
+    public StringProperty getJavaPath() { return _javaPath; }
+
+    public StringProperty getClassPath() {
         return _classPath;
     }
 
-    public StringProperty getClassNameProperty() {
+    public StringProperty getClassName() {
         return _className;
     }
 
-    public StringProperty getStatusProperty() {
+    public StringProperty getStatus() {
         return _status;
     }
 
-    public IntegerProperty getPortProperty() {
-        return _port;
-    }
+    public StringProperty getDebuggerOutput() { return _debuggerOutput; }
+    public StringProperty getDebuggeeOutput() { return _debuggeeOutput; }
+
+    public ICommand getPauseActionCommand() { return _pauseActionCommand; }
+
+    public ICommand getResumeActionCommand() { return _resumeActionCommand; }
+
+    public ICommand getStepActionCommand() { return _stepActionCommand; }
+
+    public ICommand getStartActionCommand() { return _startActionCommand; }
+
+    public ICommand getStopActionCommand() { return _stopActionCommand; }
+    //endregion
 }

@@ -85,6 +85,21 @@ public class SpringBasedLayoutTest {
     }
 
     @Test
+    public void testLayoutRootNodeFixedPosition() throws Exception {
+
+        SpringBasedLayout sl = new SpringBasedLayout();
+
+        Map<String, Node> graph = new HashMap<String, Node>();
+        Node n = new LayoutNode("id", 10, 10, 10);
+        graph.put(n.getId(), n);
+        Map<String, LayoutNode> layout = sl.layout(graph, "id");
+
+        LayoutNode layoutNode = layout.get(n.getId());
+        assertEquals(0.0f, layoutNode.x(), 0.0f);
+        assertEquals(0.0f, layoutNode.y(), 0.0f);
+    }
+
+    @Test
     public void testLayoutPairNonDestructiveFail() throws Exception {
 
         SpringBasedLayout sl = new SpringBasedLayout();

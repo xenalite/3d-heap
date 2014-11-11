@@ -1,62 +1,103 @@
 package com.heap3d.ui.controllers;
 
+/**
+ * Created by oskar on 04/11/14.
+ */
 import com.heap3d.ui.viewmodels.ProcessTabViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.util.converter.NumberStringConverter;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-/**
- * Created by oskar on 29/10/14.
- */
 public class ProcessTabController implements Initializable {
 
     @FXML
-    private Button stopButton;
+    private TextArea jvmArgs;
+
+    @FXML
+    private TextArea jdkPath;
+
+    @FXML
+    private Button pauseButton;
+
     @FXML
     private Button startButton;
+
     @FXML
-    private TextField status;
+    private TextArea debugeeOut;
+
     @FXML
-    private TextField port;
+    private TextArea classPath;
+
+    @FXML
+    private Button stopButton;
+
+    @FXML
+    private Button resumeButton;
+
+    @FXML
+    private TextArea debuggerOut;
+
+    @FXML
+    private Button stepButton;
+
     @FXML
     private TextField className;
-    @FXML
-    private TextField classPath;
-    @FXML
-    private TextField jdkPath;
-    @FXML
-    private TextArea sourceCode;
 
-    private final ProcessTabViewModel _viewModel;;
+    @FXML
+    private TextField status;
+
+    @FXML
+    void start() {
+        _viewModel.getStartActionCommand().execute();
+    }
+
+    @FXML
+    void stop() {
+        _viewModel.getStopActionCommand().execute();
+    }
+
+    @FXML
+    void pause() {
+        _viewModel.getPauseActionCommand().execute();
+    }
+
+    @FXML
+    void resume() {
+        _viewModel.getResumeActionCommand().execute();
+    }
+
+    @FXML
+    void step() {
+        _viewModel.getStepActionCommand().execute();
+    }
+
+    private final ProcessTabViewModel _viewModel;
 
     public ProcessTabController(ProcessTabViewModel viewModel) {
         _viewModel = viewModel;
     }
 
-    public void start() {
-        _viewModel.startAction();
-    }
-
-    public void stop() {
-        _viewModel.stopAction();
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        sourceCode.textProperty().bindBidirectional(_viewModel.getSourceCodeProperty());
+        startButton.disableProperty().bind(_viewModel.getStartActionCommand().canExecute().not());
+        stopButton.disableProperty().bind(_viewModel.getStopActionCommand().canExecute().not());
+        pauseButton.disableProperty().bind(_viewModel.getPauseActionCommand().canExecute().not());
+        resumeButton.disableProperty().bind(_viewModel.getResumeActionCommand().canExecute().not());
+        stepButton.disableProperty().bind(_viewModel.getStepActionCommand().canExecute().not());
 
-        jdkPath.textProperty().bindBidirectional(_viewModel.getJdkPathProperty());
-        className.textProperty().bindBidirectional(_viewModel.getClassNameProperty());
-        classPath.textProperty().bindBidirectional(_viewModel.getClassPathProperty());
-        status.textProperty().bindBidirectional(_viewModel.getStatusProperty());
-        port.textProperty().bindBidirectional(_viewModel.getPortProperty(), new NumberStringConverter());
-        startButton.disableProperty().bindBidirectional(_viewModel.getDisableStart());
-        stopButton.disableProperty().bind(_viewModel.getDisableStart().not());
+        classPath.textProperty().bindBidirectional(_viewModel.getClassPath());
+        className.textProperty().bindBidirectional(_viewModel.getClassName());
+        jdkPath.textProperty().bindBidirectional(_viewModel.getJavaPath());
+        jvmArgs.textProperty().bindBidirectional(_viewModel.getJvmArgs());
+        status.textProperty().bindBidirectional(_viewModel.getStatus());
+        debuggerOut.textProperty().bindBidirectional(_viewModel.getDebuggerOutput());
+        debugeeOut.textProperty().bindBidirectional(_viewModel.getDebuggeeOutput());
     }
 }
+
+
