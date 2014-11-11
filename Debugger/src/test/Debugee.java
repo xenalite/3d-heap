@@ -9,8 +9,8 @@ public class Debugee {
     public static void main(String[] args) {
         Debugee debugee = new Debugee();
 
-        for(int i = 0; i < 3; ++i) {
-            debugee.foo = i;
+        while(true){
+            debugee.foo = 8973;
             System.out.println(debugee.foo);
         }
     }
