@@ -2,35 +2,39 @@
 
     <property name="src.dir"     value="src"/>
     <property name="build.dir"   value="build"/>
-	<property name="build.test.dir"   value="${build.dir}/tests"/>
+    <property name="build.test.dir"   value="${build.dir}/tests"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
     <property name="main-class"  value="com.heap3d.layout.Main"/>
     <property name="lib.dir"     value="lib"/>
-	<property name="test.dir"   value="test"/>
-	<property name="reports.dir" value="reports"/>
-	
-	<!-- Define the classpath which includes the junit.jar and the classes after compiling-->
-	<path id="junit.class.path">
-		<fileset dir="${lib.dir}" includes="jar/*"/>
-		<pathelement location="${build.dir}" />
-	</path>
-    
+    <property name="test.dir"   value="test"/>
+    <property name="reports.dir" value="reports"/>
+
+    <!-- Define the classpath which includes the junit.jar and the classes after compiling-->
+    <path id="junit.class.path">
+        <fileset dir="${lib.dir}" includes="jar/*"/>
+        <pathelement location="${build.dir}" />
+    </path>
+
+    <path id="classpath">
+      <fileset dir="${lib.dir}" includes="jar/*"/>
+    </path>
+
     <target name="clean">
         <delete dir="${build.dir}"/>
-		<delete dir="${reports.dir}"/>
+        <delete dir="${reports.dir}"/>
     </target>
 
     <target name="compile">
         <mkdir dir="${classes.dir}"/>
-		<mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${build.test.dir}"/>
         <javac srcdir="${src.dir}" destdir="${build.dir}">
-			<classpath refid="junit.class.path" />
-		</javac>
-		<javac srcdir="${test.dir}" destdir="${build.test.dir}">
-			<classpath refid="junit.class.path" />
-		</javac>
-	</target>
+            <classpath refid="junit.class.path" />
+        </javac>
+        <javac srcdir="${test.dir}" destdir="${build.test.dir}">
+            <classpath refid="junit.class.path" />
+        </javac>
+    </target>
 
     <target name="jar" depends="compile">
         <mkdir dir="${jar.dir}"/>
@@ -50,33 +54,33 @@
         </java>
     </target>
 
-	<target name="test" depends="compile">
-		<mkdir dir="${reports.dir}"/>
+    <target name="test" depends="compile">
+        <mkdir dir="${reports.dir}"/>
 
-		<junit printsummary="yes" fork="true" haltonfailure="yes">
-	
-			<classpath refid="junit.class.path" />
-			<classpath>
-				<pathelement location="${build.test.dir}"/>
-			</classpath>
-			
-			<formatter type="plain"/>
-			<formatter type="xml"/>
+        <junit printsummary="yes" fork="true" haltonfailure="yes">
 
-			<batchtest todir="${reports.dir}">
-				<fileset dir="${test.dir}">
-					<include name="**/*.java"/>
-				</fileset>
-			</batchtest>
-		</junit>
-		<junitreport todir="${reports.dir}">
-			<fileset dir="${reports.dir}">
-				<include name="TEST-*.xml" />
-			</fileset>
-			<report todir="${reports.dir}" />
-		</junitreport>
-	</target>
-	
+            <classpath refid="junit.class.path" />
+            <classpath>
+                <pathelement location="${build.test.dir}"/>
+            </classpath>
+
+            <formatter type="plain"/>
+            <formatter type="xml"/>
+
+            <batchtest todir="${reports.dir}">
+                <fileset dir="${test.dir}">
+                    <include name="**/*.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+        <junitreport todir="${reports.dir}">
+            <fileset dir="${reports.dir}">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report todir="${reports.dir}" />
+        </junitreport>
+    </target>
+
     <target name="clean-build" depends="clean,jar"/>
 
     <target name="main" depends="clean,run"/>

@@ -31,7 +31,7 @@ public class StreamPipe implements Runnable{
                 while (true) {
                     line = br.readLine();
                     //String origStr = _st.toString();
-                    Platform.runLater(() -> _st.setValue(_st.get() + System.lineSeparator() + newLine));
+                    //Platform.runLater(() -> _st.setValue(_st.get() + System.lineSeparator() + line));
                     System.out.println("jkasfdhkjfdashdjlafkhldfakhfdaskljhsfdakljdashfkljfda" + _st.get());
                 }
             } catch (IOException ioe) {

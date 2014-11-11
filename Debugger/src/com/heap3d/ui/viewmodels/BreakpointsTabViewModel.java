@@ -2,9 +2,9 @@ package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.heap3d.application.events.EventDTO;
+import com.heap3d.application.events.ControlEvent;
 import com.heap3d.application.events.EventType;
-import com.heap3d.application.events.EventUtils;
+import com.heap3d.application.events.ControlEventFactory;
 import com.heap3d.application.utilities.ProcessState;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,6 +16,8 @@ import javafx.collections.ObservableList;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import static com.heap3d.application.utilities.ProcessState.STOPPED;
+
 /**
  * Created by oskar on 29/10/14.
  */
@@ -25,8 +27,8 @@ public class BreakpointsTabViewModel {
     private StringProperty _breakpoint;
     private StringProperty _watchpoint;
 
-    private Vector<EventDTO> _cachedBreakpoints;
-    private Vector<EventDTO> _cachedWatchpoints;
+    private Vector<ControlEvent> _cachedBreakpoints;
+    private Vector<ControlEvent> _cachedWatchpoints;
 
     private Property<ObservableList<String>> _breakpoints;
     private Property<ObservableList<String>> _watchpoints;
@@ -35,7 +37,7 @@ public class BreakpointsTabViewModel {
     public BreakpointsTabViewModel(EventBus eventBus) {
         _eventBus = eventBus;
         _eventBus.register(this);
-        _state = ProcessState.STOPPED;
+        _state = STOPPED;
         _breakpoint = new SimpleStringProperty(this, "breakpoint", "");
         _watchpoint = new SimpleStringProperty(this, "watchpoint", "");
         _breakpoints = new SimpleObjectProperty<>(this, "breakpoints", FXCollections.observableList(new ArrayList<>()));
@@ -45,26 +47,32 @@ public class BreakpointsTabViewModel {
     }
 
     @Subscribe
-    public void handleEvent(EventDTO e) {
+    public void handleEvent(ControlEvent e) {
         if(e.type == EventType.START) {
             _state = ProcessState.RUNNING;
             send();
         }
         else if(e.type == EventType.STOP) {
-            _state = ProcessState.STOPPED;
+            _state = STOPPED;
             cache();
         }
     }
 
-    private void cache() {
+    @Subscribe
+    public void handleEvent2(ProcessState s) {
+        if(s == STOPPED) {
+            _state = s;
+            cache();
+        }
+    }
+
+    private synchronized void cache() {
         _cachedBreakpoints.clear();
         _cachedWatchpoints.clear();
-        for(String bpoint : _breakpoints.getValue()) {
+        for(String bpoint : _breakpoints.getValue())
             _cachedBreakpoints.add(createEvent(EventType.BREAKPOINT, bpoint));
-        }
-        for(String wpoint : _watchpoints.getValue()) {
+        for(String wpoint : _watchpoints.getValue())
             _cachedWatchpoints.add(createEvent(EventType.WATCHPOINT, wpoint));
-        }
     }
 
     public void addBreakpointAction() {
@@ -96,12 +104,12 @@ public class BreakpointsTabViewModel {
         }
     }
 
-    private EventDTO createEvent(EventType type, String candidate) {
+    private ControlEvent createEvent(EventType type, String candidate) {
         String[] values = candidate.split(":");
 
         return (type == EventType.BREAKPOINT) ?
-                EventUtils.createBreakpointEvent(values[0], values[1]) :
-                EventUtils.createWatchpointEvent(values[0], values[1]);
+                ControlEventFactory.createBreakpointEvent(values[0], values[1]) :
+                ControlEventFactory.createWatchpointEvent(values[0], values[1]);
     }
 
     private boolean isValid(String candidate) {

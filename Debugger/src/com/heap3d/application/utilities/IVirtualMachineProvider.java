@@ -11,5 +11,5 @@ public interface IVirtualMachineProvider {
 
     public VirtualMachine connect(int port);
 
-    public ConnectedProcess establish(int port, Callable<Process> p);
+    public DebuggedProcess establish(int port, Callable<Process> p);
 }
