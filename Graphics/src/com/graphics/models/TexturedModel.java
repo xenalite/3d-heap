@@ -7,7 +7,6 @@ import com.graphics.textures.ModelTexture;
  * with a raw model.
  * 
  * @author Stephen James
- * 
  */
 public class TexturedModel {
 

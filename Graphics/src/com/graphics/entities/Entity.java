@@ -1,7 +1,7 @@
 package com.graphics.entities;
 
 import org.lwjgl.util.vector.Vector3f;
-import com.graphics.models.TexturedModel;
+import com.graphics.models.RawModel;
 
 /**
  * Instance of a textured model
@@ -10,20 +10,26 @@ import com.graphics.models.TexturedModel;
  */
 public class Entity {
 
-	private TexturedModel model;
+	private RawModel model;
 	private Vector3f position;
 	private float rx, ry, rz, scale;
+	private int drawMode;
 	
-	public Entity(TexturedModel model, Vector3f position, float rx, float ry,
-			float rz, float scale) {
+	public Entity(RawModel model, Vector3f position, float rx, float ry,
+			float rz, float scale, int drawMode) {
 		this.model = model;
 		this.position = position;
 		this.rx = rx;
 		this.ry = ry;
 		this.rz = rz;
 		this.scale = scale;
+		this.drawMode = drawMode;
 	}
-
+	
+	public int getDrawMode(){
+		return drawMode;
+	}
+	
 	public void increasePosition(float dx, float dy, float dz){
 		this.position.x += dx;
 		this.position.y += dy;
@@ -36,11 +42,11 @@ public class Entity {
 		this.rz += dz;
 	}
 	
-	public TexturedModel getModel() {
+	public RawModel getModel() {
 		return model;
 	}
 
-	public void setModel(TexturedModel model) {
+	public void setModel(RawModel model) {
 		this.model = model;
 	}
 
