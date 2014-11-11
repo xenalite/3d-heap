@@ -3,6 +3,8 @@ package com.perf;
 import java.awt.Color;
 import java.util.Random;
 
+import org.lwjgl.opengl.Display;
+
 import com.graphics.EntityBuilder;
 import com.graphics.RenderEngine;
 import com.graphics.entities.Entity;
@@ -39,9 +41,8 @@ public class PerfTest extends RenderEngine{
 	@Override
 	protected void inLoop() {
 		
-
-		c = new Colour(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
-
+		if(count > 200)
+			super.breakOutOfLoop();
 		
 		float x = rand.nextFloat() * 100 -50;
 		float y = rand.nextFloat() * 100 -50;
@@ -52,10 +53,8 @@ public class PerfTest extends RenderEngine{
 		
 		addEntityTo3DSpace(en);
 		
-		if(lastEn != null && count == 0)
-			lastEn.addConnection(en);
-		
-		count2++;
+		count++;
+		System.out.println(super.getFPS());
 	}
 
 	@Override

@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector3f;
 import com.graphics.entities.Camera;
-import com.graphics.entities.Entity;
-import com.graphics.entities.Light;
 import com.graphics.rendering.MasterRenderer;
 import com.graphics.shapes.Cube;
 import com.graphics.shapes.Line;
@@ -18,8 +15,9 @@ public abstract class RenderEngine {
 	private MasterRenderer renderer;
 	//private Light sun = new Light(new Vector3f(3000, 3000, 3000), new Vector3f(1, 1, 1));
 	private long lastFps;
-	private int fps;
+	private int fpsInc, fps;
 	private List<Shape> entities = new ArrayList<Shape>();
+	private boolean breakFromLoop;
 	
 	public RenderEngine(String title, int width, int height, boolean resizable){
 		DisplayManager.createDisplay(title, width, height, resizable);
@@ -38,7 +36,7 @@ public abstract class RenderEngine {
 		
 		beforeLoop();
 		
-		while(!Display.isCloseRequested()){
+		while(!Display.isCloseRequested() && !breakFromLoop){
 			
 			camera.move();
 			
@@ -68,6 +66,10 @@ public abstract class RenderEngine {
 		return fps;
 	}
 	
+	protected void breakOutOfLoop(){
+		breakFromLoop = true;
+	}
+	
 	protected void addEntityTo3DSpace(Shape e){
 		entities.add(e);
 	}
@@ -84,11 +86,12 @@ public abstract class RenderEngine {
 	
 	private void updateFPS() {
 	    if (getTime() - lastFps > 1000) {
+	    	fps = fpsInc;
 	        Display.setTitle("FPS: " + fps); 
-	        fps = 0;
+	        fpsInc = 0;
 	        lastFps += 1000;
 	    }
-	    fps++;
+	    fpsInc++;
 	}
 	
 	private long getTime() {
