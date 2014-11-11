@@ -5,12 +5,14 @@ import com.heap3d.application.EventHandler;
 import com.heap3d.application.events.EventUtils;
 import com.heap3d.application.events.StartDefinition;
 import com.heap3d.application.utilities.EventHandlerFactory;
+import com.heap3d.application.utilities.StreamPipe;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.io.IOException;
+import java.nio.channels.Pipe;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,8 +30,10 @@ public class ProcessTabViewModel {
     private StringProperty _classPath;
     private StringProperty _className;
     private SimpleStringProperty _debuggerOutput;
+    private SimpleStringProperty _debuggeeOutput;
     private StringProperty _jvmArgs;
     private BooleanProperty _enableButtons;
+    private StreamPipe _debugeeOutputStreamPipe;
 
     public ProcessTabViewModel(EventBus eventBus, EventHandlerFactory eventHandlerFactory) {
         _eventHandlerFactory = eventHandlerFactory;
@@ -40,6 +44,8 @@ public class ProcessTabViewModel {
         _javaPath = new SimpleStringProperty(this, "jdkPath", System.getProperty("java.home") + "/bin/java");
         _status = new SimpleStringProperty(this, "status", "NOT RUNNING");
         _debuggerOutput = new SimpleStringProperty("this", "debuggerOutput", "");
+        _debuggeeOutput = new SimpleStringProperty("this", "debuggeeOutput", "");
+        _debugeeOutputStreamPipe = new StreamPipe(_debuggeeOutput);
         _jvmArgs = new SimpleStringProperty(this, "jvmArgs", "");
         _enableButtons = new SimpleBooleanProperty(this, "disableStart", true);
     }
@@ -55,7 +61,7 @@ public class ProcessTabViewModel {
         _enableButtons.set(false);
 
         String jvmFormat = "-agentlib:jdwp=transport=dt_socket,address=%d,server=n,suspend=y";
-        StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), jvmFormat, _classPath.get());
+        StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), jvmFormat, _classPath.get(), _debugeeOutputStreamPipe);
         EventHandler handler = _eventHandlerFactory.create(sd);
         _eventBus.post(EventUtils.createControlEvent(START));
 
@@ -97,6 +103,7 @@ public class ProcessTabViewModel {
     }
 
     public StringProperty getDebuggerOutput() { return _debuggerOutput; }
+    public StringProperty getDebuggeeOutput() { return _debuggeeOutput; }
 
     public void pauseAction() {
         _eventBus.post(EventUtils.createControlEvent(PAUSE));

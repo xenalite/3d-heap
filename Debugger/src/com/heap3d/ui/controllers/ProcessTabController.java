@@ -96,6 +96,7 @@ public class ProcessTabController implements Initializable {
         jvmArgs.textProperty().bindBidirectional(_viewModel.getJvmArgs());
         status.textProperty().bindBidirectional(_viewModel.getStatus());
         debuggerOut.textProperty().bindBidirectional(_viewModel.getDebuggerOutput());
+        debugeeOut.textProperty().bindBidirectional(_viewModel.getDebuggeeOutput());
     }
 }
 
