@@ -37,91 +37,91 @@ public class SpringBasedLayoutTest {
         return equal;
     }
 
-    @Test
-    public void testLayoutEmptyPass() throws Exception {
-
-        SpringBasedLayout sl = new SpringBasedLayout();
-
-        Map<String, Node> graph = new HashMap<String, Node>();
-        Map<String, LayoutNode> layout = sl.layout(graph);
-
-        assertEquals(layout.size(), graph.size());
-    }
-
-    @Test
-    public void testLayoutSinglePass() throws Exception {
-
-        SpringBasedLayout sl = new SpringBasedLayout();
-
-        Map<String, Node> graph = new HashMap<String, Node>();
-        Node n = new LayoutNode("id", 0, 0, 0);
-        graph.put(n.getId(), n);
-        Map<String, LayoutNode> layout = sl.layout(graph);
-
-        assertTrue(layout.containsKey(n.getId()));
-        Node layoutNode = layout.get(n.getId());
-        assertTrue(areNodesEqual(n, layoutNode));
-    }
-
-    @Test
-    public void testLayoutPairNonDestructivePass() throws Exception {
-
-        SpringBasedLayout sl = new SpringBasedLayout();
-
-        Map<String, Node> graph = new HashMap<String, Node>();
-        Node a = new LayoutNode("a", 0, 0, 0);
-        Node b = new LayoutNode("b", 0, 0, 0);
-        a.getChildren().add(b);
-        b.getChildren().add(a);
-        graph.put(a.getId(), a);
-        graph.put(b.getId(), b);
-        Map<String, LayoutNode> layout = sl.layout(graph);
-
-        for (Node n : graph.values()) {
-            assertTrue(layout.containsKey(n.getId()));
-            Node layoutNode = layout.get(n.getId());
-            assertTrue(areNodesEqual(n, layoutNode));
-        }
-    }
-
-    @Test
-    public void testLayoutRootNodeFixedPosition() throws Exception {
-
-        SpringBasedLayout sl = new SpringBasedLayout();
-
-        Map<String, Node> graph = new HashMap<String, Node>();
-        Node n = new LayoutNode("id", 10, 10, 10);
-        graph.put(n.getId(), n);
-        Map<String, LayoutNode> layout = sl.layout(graph, "id");
-
-        LayoutNode layoutNode = layout.get(n.getId());
-        assertEquals(0.0f, layoutNode.x(), 0.0f);
-        assertEquals(0.0f, layoutNode.y(), 0.0f);
-    }
-
-    @Test
-    public void testLayoutPairNonDestructiveFail() throws Exception {
-
-        SpringBasedLayout sl = new SpringBasedLayout();
-
-        Map<String, Node> graph = new HashMap<String, Node>();
-        Node a = new LayoutNode("a", 0, 0, 0);
-        Node b = new LayoutNode("b", 0, 0, 0);
-        a.getChildren().add(b);
-        b.getChildren().add(a);
-        graph.put(a.getId(), a);
-        graph.put(b.getId(), b);
-        Map<String, LayoutNode> layout = sl.layout(graph);
-
-        for (Node n : graph.values()) {
-            assertTrue(layout.containsKey(n.getId()));
-            Node layoutNode = layout.get(n.getId());
-            //Remove the children
-            layoutNode.getChildren().clear();
-            //this should fail
-            assertFalse(areNodesEqual(n, layoutNode));
-        }
-    }
+//    @Test
+//    public void testLayoutEmptyPass() throws Exception {
+//
+//        SpringBasedLayout sl = new SpringBasedLayout();
+//
+//        Map<String, Node> graph = new HashMap<String, Node>();
+//        Map<String, LayoutNode> layout = sl.layout(graph);
+//
+//        assertEquals(layout.size(), graph.size());
+//    }
+//
+//    @Test
+//    public void testLayoutSinglePass() throws Exception {
+//
+//        SpringBasedLayout sl = new SpringBasedLayout();
+//
+//        Map<String, Node> graph = new HashMap<String, Node>();
+//        Node n = new LayoutNode("id", 0, 0, 0);
+//        graph.put(n.getId(), n);
+//        Map<String, LayoutNode> layout = sl.layout(graph);
+//
+//        assertTrue(layout.containsKey(n.getId()));
+//        Node layoutNode = layout.get(n.getId());
+//        assertTrue(areNodesEqual(n, layoutNode));
+//    }
+//
+//    @Test
+//    public void testLayoutPairNonDestructivePass() throws Exception {
+//
+//        SpringBasedLayout sl = new SpringBasedLayout();
+//
+//        Map<String, Node> graph = new HashMap<String, Node>();
+//        Node a = new LayoutNode("a", 0, 0, 0);
+//        Node b = new LayoutNode("b", 0, 0, 0);
+//        a.getChildren().add(b);
+//        b.getChildren().add(a);
+//        graph.put(a.getId(), a);
+//        graph.put(b.getId(), b);
+//        Map<String, LayoutNode> layout = sl.layout(graph);
+//
+//        for (Node n : graph.values()) {
+//            assertTrue(layout.containsKey(n.getId()));
+//            Node layoutNode = layout.get(n.getId());
+//            assertTrue(areNodesEqual(n, layoutNode));
+//        }
+//    }
+//
+//    @Test
+//    public void testLayoutRootNodeFixedPosition() throws Exception {
+//
+//        SpringBasedLayout sl = new SpringBasedLayout();
+//
+//        Map<String, Node> graph = new HashMap<String, Node>();
+//        Node n = new LayoutNode("id", 10, 10, 10);
+//        graph.put(n.getId(), n);
+//        Map<String, LayoutNode> layout = sl.layout(graph, "id");
+//
+//        LayoutNode layoutNode = layout.get(n.getId());
+//        assertEquals(0.0f, layoutNode.x(), 0.0f);
+//        assertEquals(0.0f, layoutNode.y(), 0.0f);
+//    }
+//
+//    @Test
+//    public void testLayoutPairNonDestructiveFail() throws Exception {
+//
+//        SpringBasedLayout sl = new SpringBasedLayout();
+//
+//        Map<String, Node> graph = new HashMap<String, Node>();
+//        Node a = new LayoutNode("a", 0, 0, 0);
+//        Node b = new LayoutNode("b", 0, 0, 0);
+//        a.getChildren().add(b);
+//        b.getChildren().add(a);
+//        graph.put(a.getId(), a);
+//        graph.put(b.getId(), b);
+//        Map<String, LayoutNode> layout = sl.layout(graph);
+//
+//        for (Node n : graph.values()) {
+//            assertTrue(layout.containsKey(n.getId()));
+//            Node layoutNode = layout.get(n.getId());
+//            //Remove the children
+//            layoutNode.getChildren().clear();
+//            //this should fail
+//            assertFalse(areNodesEqual(n, layoutNode));
+//        }
+//    }
 
 //    @Test
 //    public void testLayoutAdditionalEdgesFail() throws Exception {

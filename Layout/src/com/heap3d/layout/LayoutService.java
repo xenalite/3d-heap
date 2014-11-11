@@ -5,6 +5,6 @@ import com.heap3d.Node;
 
 
 public interface LayoutService {
-    public Map<String,LayoutNode> layout(Map<String,Node> nodes);
-    public Map<String,LayoutNode> layout(Map<String,Node> nodes, String rootNodeId);
+    public <T extends Spatial & Node> void layout(Map<String, T> nodes);
+    public <T extends Spatial & Node> void layout(Map<String, T> nodes, String rootNodeId);
 }

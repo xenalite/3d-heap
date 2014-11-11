@@ -13,25 +13,25 @@ import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Running Layout");
-        LayoutService layout = new SpringBasedLayout();
+//        LayoutService layout = new SpringBasedLayout();
 //        LayoutService layout = new IterativeSpringBasedLayout();
-//        LayoutService layout = new FRLayout();
+        LayoutService layout = new FRLayout();
 //        LayoutService layout = new CircularLayout();
 
-        Map<String, com.heap3d.Node> graph = randomGraph(100);
+        Map<String, LayoutNode> graph = randomGraph(100);
 
-        Map<String, LayoutNode> laidOutNodes = layout.layout(graph, "1");
+        layout.layout(graph, "1");
 
-        if (laidOutNodes != null) {
 
             float maxDistance = 0;
-            for (LayoutNode n : laidOutNodes.values()) {
+            for (LayoutNode n : graph.values()) {
                 float x = n.x();
                 float y = n.y();
                 System.out.println(String.format("Node: %s at (%f,%f)", n.getId(), x, y));
@@ -39,10 +39,11 @@ public class Main {
 
             }
             System.out.println("Max distance = " + (Math.sqrt(maxDistance)));
-        }
+
     }
 
-    public static Map<String, com.heap3d.Node> randomGraph(int numberOfNodes) {
+
+    public static Map<String, LayoutNode> randomGraph(int numberOfNodes) {
         //Init a project - and therefore a workspace
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         pc.newProject();
@@ -63,7 +64,7 @@ public class Main {
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel();
         DirectedGraph graph = graphModel.getDirectedGraph();
 
-        Map<String, com.heap3d.Node> nodes = new HashMap<String, com.heap3d.Node>();
+        Map<String, LayoutNode> nodes = new HashMap<String, LayoutNode>();
         NodeIterable ni = graph.getNodes();
         for (Node n : ni) {
             LayoutNode newNode = new LayoutNode(
