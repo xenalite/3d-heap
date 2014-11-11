@@ -55,7 +55,13 @@ public class LayoutNode implements Node, Spatial {
 
     @Override
     public boolean equals(Object obj) {
-        return this.getId().equals(obj);
+        if(!(obj instanceof LayoutNode) || obj == null)
+        {
+            return false;
+        } else
+        {
+            return this.getId().equals(((LayoutNode)obj).id);
+        }
     }
 
     @Override

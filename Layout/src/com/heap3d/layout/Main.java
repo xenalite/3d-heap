@@ -19,9 +19,10 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Running Layout");
-//        LayoutService layout = new SpringBasedLayout();
+        LayoutService layout = new SpringBasedLayout();
 //        LayoutService layout = new IterativeSpringBasedLayout();
-        LayoutService layout = new FRLayout();
+//        LayoutService layout = new FRLayout();
+//        LayoutService layout = new CircularLayout();
 
         Map<String, com.heap3d.Node> graph = randomGraph(100);
 

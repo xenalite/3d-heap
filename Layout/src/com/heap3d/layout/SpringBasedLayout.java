@@ -56,7 +56,7 @@ public class SpringBasedLayout implements LayoutService {
 
         LayoutExtender layout = new LayoutExtender();
         layout.setGraphModel(graphModel);
-        layout.resetPropertiesValues();
+        //layout.resetPropertiesValues();
         layout.initAlgo();
 
         for (int i = 0; i < 100 && layout.canAlgo(); i++) {
