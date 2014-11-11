@@ -3,11 +3,17 @@ package com.heap3d.application;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.heap3d.application.events.ControlEvent;
+import com.heap3d.application.events.ProcessEvent;
+import com.heap3d.application.events.ProcessEventType;
 import com.heap3d.application.events.StartDefinition;
 import com.heap3d.application.utilities.DebuggedProcess;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
 import com.heap3d.application.utilities.ProcessState;
-import com.sun.jdi.*;
+import com.heap3d.application.utilities.StreamListener;
+import com.sun.jdi.Field;
+import com.sun.jdi.Location;
+import com.sun.jdi.ReferenceType;
+import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.ClassPrepareRequest;
@@ -19,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.heap3d.application.utilities.ProcessState.*;
 import static java.util.AbstractMap.SimpleImmutableEntry;
@@ -82,13 +90,15 @@ public class EventHandler {
                     else if(e instanceof ModificationWatchpointEvent) {
                         _state = PAUSED;
                         ModificationWatchpointEvent mwe = (ModificationWatchpointEvent) e;
-                        _eventBus.post(String.format("Variable %s in %s modified! Old:%s, New:%s",
-                                mwe.field(), mwe.location(), mwe.valueCurrent(), mwe.valueToBe()));
+                        _eventBus.post(new ProcessEvent(ProcessEventType.DEBUG_MSG,
+                                String.format("Variable %s in %s modified! Old:%s, New:%s",
+                                mwe.field(), mwe.location(), mwe.valueCurrent(), mwe.valueToBe())));
                     }
                     else if(e instanceof BreakpointEvent) {
                         _state = PAUSED;
                         BreakpointEvent be = (BreakpointEvent) e;
-                        _eventBus.post(String.format("Breakpoint hit @%s", be.location()));
+                        _eventBus.post(new ProcessEvent(ProcessEventType.DEBUG_MSG,
+                                String.format("Breakpoint hit @%s", be.location())));
                     }
                 }
                 if(_state == RUNNING)
@@ -121,6 +131,9 @@ public class EventHandler {
         switch (e.type) {
             case START: {
                 runProcessAndEstablishConnection();
+                ExecutorService service = Executors.newSingleThreadExecutor();
+                service.submit(new StreamListener(_eventBus, _process.getInputStream()));
+                service.shutdown();
             }
             break;
             case STOP: {
@@ -203,7 +216,7 @@ public class EventHandler {
     private void dispose() {
         _state = STOPPED;
         _process.destroy();
-        _eventBus.post(_state);
+        _eventBus.post(new ProcessEvent(ProcessEventType.STOPPED));
         _eventBus.unregister(this);
     }
 }

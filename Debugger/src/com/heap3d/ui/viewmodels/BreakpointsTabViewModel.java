@@ -2,10 +2,7 @@ package com.heap3d.ui.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.heap3d.application.events.ControlEvent;
-import com.heap3d.application.events.ControlEventFactory;
-import com.heap3d.application.events.EventType;
-import com.heap3d.application.utilities.ProcessState;
+import com.heap3d.application.events.*;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,7 +16,6 @@ import java.util.Vector;
 
 import static com.heap3d.application.events.EventType.BREAKPOINT;
 import static com.heap3d.application.events.EventType.WATCHPOINT;
-import static com.heap3d.application.utilities.ProcessState.STOPPED;
 
 /**
  * Created by oskar on 29/10/14.
@@ -63,8 +59,9 @@ public class BreakpointsTabViewModel {
     }
 
     @Subscribe
-    public void handleEvent2(ProcessState s) {
-        if(s == STOPPED) {
+    public void handleProcessEvent(ProcessEvent pe) {
+        if(pe.type == ProcessEventType.STOPPED)
+        {
             _cacheEnabled = true;
             cache();
         }
