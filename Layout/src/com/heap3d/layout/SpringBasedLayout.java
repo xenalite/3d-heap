@@ -4,6 +4,8 @@ import com.heap3d.Node;
 import org.gephi.graph.api.*;
 import org.gephi.graph.spi.LayoutData;
 import org.gephi.layout.plugin.fruchterman.FruchtermanReingold;
+import org.gephi.layout.spi.Layout;
+import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.impl.ProjectImpl;
 import org.gephi.workspace.impl.WorkspaceImpl;
@@ -29,6 +31,8 @@ public class SpringBasedLayout implements LayoutService {
         GraphFactory factory = graphModel.factory();
         for (Node hn : nodes.values()) {
             org.gephi.graph.api.Node node = factory.newNode(hn.getId());
+            node.getNodeData().setX(0f);
+            node.getNodeData().setY(0f);
             graph.addNode(node);
         }
 
@@ -50,22 +54,24 @@ public class SpringBasedLayout implements LayoutService {
             }
         }
 
-        FruchtermanReingold layout = new FruchtermanReingold(null);
-
-//        YifanHuLayout layout = new YifanHuLayout(null, new StepDisplacement(1f));
+        LayoutExtender layout = new LayoutExtender();
         layout.setGraphModel(graphModel);
+        //layout.resetPropertiesValues();
         layout.initAlgo();
-        layout.resetPropertiesValues();
-//        layout.setOptimalDistance(20f);
 
         for (int i = 0; i < 100 && layout.canAlgo(); i++) {
-//            System.out.println("Laying Out ..");
             layout.goAlgo();
         }
         layout.endAlgo();
 
         Map<String, LayoutNode> map = new HashMap<String, LayoutNode>();
-        for(org.gephi.graph.api.Node n : graph.getNodes())
+
+        NodeIterable vn = layout.getGraph().getNodes();
+
+        NodeIterable gn = graph.getNodes();
+        NodeIterable gmn = graphModel.getHierarchicalDirectedGraph().getNodes();
+
+        for(org.gephi.graph.api.Node n : vn)
         {
             LayoutNode newNode = new LayoutNode(
                     n.getNodeData().getId(),
@@ -78,5 +84,18 @@ public class SpringBasedLayout implements LayoutService {
         }
 
         return map;
+    }
+
+    public class LayoutExtender extends FruchtermanReingold
+    {
+        public LayoutExtender()
+        {
+            super(null);
+        }
+
+        public Graph getGraph()
+        {
+            return this.graph;
+        }
     }
 }

@@ -5,6 +5,7 @@ Graphics/bin/*
 out/
 Layout/build/*
 Layout/bin/*
+*/reports/*
 
 # Eclipse files
 .classpath
