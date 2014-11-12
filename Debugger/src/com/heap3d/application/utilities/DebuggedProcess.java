@@ -2,14 +2,10 @@ package com.heap3d.application.utilities;
 
 import com.google.common.eventbus.EventBus;
 import com.heap3d.application.events.ProcessEvent;
-import com.heap3d.application.events.ProcessEventType;
 import com.heap3d.application.events.StartDefinition;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
-import com.sun.jdi.request.BreakpointRequest;
-import com.sun.jdi.request.ClassPrepareRequest;
-import com.sun.jdi.request.EventRequestManager;
-import com.sun.jdi.request.ModificationWatchpointRequest;
+import com.sun.jdi.request.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +13,7 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.heap3d.application.events.ProcessEventType.DEBUG_MSG;
 import static com.heap3d.application.utilities.ProcessState.*;
 import static java.util.AbstractMap.SimpleImmutableEntry;
 import static java.util.Map.Entry;
@@ -79,6 +76,7 @@ public class DebuggedProcess {
     public void resume() {
         if (_instance != null && _state == PAUSED) {
             _state = RUNNING;
+            _threadRef = null;
             _instance.resume();
         }
     }
@@ -106,15 +104,23 @@ public class DebuggedProcess {
                 else if(e instanceof ModificationWatchpointEvent) {
                     _state = PAUSED;
                     ModificationWatchpointEvent mwe = (ModificationWatchpointEvent) e;
-                    _eventBus.post(new ProcessEvent(ProcessEventType.DEBUG_MSG,
+                    _eventBus.post(new ProcessEvent(DEBUG_MSG,
                             String.format("Variable %s in %s modified! Old:%s, New:%s",
                                     mwe.field(), mwe.location(), mwe.valueCurrent(), mwe.valueToBe())));
+                    _threadRef = mwe.thread();
                 }
                 else if(e instanceof BreakpointEvent) {
                     _state = PAUSED;
                     BreakpointEvent be = (BreakpointEvent) e;
-                    _eventBus.post(new ProcessEvent(ProcessEventType.DEBUG_MSG,
+                    _eventBus.post(new ProcessEvent(DEBUG_MSG,
                             String.format("Breakpoint hit @%s", be.location())));
+                    _threadRef = be.thread();
+                }
+                else if(e instanceof StepEvent) {
+                    _threadRef = ((StepEvent) e).thread();
+                    _state = PAUSED;
+                    _eventBus.post(new ProcessEvent(DEBUG_MSG, "Stepped over a line."));
+                    e.request().disable();
                 }
             }
             if(_state == RUNNING)
@@ -127,14 +133,14 @@ public class DebuggedProcess {
         EventRequestManager erm = _instance.eventRequestManager();
         Location l = classReference.methodsByName(breakpoint).get(0).location();
         BreakpointRequest br = erm.createBreakpointRequest(l);
-        br.setEnabled(true);
+        br.enable();
     }
 
     private void addWatchpoint(ReferenceType classReference, String watchpoint) {
         EventRequestManager erm = _instance.eventRequestManager();
         Field f = classReference.fieldByName(watchpoint);
         ModificationWatchpointRequest mwe = erm.createModificationWatchpointRequest(f);
-        mwe.setEnabled(true);
+        mwe.enable();
     }
 
     public void cacheWatchpointUntilClassIsLoaded(String className, String argument) {
@@ -162,14 +168,20 @@ public class DebuggedProcess {
     }
 
     public void createStepRequest() {
-        EventRequestManager erm = _instance.eventRequestManager();
-//        erm.createStepRequest()
+        if(_threadRef != null && _state == PAUSED) {
+            EventRequestManager erm = _instance.eventRequestManager();
+            StepRequest sr = erm.createStepRequest(_threadRef, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
+            sr.addCountFilter(1);
+            sr.enable();
+            resume();
+            _state = RUNNING;
+        }
     }
 
     private void createClassPrepareRequest(String filter) {
         EventRequestManager erm = _instance.eventRequestManager();
         ClassPrepareRequest cpr = erm.createClassPrepareRequest();
         cpr.addClassFilter(filter);
-        cpr.setEnabled(true);
+        cpr.enable();
     }
 }

@@ -13,7 +13,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,7 +50,7 @@ public class ProcessTabViewModel {
         _stopActionCommand = new RelayCommand(this::stopAction);
         _pauseActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(PAUSE)));
         _resumeActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(RESUME)));
-        _stepActionCommand = new RelayCommand(() -> {});
+        _stepActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEP)));
 
         _className = new SimpleStringProperty(this, "className", "test.Debugee");
         _classPath = new SimpleStringProperty(this, "classpath", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
@@ -120,7 +119,7 @@ public class ProcessTabViewModel {
         service.submit(() -> {
             try {
                 handler.run();
-            } catch (IOException | InterruptedException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         });
