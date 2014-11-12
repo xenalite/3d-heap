@@ -9,7 +9,6 @@ import com.heap3d.application.events.StartDefinition;
 import com.heap3d.application.utilities.DebuggedProcess;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
 
-import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -33,7 +32,7 @@ public class EventHandler {
         _controlEventQueue.add(e);
     }
 
-    public void loop() throws InterruptedException, IOException {
+    public void loop() throws InterruptedException {
         while (true) {
             while (!_controlEventQueue.isEmpty())
                 if(!handleControlQueueItem(_controlEventQueue.removeFirst()))
@@ -77,7 +76,7 @@ public class EventHandler {
         return true;
     }
 
-    public void run() throws InterruptedException, IOException {
+    public void run() throws InterruptedException {
         loop();
         dispose();
     }
