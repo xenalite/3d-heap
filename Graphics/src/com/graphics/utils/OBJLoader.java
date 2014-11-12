@@ -8,10 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
-import com.graphics.application.Loader;
+
+import com.graphics.models.Loader;
 import com.graphics.models.RawModel;
 
-
+/**
+ * Loading in .obj files from programs such as 3DSMax and Maya
+ * @author Stephen James
+ */
 public class OBJLoader {
 
 	public static RawModel loadObjModel(String fileName, Loader loader){
@@ -110,7 +114,7 @@ public class OBJLoader {
 			indicesArray[i++] = indice;
 		}
 		
-		return loader.loadToVAO(verticesArray, textureArray, normalsArray, indicesArray);
+		return null;//loader.loadToVAO(verticesArray, textureArray, normalsArray, indicesArray); TODO
 	}
 	
 	private static void processVertex(String[] vertexData,

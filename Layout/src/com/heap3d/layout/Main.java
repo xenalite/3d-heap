@@ -13,36 +13,37 @@ import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Running Layout");
-        LayoutService layout = new SpringBasedLayout();
+//        LayoutService layout = new SpringBasedLayout();
 //        LayoutService layout = new IterativeSpringBasedLayout();
-//        LayoutService layout = new FRLayout();
+        LayoutService layout = new FRLayout();
 //        LayoutService layout = new CircularLayout();
 
-        Map<String, com.heap3d.Node> graph = randomGraph(100);
+        Map<String, LayoutNode> graph = randomGraph(100, 0.0f);
 
-        Map<String, LayoutNode> laidOutNodes = layout.layout(graph, "1");
+        layout.layout(graph, "1");
 
-        if (laidOutNodes != null) {
 
-            float maxDistance = 0;
-            for (LayoutNode n : laidOutNodes.values()) {
-                float x = n.x();
-                float y = n.y();
-                System.out.println(String.format("Node: %s at (%f,%f)", n.getId(), x, y));
-                maxDistance = Math.max(x * x + y * y, maxDistance);
+        float maxDistance = 0;
+        for (LayoutNode n : graph.values()) {
+            float x = n.x();
+            float y = n.y();
+            System.out.println(String.format("Node: %s at (%f,%f)", n.getId(), x, y));
+            maxDistance = Math.max(x * x + y * y, maxDistance);
 
-            }
-            System.out.println("Max distance = " + (Math.sqrt(maxDistance)));
         }
+        System.out.println("Max distance = " + (Math.sqrt(maxDistance)));
+
     }
 
-    public static Map<String, com.heap3d.Node> randomGraph(int numberOfNodes) {
+
+    public static Map<String, LayoutNode> randomGraph(int numberOfNodes, float edgeProbability) {
         //Init a project - and therefore a workspace
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         pc.newProject();
@@ -52,7 +53,7 @@ public class Main {
         org.gephi.io.importer.api.Container container = Lookup.getDefault().lookup(ContainerFactory.class).newContainer();
         RandomGraph randomGraph = new RandomGraph();
         randomGraph.setNumberOfNodes(numberOfNodes);
-        randomGraph.setWiringProbability(0.005);
+        randomGraph.setWiringProbability(edgeProbability);
         randomGraph.generate(container.getLoader());
 
         //Append container to graph structure
@@ -63,14 +64,11 @@ public class Main {
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel();
         DirectedGraph graph = graphModel.getDirectedGraph();
 
-        Map<String, com.heap3d.Node> nodes = new HashMap<String, com.heap3d.Node>();
+        Map<String, LayoutNode> nodes = new HashMap<String, LayoutNode>();
         NodeIterable ni = graph.getNodes();
         for (Node n : ni) {
-            LayoutNode newNode = new LayoutNode(
-                    n.getNodeData().getId(), 0f, 0f, 0f);
-//                    n.getNodeData().x(),
-//                    n.getNodeData().y(),
-//                    n.getNodeData().z() );
+            LayoutNode newNode = new LayoutNode(n.getNodeData().getId(), 0f, 0f, 0f);
+
             nodes.put(n.getNodeData().getId(), newNode);
         }
 

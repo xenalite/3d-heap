@@ -1,6 +1,7 @@
 package com.graphics.shaders;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
@@ -10,6 +11,12 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+/**
+ * Represents a generic shader programming, containing all the attributes and
+ * methods a shader program will have
+ * 
+ * @author Stephen James
+ */
 public abstract class ShaderProgram {
 
 	private int programID;
@@ -81,8 +88,9 @@ public abstract class ShaderProgram {
 	private static int loadShader(String file, int type){
 		StringBuilder shaderSource = new StringBuilder();
 		try{
+			//TODO change to be more generic
 			InputStreamReader r = new InputStreamReader(ShaderProgram.class.getClassLoader().getResourceAsStream(file));
-			BufferedReader reader = new BufferedReader(r);
+			BufferedReader reader = new BufferedReader(r);//new FileReader("res/"+file));//r);
 			String line;
 			while((line = reader.readLine()) != null)
 				shaderSource.append(line).append("\n");

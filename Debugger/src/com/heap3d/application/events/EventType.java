@@ -10,5 +10,6 @@ public enum EventType {
     PAUSE,
     RESUME,
     BREAKPOINT,
-    WATCHPOINT
+    WATCHPOINT,
+    STEP
 }

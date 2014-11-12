@@ -22,7 +22,6 @@ public class TypeRegistry {
     public TypeRegistry() {
         _injector = new DefaultPicoContainer(new OptInCaching());
 
-        _injector.as(Characteristics.CACHE).addComponent(EventHandlerFactory.class);
         _injector.as(Characteristics.CACHE).addComponent(VirtualMachineProvider.class);
         _injector.as(Characteristics.CACHE).addComponent(EventBus.class);
         _injector.as(Characteristics.CACHE).addComponent(EventHandler.class);

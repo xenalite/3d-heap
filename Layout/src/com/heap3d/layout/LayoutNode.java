@@ -68,5 +68,20 @@ public class LayoutNode implements Node, Spatial {
     public String toString() {
         return id + " (" + x+","+y+","+z+")";
     }
+
+    @Override
+    public void setX(float v) {
+        this.x = v;
+    }
+
+    @Override
+    public void setY(float v) {
+        this.y=v;
+    }
+
+    @Override
+    public void setZ(float v) {
+        this.z=v;
+    }
 }
 
