@@ -6,8 +6,11 @@ import com.heap3d.application.events.StartDefinition;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.*;
+import com.sun.tools.internal.ws.wsdl.document.jaxws.*;
 
+import java.lang.Exception;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -121,12 +124,31 @@ public class DebuggedProcess {
                     _state = PAUSED;
                     _eventBus.post(new ProcessEvent(DEBUG_MSG, "Stepped over a line."));
                     e.request().disable();
+                    checkVariables((StepEvent) e);
                 }
             }
             if(_state == RUNNING)
                 set.resume();
         }
         return true;
+    }
+
+    private void checkVariables(StepEvent se) {
+        try {
+            ObjectReference or = _threadRef.frame(0).thisObject();
+            Location l = se.location();
+            ReferenceType t = l.declaringType();
+            List<Field> fields = t.allFields();
+//            System.out.println(fields);
+            for (Field f : fields) {
+                String message = String.format("%s:%s (%s) = %s", t, f.name(), f.type(), or.getValue(f));
+                System.out.println(message);
+//                _eventBus.post(new ProcessEvent(DEBUG_MSG, message));
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void addBreakpoint(ReferenceType classReference, String breakpoint) {
