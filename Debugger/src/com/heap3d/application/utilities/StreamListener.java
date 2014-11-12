@@ -32,7 +32,8 @@ public class StreamListener implements Runnable {
             }
         }
         catch(IOException e) {
-            e.printStackTrace();
+            System.out.println("closed");
+            return;
         }
     }
 }
