@@ -16,8 +16,6 @@ public class Line extends Shape{
 				e2.getPosition().x, e2.getPosition().y, e2.getPosition().z
 		};
 		
-	
-		
 		int[] indices = new int[]{0, 1};
 		
 		float[] colourValues = new float[vertices.length];

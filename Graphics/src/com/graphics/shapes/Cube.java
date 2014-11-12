@@ -89,9 +89,14 @@ public class Cube extends Shape{
 		
 		entity = new Entity(model, new Vector3f(x, y, z), rotX, rotY, rotZ, scale, GL11.GL_TRIANGLES);
 	}
-	
-	public void addConnection(Cube cubeToLink){
-		Line l = new Line(getEntity(), cubeToLink.getEntity(), Colour.GREEN);
+
+	/**
+	 * Connect this cube to another with a line
+	 * @param cubeToLink The cub that will be linked to this cube
+	 * @param lineColour The colour of the line
+	 */
+	public void addConnection(Cube cubeToLink, Colour lineColour){
+		Line l = new Line(getEntity(), cubeToLink.getEntity(), lineColour==null?Colour.GREEN:lineColour);
 		links.put(cubeToLink, l);
 	}
 	

@@ -3,7 +3,6 @@ package com.perf;
 import java.awt.Color;
 import java.util.Random;
 
-import org.lwjgl.opengl.Display;
 
 import com.graphics.EntityBuilder;
 import com.graphics.RenderEngine;
@@ -41,8 +40,8 @@ public class PerfTest extends RenderEngine{
 	@Override
 	protected void inLoop() {
 		
-		if(count > 200)
-			super.breakOutOfLoop();
+		//if(count > 200)
+		//	super.breakOutOfLoop();
 		
 		float x = rand.nextFloat() * 100 -50;
 		float y = rand.nextFloat() * 100 -50;
