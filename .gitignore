@@ -5,6 +5,8 @@ Graphics/bin/*
 out/
 Layout/build/*
 Layout/bin/*
+HeapVisualizer/build/*
+HeapVisualizer/bin/*
 */reports/*
 
 # Eclipse files
