@@ -1,0 +1,10 @@
+#!/usr/bin/gnuplot
+ 
+set title "Graphics Performance Test"
+set xlabel "# Of Cubes"
+set ylabel "FPS"
+set ytics "10"
+set yrange [0:140]
+set terminal png
+set output 'image.png' 
+plot "data.data" title "" with lines
