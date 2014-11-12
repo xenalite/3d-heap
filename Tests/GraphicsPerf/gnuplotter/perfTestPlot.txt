@@ -6,5 +6,5 @@ set ylabel "FPS"
 set ytics "10"
 set yrange [0:140]
 set terminal png
-set output 'image.png' 
+set output 'perfTestResults.png' 
 plot "data.data" title "" with lines
