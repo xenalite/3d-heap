@@ -38,7 +38,7 @@ public class BreakpointsTabViewModel {
         _eventBus.register(this);
         _cacheEnabled = true;
         _breakpointClass = new SimpleStringProperty(this, "breakpointClass", "test.Program");
-        _breakpointMethod = new SimpleStringProperty(this, "breakpointMethod", "factorial");
+        _breakpointMethod = new SimpleStringProperty(this, "breakpointMethod", "method");
         _watchpointClass = new SimpleStringProperty(this, "watchpointClass", "");
         _watchpointField = new SimpleStringProperty(this, "watchpointField", "");
         _breakpoints = new SimpleObjectProperty<>(this, "breakpoints", FXCollections.observableList(new ArrayList<>()));
@@ -68,12 +68,12 @@ public class BreakpointsTabViewModel {
     }
 
     private synchronized void cache() {
+        _cachedElements.clear();
         addToCache(_breakpoints.getValue(), BREAKPOINT);
         addToCache(_watchpoints.getValue(), WATCHPOINT);
     }
 
     private void addToCache(List<String> list, EventType type) {
-        _cachedElements.clear();
         for(String contents : list) {
             String[] values = contents.split(":");
             _cachedElements.add(createEvent(type, values[0], values[1]));
