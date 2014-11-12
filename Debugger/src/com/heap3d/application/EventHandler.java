@@ -6,10 +6,9 @@ import com.heap3d.application.events.ControlEvent;
 import com.heap3d.application.events.ProcessEvent;
 import com.heap3d.application.events.ProcessEventType;
 import com.heap3d.application.events.StartDefinition;
-import com.heap3d.application.utilities.DProcess;
+import com.heap3d.application.utilities.DebuggedProcess;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
 import com.heap3d.application.utilities.ProcessState;
-import com.heap3d.application.utilities.StreamListener;
 import com.sun.jdi.Field;
 import com.sun.jdi.Location;
 import com.sun.jdi.ReferenceType;
@@ -25,8 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.heap3d.application.utilities.ProcessState.*;
 import static java.util.AbstractMap.SimpleImmutableEntry;
@@ -37,19 +34,21 @@ import static java.util.Map.Entry;
  */
 public class EventHandler {
 
+    private DebuggedProcess _dprocess;
     private StartDefinition _definition;
     private Process _process;
     private ProcessState _state;
     private EventBus _eventBus;
-    private VirtualMachine _virtualMachineInstance;
-    private IVirtualMachineProvider _virtualMachineProvider;
+    private VirtualMachine _instance;
+    private IVirtualMachineProvider _provider;
     private ConcurrentLinkedDeque<ControlEvent> _controlEventQueue;
     private Map<String, Entry<Vector<String>, Vector<String>>> _cachedBWPoints;
 
-    public EventHandler(StartDefinition definition, IVirtualMachineProvider virtualMachineProvider, EventBus eventBus) {
+    public EventHandler(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus) {
+        _dprocess = new DebuggedProcess(definition, provider, eventBus);
         _definition = definition;
         _state = ProcessState.STOPPED;
-        _virtualMachineProvider = virtualMachineProvider;
+        _provider = provider;
         _controlEventQueue = new ConcurrentLinkedDeque<>();
         _cachedBWPoints = new HashMap<>();
         _eventBus = eventBus;
@@ -68,8 +67,9 @@ public class EventHandler {
                 if(!handleControlQueueItem(_controlEventQueue.removeFirst()))
                     return;
 
-            if(_virtualMachineInstance != null && _state == RUNNING) {
-                EventQueue vmQueue = _virtualMachineInstance.eventQueue();
+            _dprocess.waitForEvents();
+            if(_instance != null && _state == RUNNING) {
+                EventQueue vmQueue = _instance.eventQueue();
                 EventSet set = vmQueue.remove();
                 for(Event e : set) {
                     System.out.println(e);
@@ -108,53 +108,46 @@ public class EventHandler {
     }
 
     private void addBreakpoint(ReferenceType classReference, String breakpoint) {
-        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+        EventRequestManager erm = _instance.eventRequestManager();
         Location l = classReference.methodsByName(breakpoint).get(0).location();
         BreakpointRequest br = erm.createBreakpointRequest(l);
         br.setEnabled(true);
     }
 
     private void addWatchpoint(ReferenceType classReference, String watchpoint) {
-        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+        EventRequestManager erm = _instance.eventRequestManager();
         Field f = classReference.fieldByName(watchpoint);
         ModificationWatchpointRequest mwe = erm.createModificationWatchpointRequest(f);
         mwe.setEnabled(true);
     }
 
-    public int getRandomPort() {
-        final int RANGE = 10000;
-        final int MINIMUM = 30000;
-        return ((int) Math.ceil(Math.random() * RANGE)) + MINIMUM;
-    }
-
     private boolean handleControlQueueItem(ControlEvent e) throws IOException, InterruptedException {
         switch (e.type) {
             case START: {
-                runProcessAndEstablishConnection();
-                ExecutorService service = Executors.newSingleThreadExecutor();
-                service.submit(new StreamListener(_eventBus, _process.getInputStream()));
-                service.shutdown();
+                _dprocess.start();
             }
             break;
             case STOP: {
                 return false;
             }
             case PAUSE: {
-                if (_virtualMachineInstance != null && _state == RUNNING) {
+                _dprocess.pause();
+                if (_instance != null && _state == RUNNING) {
                     _state = PAUSED;
-                    _virtualMachineInstance.suspend();
+                    _instance.suspend();
                 }
             }
             break;
             case RESUME: {
-                if (_virtualMachineInstance != null && _state == PAUSED) {
+                _dprocess.resume();
+                if (_instance != null && _state == PAUSED) {
                     _state = RUNNING;
-                    _virtualMachineInstance.resume();
+                    _instance.resume();
                 }
             }
             break;
             case STEP: {
-                if(_virtualMachineInstance != null && _state == PAUSED) {
+                if(_instance != null && _state == PAUSED) {
                     createStepRequest();
                 }
             }
@@ -172,17 +165,11 @@ public class EventHandler {
     }
 
     private void createStepRequest() {
-        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+        EventRequestManager erm = _instance.eventRequestManager();
 //        erm.createStepRequest()
     }
 
-    private void runProcessAndEstablishConnection() {
-        int port = getRandomPort();
-        DProcess cp = _virtualMachineProvider.establish(port, () -> _definition.buildProcess(port));
-        _virtualMachineInstance = cp.virtualMachine;
-        _process = cp.process;
-        _state = RUNNING;
-    }
+
 
     private void cacheWatchpointUntilClassIsLoaded(ControlEvent e) {
         Vector<String> entries;
@@ -209,7 +196,7 @@ public class EventHandler {
     }
 
     private void createClassPrepareRequest(String filter) {
-        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+        EventRequestManager erm = _instance.eventRequestManager();
         ClassPrepareRequest cpr = erm.createClassPrepareRequest();
         cpr.addClassFilter(filter);
         cpr.setEnabled(true);
@@ -221,6 +208,7 @@ public class EventHandler {
     }
 
     private void dispose() {
+        _dprocess.dispose();
         _state = STOPPED;
         _process.destroy();
         _eventBus.post(new ProcessEvent(ProcessEventType.STOPPED));
