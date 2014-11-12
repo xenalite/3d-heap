@@ -37,8 +37,8 @@ public class BreakpointsTabViewModel {
         _eventBus = eventBus;
         _eventBus.register(this);
         _cacheEnabled = true;
-        _breakpointClass = new SimpleStringProperty(this, "breakpointClass", "");
-        _breakpointMethod = new SimpleStringProperty(this, "breakpointMethod", "");
+        _breakpointClass = new SimpleStringProperty(this, "breakpointClass", "test.Debugee");
+        _breakpointMethod = new SimpleStringProperty(this, "breakpointMethod", "run");
         _watchpointClass = new SimpleStringProperty(this, "watchpointClass", "");
         _watchpointField = new SimpleStringProperty(this, "watchpointField", "");
         _breakpoints = new SimpleObjectProperty<>(this, "breakpoints", FXCollections.observableList(new ArrayList<>()));
