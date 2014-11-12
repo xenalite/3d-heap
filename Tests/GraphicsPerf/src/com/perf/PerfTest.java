@@ -13,7 +13,7 @@ public class PerfTest extends RenderEngine{
 	private Random rand;
 	private Colour c;
 	private StringBuilder stringBuilder;
-	private static final int MAX_CUBES = 1000;
+	private static final int MAX_CUBES = 15000;
 	
 	public static void main(String[] args){
 		new PerfTest();
