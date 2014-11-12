@@ -6,7 +6,7 @@ import com.heap3d.application.events.ControlEvent;
 import com.heap3d.application.events.ProcessEvent;
 import com.heap3d.application.events.ProcessEventType;
 import com.heap3d.application.events.StartDefinition;
-import com.heap3d.application.utilities.DebuggedProcess;
+import com.heap3d.application.utilities.DProcess;
 import com.heap3d.application.utilities.IVirtualMachineProvider;
 import com.heap3d.application.utilities.ProcessState;
 import com.heap3d.application.utilities.StreamListener;
@@ -154,7 +154,9 @@ public class EventHandler {
             }
             break;
             case STEP: {
-
+                if(_virtualMachineInstance != null && _state == PAUSED) {
+                    createStepRequest();
+                }
             }
             break;
             case BREAKPOINT: {
@@ -169,9 +171,14 @@ public class EventHandler {
         return true;
     }
 
+    private void createStepRequest() {
+        EventRequestManager erm = _virtualMachineInstance.eventRequestManager();
+//        erm.createStepRequest()
+    }
+
     private void runProcessAndEstablishConnection() {
         int port = getRandomPort();
-        DebuggedProcess cp = _virtualMachineProvider.establish(port, () -> _definition.buildProcess(port));
+        DProcess cp = _virtualMachineProvider.establish(port, () -> _definition.buildProcess(port));
         _virtualMachineInstance = cp.virtualMachine;
         _process = cp.process;
         _state = RUNNING;
