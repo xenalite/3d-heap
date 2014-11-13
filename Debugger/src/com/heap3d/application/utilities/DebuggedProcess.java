@@ -148,6 +148,8 @@ public class DebuggedProcess {
                 LocalVariable lv = entry.getKey();
                 Value v = entry.getValue();
                 System.out.println(String.format("%s (%s) = %s", lv.name(), lv.typeName(), v));
+
+                drillDown(v);
             }
 
             List<Field> allFields = referenceType.fields();
@@ -159,6 +161,8 @@ public class DebuggedProcess {
                     Value v = entry.getValue();
                     String typeName = (f.isStatic()) ? "static " + f.typeName() : f.typeName();
                     System.out.println(String.format("%s (%s) = %s", f.name(), typeName, v));
+
+                    drillDown(v);
                 }
             }
             else {
@@ -172,26 +176,36 @@ public class DebuggedProcess {
                     Value v = entry.getValue();
                     System.out.println(String.format("%s (%s) = %s", f.name(), f.typeName(), v));
 
-                    if(v instanceof ArrayReference) {
-                        ArrayReference var = (ArrayReference) v;
-                    }
-                    else if(v instanceof ObjectReference) {
-                        ObjectReference vor = (ObjectReference) v;
-                        ReferenceType refType = vor.referenceType();
-                        List<Field> fieldsOfValue = refType.fields();
-                        Map<Field, Value> vofov = vor.getValues(fieldsOfValue);
-                        for(Entry<Field, Value> vEntry : vofov.entrySet()) {
-                            Field vf = vEntry.getKey();
-                            Value vv = vEntry.getValue();
-                            String typeName = (vf.isStatic()) ? "static " + vf.typeName() : vf.typeName();
-                            System.out.println(String.format("\t %s (%s) = %s", vf.name(), typeName, vv));
-                        }
-                    }
+                    drillDown(v);
                 }
             }
         }
         catch(Exception ex) {
             System.out.println("Exception");
+        }
+    }
+
+    private void drillDown(Value value) {
+        if(value instanceof ArrayReference) {
+            ArrayReference arrayValue = (ArrayReference) value;
+            List<Value> arrayValues = arrayValue.getValues();
+            int i = 0;
+            for(Value valueEntry : arrayValues) {
+                System.out.println(String.format("\t [%d] (%s) = %s", i, valueEntry.type().name(), value));
+                ++i;
+            }
+        }
+        else if(value instanceof ObjectReference) {
+            ObjectReference objectValue = (ObjectReference) value;
+            ReferenceType referenceType = objectValue.referenceType();
+            List<Field> fields = referenceType.fields();
+            Map<Field, Value> valuesOfFields = objectValue.getValues(fields);
+            for(Entry<Field, Value> entry : valuesOfFields.entrySet()) {
+                Field f = entry.getKey();
+                Value v = entry.getValue();
+                String typeName = (f.isStatic()) ? "static " + f.typeName() : f.typeName();
+                System.out.println(String.format("\t %s (%s) = %s", f.name(), typeName, v));
+            }
         }
     }
 
