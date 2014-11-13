@@ -62,11 +62,11 @@ public class EventHandler {
             }
             break;
             case BREAKPOINT: {
-                _dprocess.cacheBreakpointUntilClassIsLoaded(e.className, e.argument);
+                _dprocess.addBreakpoint(e.className, e.argument);
             }
             break;
             case WATCHPOINT: {
-                _dprocess.cacheWatchpointUntilClassIsLoaded(e.className, e.argument);
+                _dprocess.addWatchpoint(e.className, e.argument);
             }
             break;
             case STOP: {

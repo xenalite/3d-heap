@@ -6,9 +6,7 @@ import com.heap3d.application.events.StartDefinition;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.*;
-import com.sun.tools.internal.ws.wsdl.document.jaxws.*;
 
-import java.lang.Exception;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +49,7 @@ public class DebuggedProcess {
     public void start() {
         runProcessAndEstablishConnection();
         ExecutorService service = Executors.newSingleThreadExecutor();
-        service.submit(new StreamListener(_eventBus, _process.getInputStream()));
+        service.submit(new StreamListener(_eventBus, _process.getInputStream(), _process.getErrorStream()));
         service.shutdown();
     }
 
@@ -98,10 +96,10 @@ public class DebuggedProcess {
                     if(_cachedPoints.containsKey(classReference.name())) {
                         Vector<String> watchpoints = _cachedPoints.get(classReference.name()).getValue();
                         for(String watchpoint : watchpoints)
-                            addWatchpoint(classReference, watchpoint);
+                            createWatchpointRequest(classReference, watchpoint);
                         Vector<String> breakpoints = _cachedPoints.get(classReference.name()).getKey();
                         for(String breakpoint : breakpoints)
-                            addBreakpoint(classReference, breakpoint);
+                            createBreakpointRequest(classReference, breakpoint);
                     }
                 }
                 else if(e instanceof ModificationWatchpointEvent) {
@@ -111,6 +109,7 @@ public class DebuggedProcess {
                             String.format("Variable %s in %s modified! Old:%s, New:%s",
                                     mwe.field(), mwe.location(), mwe.valueCurrent(), mwe.valueToBe())));
                     _threadRef = mwe.thread();
+                    removeStepRequests();
                 }
                 else if(e instanceof BreakpointEvent) {
                     _state = PAUSED;
@@ -118,13 +117,13 @@ public class DebuggedProcess {
                     _eventBus.post(new ProcessEvent(DEBUG_MSG,
                             String.format("Breakpoint hit @%s", be.location())));
                     _threadRef = be.thread();
+                    removeStepRequests();
                 }
                 else if(e instanceof StepEvent) {
                     _threadRef = ((StepEvent) e).thread();
                     _state = PAUSED;
                     _eventBus.post(new ProcessEvent(DEBUG_MSG, "Stepped over a line."));
                     e.request().disable();
-                    checkVariables((StepEvent) e);
                 }
             }
             if(_state == RUNNING)
@@ -133,60 +132,60 @@ public class DebuggedProcess {
         return true;
     }
 
-    private void checkVariables(StepEvent se) {
-        try {
-            ObjectReference or = _threadRef.frame(0).thisObject();
-            Location l = se.location();
-            ReferenceType t = l.declaringType();
-            List<Field> fields = t.allFields();
-//            System.out.println(fields);
-            for (Field f : fields) {
-                String message = String.format("%s:%s (%s) = %s", t, f.name(), f.type(), or.getValue(f));
-                System.out.println(message);
-//                _eventBus.post(new ProcessEvent(DEBUG_MSG, message));
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void removeStepRequests() {
+        _instance.eventRequestManager().stepRequests().stream()
+                .filter(sr -> _threadRef.equals(sr.thread()))
+                .forEach(EventRequest::disable);
     }
 
-    private void addBreakpoint(ReferenceType classReference, String breakpoint) {
+    private void createBreakpointRequest(ReferenceType classReference, String breakpoint) {
         EventRequestManager erm = _instance.eventRequestManager();
         Location l = classReference.methodsByName(breakpoint).get(0).location();
         BreakpointRequest br = erm.createBreakpointRequest(l);
         br.enable();
     }
 
-    private void addWatchpoint(ReferenceType classReference, String watchpoint) {
+    private void createWatchpointRequest(ReferenceType classReference, String watchpoint) {
         EventRequestManager erm = _instance.eventRequestManager();
         Field f = classReference.fieldByName(watchpoint);
         ModificationWatchpointRequest mwe = erm.createModificationWatchpointRequest(f);
         mwe.enable();
     }
 
-    public void cacheWatchpointUntilClassIsLoaded(String className, String argument) {
-        Vector<String> entries;
-        if (_cachedPoints.containsKey(className)) {
-            entries = _cachedPoints.get(className).getValue();
-        } else {
-            createClassPrepareRequest(className);
-            entries = new Vector<>();
-            _cachedPoints.put(className, new SimpleImmutableEntry<>(new Vector<>(), entries));
+    public void addWatchpoint(String className, String argument) {
+        List<ReferenceType> classes = _instance.classesByName(className);
+        if(!classes.isEmpty()) {
+            createWatchpointRequest(classes.get(0), argument);
         }
-        entries.add(argument);
+        else {
+            Vector<String> entries;
+            if (_cachedPoints.containsKey(className)) {
+                entries = _cachedPoints.get(className).getValue();
+            } else {
+                createClassPrepareRequest(className);
+                entries = new Vector<>();
+                _cachedPoints.put(className, new SimpleImmutableEntry<>(new Vector<>(), entries));
+            }
+            entries.add(argument);
+        }
     }
 
-    public void cacheBreakpointUntilClassIsLoaded(String className, String argument) {
-        Vector<String> entries;
-        if (_cachedPoints.containsKey(className)) {
-            entries = _cachedPoints.get(className).getKey();
-        } else {
-            createClassPrepareRequest(className);
-            entries = new Vector<>();
-            _cachedPoints.put(className, new SimpleImmutableEntry<>(entries, new Vector<>()));
+    public void addBreakpoint(String className, String argument) {
+        List<ReferenceType> classes = _instance.classesByName(className);
+        if(!classes.isEmpty()) {
+            createBreakpointRequest(classes.get(0), argument);
         }
-        entries.add(argument);
+        else {
+            Vector<String> entries;
+            if (_cachedPoints.containsKey(className)) {
+                entries = _cachedPoints.get(className).getKey();
+            } else {
+                createClassPrepareRequest(className);
+                entries = new Vector<>();
+                _cachedPoints.put(className, new SimpleImmutableEntry<>(entries, new Vector<>()));
+            }
+            entries.add(argument);
+        }
     }
 
     public void createStepRequest() {
