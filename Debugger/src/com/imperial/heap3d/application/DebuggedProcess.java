@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import static com.imperial.heap3d.application.ProcessState.*;
 import static com.imperial.heap3d.events.ProcessEventType.DEBUG_MSG;
 import static java.util.AbstractMap.SimpleImmutableEntry;
 import static java.util.Map.Entry;

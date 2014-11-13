@@ -1,16 +1,10 @@
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.GridPane?>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.control.Button?>
-<TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1"
-         xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+<TabPane maxHeight="289.0" maxWidth="312.0" minHeight="200.0" minWidth="200.0" prefHeight="289.0" prefWidth="312.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1"
+         xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
          fx:controller="com.imperial.heap3d.ui.controllers.BreakpointsController">
     <tabs>
         <Tab text="Breakpoints">
@@ -46,7 +40,12 @@
                                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                                     </rowConstraints>
                                 </GridPane>
-                                <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#addBreakpointPressed" text="Add" />
+                        <HBox spacing="20.0">
+                           <children>
+                                      <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#addBreakpointPressed" text="Add" />
+                              <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#removeBreakpointPressed" text="Remove" />
+                           </children>
+                        </HBox>
                             </children>
                         </VBox>
                     </children>
@@ -86,7 +85,12 @@
                                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                                     </rowConstraints>
                                 </GridPane>
-                                <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#addWatchpointPressed" text="Add" />
+                        <HBox spacing="20.0">
+                           <children>
+                                      <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#addWatchpointPressed" text="Add" />
+                              <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#removeWatchpointPressed" text="Remove" />
+                           </children>
+                        </HBox>
                             </children>
                         </VBox>
                     </children>

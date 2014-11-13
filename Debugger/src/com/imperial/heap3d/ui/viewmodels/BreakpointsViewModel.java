@@ -37,12 +37,12 @@ public class BreakpointsViewModel {
         _eventBus = eventBus;
         _eventBus.register(this);
         _cacheEnabled = true;
-        _breakpointClass = new SimpleStringProperty(this, "breakpointClass", "");
-        _breakpointMethod = new SimpleStringProperty(this, "breakpointMethod", "");
-        _watchpointClass = new SimpleStringProperty(this, "watchpointClass", "");
-        _watchpointField = new SimpleStringProperty(this, "watchpointField", "");
-        _breakpoints = new SimpleObjectProperty<>(this, "breakpoints", FXCollections.observableList(new ArrayList<>()));
-        _watchpoints = new SimpleObjectProperty<>(this, "watchpoints", FXCollections.observableList(new ArrayList<>()));
+        _breakpointClass = new SimpleStringProperty(this, "", "");
+        _breakpointMethod = new SimpleStringProperty(this, "", "");
+        _watchpointClass = new SimpleStringProperty(this, "", "");
+        _watchpointField = new SimpleStringProperty(this, "", "");
+        _breakpoints = new SimpleObjectProperty<>(this, "", FXCollections.observableList(new ArrayList<>()));
+        _watchpoints = new SimpleObjectProperty<>(this, "", FXCollections.observableList(new ArrayList<>()));
         _cachedElements = new Vector<>();
 
         // TODO: REMOVE AFTER TESTING -- THIS IS FOR CONVENIENCE ONLY
@@ -141,4 +141,12 @@ public class BreakpointsViewModel {
     public StringProperty getWatchpointClassProperty() { return _watchpointClass; }
     public StringProperty getWatchpointFieldProperty() { return _watchpointField; }
     public Property<ObservableList<String>> getWatchpointsProperty() { return _watchpoints; }
+
+    public void removeBreakpointAction(String selectedItem) {
+        _breakpoints.getValue().remove(selectedItem);
+    }
+
+    public void removeWatchpointAction(String selectedItem) {
+        _watchpoints.getValue().remove(selectedItem);
+    }
 }

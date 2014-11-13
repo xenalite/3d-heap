@@ -43,6 +43,16 @@ public class BreakpointsController implements Initializable {
         _viewModel.addWatchpointAction();
     }
 
+    @FXML
+    void removeWatchpointPressed() {
+        _viewModel.removeWatchpointAction(watchpointsListView.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML
+    void removeBreakpointPressed() {
+        _viewModel.removeBreakpointAction(breakpointsListView.getSelectionModel().getSelectedItem());
+    }
+
     private final BreakpointsViewModel _viewModel;
 
     public BreakpointsController(BreakpointsViewModel viewModel) {

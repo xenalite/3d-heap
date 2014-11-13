@@ -16,6 +16,8 @@ import javafx.beans.property.StringProperty;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.imperial.heap3d.events.EventType.*;
+
 /**
  * Created by oskar on 29/10/14.
  */
