@@ -37,13 +37,26 @@ public class BreakpointsTabViewModel {
         _eventBus = eventBus;
         _eventBus.register(this);
         _cacheEnabled = true;
-        _breakpointClass = new SimpleStringProperty(this, "breakpointClass", "test.Program");
-        _breakpointMethod = new SimpleStringProperty(this, "breakpointMethod", "method");
+        _breakpointClass = new SimpleStringProperty(this, "breakpointClass", "");
+        _breakpointMethod = new SimpleStringProperty(this, "breakpointMethod", "");
         _watchpointClass = new SimpleStringProperty(this, "watchpointClass", "");
         _watchpointField = new SimpleStringProperty(this, "watchpointField", "");
         _breakpoints = new SimpleObjectProperty<>(this, "breakpoints", FXCollections.observableList(new ArrayList<>()));
         _watchpoints = new SimpleObjectProperty<>(this, "watchpoints", FXCollections.observableList(new ArrayList<>()));
         _cachedElements = new Vector<>();
+
+        // TODO: REMOVE AFTER TESTING -- THIS IS FOR CONVENIENCE ONLY
+        _breakpointClass.set("test.Program");
+        _breakpointMethod.set("main");
+        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
+
+        _breakpointClass.set("test.Program");
+        _breakpointMethod.set("method");
+        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
+
+        _breakpointClass.set("test.Program");
+        _breakpointMethod.set("append");
+        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
     }
 
     @Subscribe

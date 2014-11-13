@@ -7,12 +7,10 @@ import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import static com.heap3d.application.events.ProcessEventType.DEBUG_MSG;
 import static com.heap3d.application.utilities.ProcessState.*;
@@ -110,6 +108,7 @@ public class DebuggedProcess {
                                     mwe.field(), mwe.location(), mwe.valueCurrent(), mwe.valueToBe())));
                     _threadRef = mwe.thread();
                     removeStepRequests();
+                    analyseVariables(mwe);
                 }
                 else if(e instanceof BreakpointEvent) {
                     _state = PAUSED;
@@ -118,18 +117,82 @@ public class DebuggedProcess {
                             String.format("Breakpoint hit @%s", be.location())));
                     _threadRef = be.thread();
                     removeStepRequests();
+                    analyseVariables(be);
                 }
                 else if(e instanceof StepEvent) {
                     _threadRef = ((StepEvent) e).thread();
                     _state = PAUSED;
                     _eventBus.post(new ProcessEvent(DEBUG_MSG, "Stepped over a line."));
                     e.request().disable();
+                    analyseVariables((LocatableEvent) e);
                 }
             }
             if(_state == RUNNING)
                 set.resume();
         }
         return true;
+    }
+
+    private void analyseVariables(LocatableEvent e) {
+        try {
+            ThreadReference threadReference = e.thread();
+            Location location = e.location();
+            ReferenceType referenceType = location.declaringType();
+            StackFrame stackFrame = threadReference.frame(0);
+            ObjectReference thisObject = stackFrame.thisObject();
+
+            List<LocalVariable> localVariables = stackFrame.visibleVariables();
+            Map<LocalVariable, Value> valuesOfLocalVars = stackFrame.getValues(localVariables);
+            System.out.println("Local variables:");
+            for(Entry<LocalVariable, Value> entry : valuesOfLocalVars.entrySet()) {
+                LocalVariable lv = entry.getKey();
+                Value v = entry.getValue();
+                System.out.println(String.format("%s (%s) = %s", lv.name(), lv.typeName(), v));
+            }
+
+            List<Field> allFields = referenceType.fields();
+            if(thisObject != null) {
+                Map<Field, Value> valuesOfFields = thisObject.getValues(allFields);
+                System.out.println("Instance variables:");
+                for(Entry<Field, Value> entry : valuesOfFields.entrySet()) {
+                    Field f = entry.getKey();
+                    Value v = entry.getValue();
+                    String typeName = (f.isStatic()) ? "static " + f.typeName() : f.typeName();
+                    System.out.println(String.format("%s (%s) = %s", f.name(), typeName, v));
+                }
+            }
+            else {
+                List<Field> staticFields = allFields.stream().filter(TypeComponent::isStatic)
+                        .collect(Collectors.toCollection(LinkedList::new));
+
+                Map<Field, Value> valuesOfFields = referenceType.getValues(staticFields);
+                System.out.println("Static variables:");
+                for(Entry<Field, Value> entry : valuesOfFields.entrySet()) {
+                    Field f = entry.getKey();
+                    Value v = entry.getValue();
+                    System.out.println(String.format("%s (%s) = %s", f.name(), f.typeName(), v));
+
+                    if(v instanceof ArrayReference) {
+                        ArrayReference var = (ArrayReference) v;
+                    }
+                    else if(v instanceof ObjectReference) {
+                        ObjectReference vor = (ObjectReference) v;
+                        ReferenceType refType = vor.referenceType();
+                        List<Field> fieldsOfValue = refType.fields();
+                        Map<Field, Value> vofov = vor.getValues(fieldsOfValue);
+                        for(Entry<Field, Value> vEntry : vofov.entrySet()) {
+                            Field vf = vEntry.getKey();
+                            Value vv = vEntry.getValue();
+                            String typeName = (vf.isStatic()) ? "static " + vf.typeName() : vf.typeName();
+                            System.out.println(String.format("\t %s (%s) = %s", vf.name(), typeName, vv));
+                        }
+                    }
+                }
+            }
+        }
+        catch(Exception ex) {
+            System.out.println("Exception");
+        }
     }
 
     private void removeStepRequests() {
