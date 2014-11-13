@@ -75,8 +75,7 @@ public class MainWindowViewModel {
             }
             break;
             case DEBUG_MSG: {
-                Platform.runLater(() -> _variables.set(_variables.get()
-                + System.lineSeparator() + pe.message));
+                Platform.runLater(() -> _variables.set(pe.message));
             }
             break;
             case PROCESS_MSG: {

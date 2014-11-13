@@ -121,9 +121,11 @@ public class DebuggedProcess {
                     analyseVariables(be);
                 }
                 else if(e instanceof StepEvent) {
-                    _threadRef = ((StepEvent) e).thread();
+                    StepEvent se = (StepEvent) e;
+                    _threadRef = se.thread();
                     _state = PAUSED;
-                    _eventBus.post(new ProcessEvent(DEBUG_MSG, "Stepped over a line."));
+                    _eventBus.post(new ProcessEvent(DEBUG_MSG,
+                            String.format("Step into @%s", se.location())));
                     e.request().disable();
                     analyseVariables((LocatableEvent) e);
                 }
@@ -134,8 +136,11 @@ public class DebuggedProcess {
         return true;
     }
 
+    // -- TODO REFACTOR THIS INTO A SEPARATE INTERFACE
+    private static final String delim = "------\n";
     private void analyseVariables(LocatableEvent e) {
         try {
+            StringBuilder sb = new StringBuilder();
             ThreadReference threadReference = e.thread();
             Location location = e.location();
             ReferenceType referenceType = location.declaringType();
@@ -144,26 +149,28 @@ public class DebuggedProcess {
 
             List<LocalVariable> localVariables = stackFrame.visibleVariables();
             Map<LocalVariable, Value> valuesOfLocalVars = stackFrame.getValues(localVariables);
-            System.out.println("Local variables:");
+            sb.append(delim);
+            sb.append("Local variables:\n");
             for(Entry<LocalVariable, Value> entry : valuesOfLocalVars.entrySet()) {
                 LocalVariable lv = entry.getKey();
                 Value v = entry.getValue();
-                System.out.println(String.format("%s (%s) = %s", lv.name(), lv.typeName(), v));
+                sb.append(String.format("%s (%s) = %s\n", lv.name(), lv.typeName(), v));
 
-                drillDown(v);
+                drillDown(v, sb);
             }
 
             List<Field> allFields = referenceType.fields();
             if(thisObject != null) {
                 Map<Field, Value> valuesOfFields = thisObject.getValues(allFields);
-                System.out.println("Instance variables:");
+                sb.append(delim);
+                sb.append("Instance variables:\n");
                 for(Entry<Field, Value> entry : valuesOfFields.entrySet()) {
                     Field f = entry.getKey();
                     Value v = entry.getValue();
                     String typeName = (f.isStatic()) ? "static " + f.typeName() : f.typeName();
-                    System.out.println(String.format("%s (%s) = %s", f.name(), typeName, v));
+                    sb.append(String.format("%s (%s) = %s\n", f.name(), typeName, v));
 
-                    drillDown(v);
+                    drillDown(v, sb);
                 }
             }
             else {
@@ -171,28 +178,31 @@ public class DebuggedProcess {
                         .collect(Collectors.toCollection(LinkedList::new));
 
                 Map<Field, Value> valuesOfFields = referenceType.getValues(staticFields);
-                System.out.println("Static variables:");
+                sb.append(delim);
+                sb.append("Static variables:\n");
                 for(Entry<Field, Value> entry : valuesOfFields.entrySet()) {
                     Field f = entry.getKey();
                     Value v = entry.getValue();
-                    System.out.println(String.format("%s (%s) = %s", f.name(), f.typeName(), v));
+                    sb.append(String.format("%s (%s) = %s\n", f.name(), f.typeName(), v));
 
-                    drillDown(v);
+                    drillDown(v, sb);
                 }
             }
+            _eventBus.post(new ProcessEvent(DEBUG_MSG, sb.toString()));
         }
         catch(Exception ex) {
             System.out.println("Exception");
         }
     }
 
-    private void drillDown(Value value) {
+    // TODO -- AND THIS
+    private void drillDown(Value value, StringBuilder sb) {
         if(value instanceof ArrayReference) {
             ArrayReference arrayValue = (ArrayReference) value;
             List<Value> arrayValues = arrayValue.getValues();
             int i = 0;
             for(Value valueEntry : arrayValues) {
-                System.out.println(String.format("\t [%d] (%s) = %s", i, valueEntry.type().name(), value));
+                sb.append(String.format("\t [%d] (%s) = %s\n", i, valueEntry.type().name(), value));
                 ++i;
             }
         }
@@ -205,7 +215,7 @@ public class DebuggedProcess {
                 Field f = entry.getKey();
                 Value v = entry.getValue();
                 String typeName = (f.isStatic()) ? "static " + f.typeName() : f.typeName();
-                System.out.println(String.format("\t %s (%s) = %s", f.name(), typeName, v));
+                sb.append(String.format("\t %s (%s) = %s\n", f.name(), typeName, v));
             }
         }
     }
