@@ -12,7 +12,9 @@ import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import static com.imperial.heap3d.events.EventType.BREAKPOINT;
 import static com.imperial.heap3d.events.EventType.WATCHPOINT;
@@ -22,6 +24,7 @@ import static com.imperial.heap3d.events.EventType.WATCHPOINT;
  */
 public class BreakpointsViewModel {
 
+    private final String DELIM = ":";
     private EventBus _eventBus;
     private StringProperty _breakpointClass;
     private StringProperty _breakpointMethod;
@@ -87,7 +90,7 @@ public class BreakpointsViewModel {
 
     private void addToCache(List<String> list, EventType type) {
         for(String contents : list) {
-            String[] values = contents.split(":");
+            String[] values = contents.split(DELIM);
             _cachedElements.add(createEvent(type, values[0], values[1]));
         }
     }
@@ -105,7 +108,7 @@ public class BreakpointsViewModel {
         String className = classNameProperty.get();
         String point = pointProperty.get();
         if(isValid(className, point)) {
-            list.add(className + ":" + point);
+            list.add(className + DELIM + point);
             classNameProperty.set("");
             pointProperty.set("");
             _cachedElements.add(createEvent(type, className, point));
@@ -143,10 +146,18 @@ public class BreakpointsViewModel {
     public Property<ObservableList<String>> getWatchpointsProperty() { return _watchpoints; }
 
     public void removeBreakpointAction(String selectedItem) {
+        String[] values = selectedItem.split(DELIM);
         _breakpoints.getValue().remove(selectedItem);
+        _cachedElements = _cachedElements.stream().filter(ce -> Objects.equals(ce.className, values[0]) &&
+                Objects.equals(ce.argument, values[1]) &&
+                ce.type == BREAKPOINT).collect(Collectors.toCollection(Vector::new));
     }
 
     public void removeWatchpointAction(String selectedItem) {
+        String[] values = selectedItem.split(DELIM);
         _watchpoints.getValue().remove(selectedItem);
+        _cachedElements = _cachedElements.stream().filter(ce -> Objects.equals(ce.className, values[0]) &&
+                Objects.equals(ce.argument, values[1]) &&
+                ce.type == WATCHPOINT).collect(Collectors.toCollection(Vector::new));
     }
 }
