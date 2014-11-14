@@ -74,6 +74,14 @@ public abstract class RenderEngine {
 		entities.add(e);
 	}
 	
+	protected void removeEntityFrom3DSpace(Shape e){
+		entities.remove(e);
+	}
+	
+	protected void clearEntitiesFrom3DSpace(){
+		entities.clear();
+	}
+	
 	protected int getNumberOfEntities() {
 		return entities.size();
 	}

@@ -1,0 +1,11 @@
+#!/usr/bin/gnuplot
+ 
+set title "Graphics Performance Test On Cubes With Lines"
+set xlabel "# Of Cubes With Lines"
+set ylabel "FPS"
+set ytics "10"
+set yrange [0:140]
+set grid
+set terminal png
+set output 'perfTestCubesWithLinesResults.png' 
+plot "lines.data" title "" with lines
