@@ -5,9 +5,7 @@ import edu.uci.ics.jung.graph.DirectedGraph;
 
 import java.awt.*;
 
-/**
- * Created by Niklas on 11/13/2014.
- */
+
 public class ISOLayout extends JungLayout{
 
 

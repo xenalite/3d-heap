@@ -50,7 +50,7 @@ public abstract class JungLayout implements LayoutService{
             if(nodes.containsKey(rootNodeId))
             {
                 T root = nodes.get(rootNodeId);
-                layout.setLocation(root, 0.0, 0.0);
+                layout.setLocation(root, 0.0d, 0.0d);
                 layout.lock(root, true);
             }
         }
