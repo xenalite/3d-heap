@@ -9,13 +9,13 @@ public interface IStackFrame {
 
     public List<ILocalVariable> getLocalVariables();
 
-    public IVariable getThisObject();
+    public IValue getThisObject();
 
     public boolean isStaticContext();
 
     public String referenceType();
 
-    public List<IVariable> getStaticVariables();
+    public List<IFieldValue> getStaticVariables();
 
     public boolean isValid();
 
