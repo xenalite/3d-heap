@@ -22,8 +22,9 @@ public class Main {
         System.out.println("Running Layout");
 //        LayoutService layout = new SpringBasedLayout();
 //        LayoutService layout = new IterativeSpringBasedLayout();
-        LayoutService layout = new FRLayout();
+//        LayoutService layout = new FRLayout();
 //        LayoutService layout = new CircularLayout();
+        LayoutService layout = new ISOLayout();
 
         Map<String, LayoutNode> graph = randomGraph(100, 0.0f);
 
