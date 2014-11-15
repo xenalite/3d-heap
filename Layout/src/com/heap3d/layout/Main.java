@@ -31,7 +31,7 @@ public class Main {
         int edgeCount = 0;
         for(LayoutNode n: g.values())
         {
-            java.util.List<Node> children = n.getChildren();
+            java.util.List<LayoutNode> children = n.getChildren();
             for (int i = 0; i < children.size(); i++) {
                 LayoutNode child = new LayoutNode(children.get(i).getId(),0,0,0);
                 graph.addEdge(edgeCount++ +"", n, child);

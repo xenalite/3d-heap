@@ -1,16 +1,12 @@
 package com.heap3d.layout;
 
-import com.heap3d.Node;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
-import edu.uci.ics.jung.graph.*;
 import edu.uci.ics.jung.graph.Graph;
 import org.apache.commons.collections15.Transformer;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class JungLayout<V,E> implements Layout<V,E>, IterativeContext{
 
