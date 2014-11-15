@@ -26,27 +26,20 @@ public class Renderer {
 
 	private static final float FOV = 70f;
 	private static final float NEAR_PLANE = 0.1f;
-	private static final float FAR_PLANE = 1000f;
+	private static final float FAR_PLANE = 300f;//was 1000
 	
 	private Matrix4f projectionMatrix;
 	private StaticShader shader;
-	private float backR, backG, backB, backA;
 	
 	public Renderer(StaticShader shader){
 		
 		this.shader = shader;
-		//GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 		createProjectionMatrix();
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
 		shader.stop();
-	}
-	
-	public void prepare(){
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		
-		GL11.glClearColor(backR, backG, backB, backA);
 	}
 	
 	public void render(Map<RawModel, List<Entity>> entities){
@@ -61,20 +54,8 @@ public class Renderer {
 				GL11.glDrawElements(entity.getDrawMode(), model.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 			}
 			
-			/*
-			 * TODO REMOVE THIS
-			GL30.glBindVertexArray(r.getVaoID());
-			GL20.glEnableVertexAttribArray(0);
-			GL20.glEnableVertexAttribArray(1);
-			GL20.glEnableVertexAttribArray(2);
-			
-			GL11.glDrawElements(GL11.GL_LINES, 2, GL11.GL_UNSIGNED_INT, 0);
-			*/
-			
 			unbindRawModel();
-			
 		}
-		
 	}
 	
 	/*
@@ -98,8 +79,8 @@ public class Renderer {
 		GL30.glBindVertexArray(rawModel.getVaoID());
 		GL20.glEnableVertexAttribArray(0);	// points
 		GL20.glEnableVertexAttribArray(1);	// colours
-		//GL20.glEnableVertexAttribArray(2);	// normals
-
+		GL20.glEnableVertexAttribArray(2);	// normals
+		shader.loadShineVariables(10, 1);
 		//ModelTexture texture = model.getTexture();
 		//shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
 		//GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -110,7 +91,7 @@ public class Renderer {
 	private void unbindRawModel(){
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
-		//GL20.glDisableVertexAttribArray(2);
+		GL20.glDisableVertexAttribArray(2);
 		GL30.glBindVertexArray(0);
 	}
 	
@@ -135,19 +116,4 @@ public class Renderer {
 		projectionMatrix.m33 = 0;
 	}
 
-	public void setBackR(float backR) {
-		this.backR = backR;
-	}
-
-	public void setBackG(float backG) {
-		this.backG = backG;
-	}
-
-	public void setBackB(float backB) {
-		this.backB = backB;
-	}
-
-	public void setBackA(float backA) {
-		this.backA = backA;
-	}
 }

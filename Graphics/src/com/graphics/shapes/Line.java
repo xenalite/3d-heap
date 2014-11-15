@@ -27,7 +27,7 @@ public class Line extends Shape{
 		}
 		
 
-		RawModel model = Loader.getInstance().loadToVAO(vertices, colourValues, indices);
+		RawModel model = Loader.getInstance().loadToVAO(vertices, colourValues, null, indices);
 		
 		entity = new Entity(model, new Vector3f(0,0,0), 0, 0, 0, 1, GL11.GL_LINES);
 	}

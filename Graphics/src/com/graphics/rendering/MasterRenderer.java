@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.lwjgl.opengl.GL11;
+
 import com.graphics.entities.Camera;
 import com.graphics.entities.Entity;
 import com.graphics.entities.Light;
@@ -16,10 +18,28 @@ public class MasterRenderer {
 
 	private StaticShader shader = new StaticShader();
 	private Renderer renderer = new Renderer(shader);
-	
+	private float backR, backG, backB, backA;
 	private Map<RawModel, List<Entity>> entities = new HashMap<RawModel, List<Entity>>();
 	
 	public void render(Light sun, Camera camera){
+		prepare();
+		shader.start();
+		shader.loadSkyColour(backR, backG, backB);
+		shader.loadLight(sun);
+		shader.loadViewMatrix(camera);
+		renderer.render(entities);
+		shader.stop();
+		entities.clear();
+	}
+	
+	private void prepare(){
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		
+		GL11.glClearColor(backR, backG, backB, backA);
+	}
+	
+	/*
+	public void render(Camera camera){
 		renderer.prepare();
 		shader.start();
 		//shader.loadLight(sun);
@@ -27,17 +47,7 @@ public class MasterRenderer {
 		renderer.render(entities);
 		shader.stop();
 		entities.clear();
-	}
-	
-	public void render(Camera camera){
-		renderer.prepare();
-		shader.start();
-	//	shader.loadLight(sun);
-		shader.loadViewMatrix(camera);
-		renderer.render(entities);
-		shader.stop();
-		entities.clear();
-	}
+	}*/
 	
 	public void processEntity(Entity entity){
 		RawModel entityModel = entity.getModel();
@@ -56,19 +66,19 @@ public class MasterRenderer {
 	}
 	
 	public void setBackR(float backR) {
-		renderer.setBackR(backR);
+		this.backR = backR;
 	}
 
 	public void setBackG(float backG) {
-		renderer.setBackG(backG);
+		this.backG = backG;
 	}
 
 	public void setBackB(float backB) {
-		renderer.setBackB(backB);
+		this.backB = backB;
 	}
 
 	public void setBackA(float backA) {
-		renderer.setBackA(backA);
+		this.backA = backA;
 	}
 	
 }

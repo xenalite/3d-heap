@@ -46,11 +46,13 @@ public class Loader {
 		return new RawModel(vaoID, indices.length);
 	}
 	*/
-	public RawModel loadToVAO(float[] positions, float[] colours, int[] indices){
+	public RawModel loadToVAO(float[] positions, float[] colours, float[] normals, int[] indices){
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
 		storeDataInAttributeList(1, 3, colours);
+		if(normals!=null)
+			storeDataInAttributeList(2, 3, normals);
 		unBindVAO();
 		return new RawModel(vaoID, indices.length);
 	}
