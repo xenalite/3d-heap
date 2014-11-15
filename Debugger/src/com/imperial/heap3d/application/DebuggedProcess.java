@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
+import com.imperial.heap3d.variables.implementation.ConcreteStackFrame;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.*;
@@ -128,6 +129,11 @@ public class DebuggedProcess {
                             String.format("Step into @%s", se.location())));
                     e.request().disable();
                     analyseVariables((LocatableEvent) e);
+
+                    try {
+                        new ConcreteStackFrame(_threadRef.frame(0));
+                    } catch (IncompatibleThreadStateException ignored) {
+                    }
                 }
             }
             if(_state == RUNNING)
