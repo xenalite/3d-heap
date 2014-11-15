@@ -9,10 +9,10 @@ public class FRLayout extends JungLayout {
     edu.uci.ics.jung.algorithms.layout.FRLayout sl;
 
     @Override
-    protected void initializeLayout(DirectedGraph g) {
+    protected void initializeLayout(DirectedGraph g, Dimension size) {
         sl = new edu.uci.ics.jung.algorithms.layout.FRLayout(g);
         layout = sl;
-        sl.setSize(new Dimension(1000,1000));
+        sl.setSize(size);
         sl.initialize();
     }
 

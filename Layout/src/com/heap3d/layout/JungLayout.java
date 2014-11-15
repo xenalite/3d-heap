@@ -41,8 +41,10 @@ public abstract class JungLayout implements LayoutService{
         }
 
         //Initialize the graph
-        initializeLayout(g);
+        initializeLayout(g,size);
 
+        double midx = size.width/2.0;
+        double midy = size.height/2.0;
 
         //Freeze the root node at 0,0
         if(rootNodeId != null)
@@ -50,7 +52,8 @@ public abstract class JungLayout implements LayoutService{
             if(nodes.containsKey(rootNodeId))
             {
                 T root = nodes.get(rootNodeId);
-                layout.setLocation(root, 0.0d, 0.0d);
+
+                layout.setLocation(root, midx, midy);
                 layout.lock(root, true);
             }
         }
@@ -60,12 +63,19 @@ public abstract class JungLayout implements LayoutService{
 
         for(T n : nodes.values())
         {
-            n.setX((float)layout.getX(n));
-            n.setY((float)layout.getY(n));
+            n.setX((float)(layout.getX(n)-midx));
+            n.setY((float)(layout.getY(n)-midy));
         }
     }
 
-    protected abstract void initializeLayout(DirectedGraph g);
+
+    Dimension size = new Dimension(1000,1000);
+    @Override
+    public void setSize(int size) {
+        this.size = new Dimension(size,size);
+    }
+
+    protected abstract void initializeLayout(DirectedGraph g, Dimension size);
     protected abstract void run();
 
 }

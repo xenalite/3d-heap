@@ -9,10 +9,10 @@ public class IterativeSpringBasedLayout extends JungLayout {
 
     SpringLayout sl;
     @Override
-    protected void initializeLayout(DirectedGraph g) {
+    protected void initializeLayout(DirectedGraph g, Dimension size) {
         sl = new SpringLayout(g);
         layout = sl;
-        sl.setSize(new Dimension(1000,1000));
+        sl.setSize(size);
         sl.initialize();
     }
 

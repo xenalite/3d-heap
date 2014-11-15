@@ -1,6 +1,7 @@
 package com.heap3d.layout;
 
 import com.heap3d.Node;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -80,5 +81,22 @@ public class LayoutServiceTest {
         assertEquals(0.0f, n.x(), 0.0f);
         assertEquals(0.0f, n.y(), 0.0f);
     }
+
+    @Test
+    public void testLayoutReSizing() throws Exception {
+
+        Map<String, LayoutNode> graph = Graph.randomGraph(500, 0.1, 1);
+        layoutService.layout(graph);
+
+        for(LayoutNode n : graph.values())
+        {
+            float x = n.x();
+            float y = n.y();
+            assertTrue(x < 1000 && x > 0);
+            assertTrue(y < 1000 && y > 0);
+        }
+
+    }
+
 
 }

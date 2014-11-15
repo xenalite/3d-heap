@@ -8,11 +8,11 @@ import java.awt.*;
 public class CircularLayout extends JungLayout{
 
     @Override
-    protected void initializeLayout(DirectedGraph g) {
+    protected void initializeLayout(DirectedGraph g, Dimension size) {
         CircleLayout sl = new CircleLayout(g);
         layout = sl;
-        sl.setSize(new Dimension(1000,1000));
-        sl.setRadius(500f);
+        sl.setSize(size);
+        sl.setRadius(+size.getHeight()/2.01f);
         sl.initialize();
     }
 

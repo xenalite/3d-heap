@@ -8,13 +8,12 @@ import java.awt.*;
 
 public class ISOLayout extends JungLayout{
 
-
     ISOMLayout sl;
     @Override
-    protected void initializeLayout(DirectedGraph g) {
+    protected void initializeLayout(DirectedGraph g, Dimension size) {
         sl = new ISOMLayout(g);
         layout = sl;
-        sl.setSize(new Dimension(1000,1000));
+        sl.setSize(size);
         sl.initialize();
     }
 

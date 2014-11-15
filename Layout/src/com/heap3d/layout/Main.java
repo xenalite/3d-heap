@@ -44,41 +44,89 @@ public class Main {
     }
 
 
-    public static Map<String, LayoutNode> randomGraph(int numberOfNodes, float edgeProbability) {
-        //Init a project - and therefore a workspace
-        ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
-        pc.newProject();
-        Workspace workspace = pc.getCurrentWorkspace();
-
-        //Generate a new random graph into a container
-        org.gephi.io.importer.api.Container container = Lookup.getDefault().lookup(ContainerFactory.class).newContainer();
-        RandomGraph randomGraph = new RandomGraph();
-        randomGraph.setNumberOfNodes(numberOfNodes);
-        randomGraph.setWiringProbability(edgeProbability);
-        randomGraph.generate(container.getLoader());
-
-        //Append container to graph structure
-        ImportController importController = Lookup.getDefault().lookup(ImportController.class);
-        importController.process(container, new DefaultProcessor(), workspace);
-
-        //See if graph is well imported
-        GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel();
-        DirectedGraph graph = graphModel.getDirectedGraph();
-
+    private static Map<String, LayoutNode> randomGraph(int numberOfNodes, double edgeProbability)
+    {
         Map<String, LayoutNode> nodes = new HashMap<String, LayoutNode>();
-        NodeIterable ni = graph.getNodes();
-        for (Node n : ni) {
-            LayoutNode newNode = new LayoutNode(n.getNodeData().getId(), 0f, 0f, 0f);
 
-            nodes.put(n.getNodeData().getId(), newNode);
+        LayoutNode root = new LayoutNode("0", 0f, 0f, 0f);
+        nodes.put("0", root);
+        LayoutNode prev = root;
+
+        for (int i = 1; i < numberOfNodes/2; i++) {
+            String id = i +"";
+            LayoutNode newNode = new LayoutNode(id, 0f, 0f, 0f);
+            //Make the graph connected
+            newNode.getChildren().add(prev);
+            nodes.put(id, newNode);
+
+            prev= newNode;
         }
 
-        for (Edge e : graph.getEdges()) {
-            com.heap3d.Node source = nodes.get(e.getSource().getNodeData().getId());
-            com.heap3d.Node target = nodes.get(e.getTarget().getNodeData().getId());
-            source.getChildren().add(target);
+        for (int i = numberOfNodes/2; i < numberOfNodes; i++) {
+            String id = i +"";
+            LayoutNode newNode = new LayoutNode(id, 0f, 0f, 0f);
+            nodes.put(id,newNode);
+            int randomNodeNumber = (int)(Math.random() * i);
+            LayoutNode randomNode = nodes.get(""+randomNodeNumber);
+            randomNode.getChildren().add(newNode);
+
         }
+
+        for (int i = 0; i < numberOfNodes; i++) {
+            String id = i +"";
+            LayoutNode n = nodes.get(id);
+
+
+
+            int randomNodeNumber = (int)(Math.random() * numberOfNodes);
+            double probability = Math.random();
+            if(probability <= edgeProbability)
+            {
+                LayoutNode randomNode = nodes.get(""+randomNodeNumber);
+                n.getChildren().add(randomNode);
+            }
+        }
+
 
         return nodes;
     }
+
+
+//    public static Map<String, LayoutNode> randomGraph(int numberOfNodes, float edgeProbability) {
+//        //Init a project - and therefore a workspace
+//        ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
+//        pc.newProject();
+//        Workspace workspace = pc.getCurrentWorkspace();
+//
+//        //Generate a new random graph into a container
+//        org.gephi.io.importer.api.Container container = Lookup.getDefault().lookup(ContainerFactory.class).newContainer();
+//        RandomGraph randomGraph = new RandomGraph();
+//        randomGraph.setNumberOfNodes(numberOfNodes);
+//        randomGraph.setWiringProbability(edgeProbability);
+//        randomGraph.generate(container.getLoader());
+//
+//        //Append container to graph structure
+//        ImportController importController = Lookup.getDefault().lookup(ImportController.class);
+//        importController.process(container, new DefaultProcessor(), workspace);
+//
+//        //See if graph is well imported
+//        GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel();
+//        DirectedGraph graph = graphModel.getDirectedGraph();
+//
+//        Map<String, LayoutNode> nodes = new HashMap<String, LayoutNode>();
+//        NodeIterable ni = graph.getNodes();
+//        for (Node n : ni) {
+//            LayoutNode newNode = new LayoutNode(n.getNodeData().getId(), 0f, 0f, 0f);
+//
+//            nodes.put(n.getNodeData().getId(), newNode);
+//        }
+//
+//        for (Edge e : graph.getEdges()) {
+//            com.heap3d.Node source = nodes.get(e.getSource().getNodeData().getId());
+//            com.heap3d.Node target = nodes.get(e.getTarget().getNodeData().getId());
+//            source.getChildren().add(target);
+//        }
+//
+//        return nodes;
+//    }
 }
