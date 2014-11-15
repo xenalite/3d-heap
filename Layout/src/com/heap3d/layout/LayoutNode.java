@@ -5,7 +5,7 @@ import com.heap3d.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LayoutNode implements Node, Spatial {
+public class LayoutNode implements Node {
 
     private float x;
     private float y;
@@ -32,21 +32,6 @@ public class LayoutNode implements Node, Spatial {
     }
 
 
-    @Override
-    public float x() {
-        return x;
-    }
-
-    @Override
-    public float y() {
-        return y;
-    }
-
-    @Override
-    public float z() {
-        return z;
-    }
-
 
     @Override
     public int hashCode() {
@@ -69,19 +54,5 @@ public class LayoutNode implements Node, Spatial {
         return id + " (" + x+","+y+","+z+")";
     }
 
-    @Override
-    public void setX(float v) {
-        this.x = v;
-    }
-
-    @Override
-    public void setY(float v) {
-        this.y=v;
-    }
-
-    @Override
-    public void setZ(float v) {
-        this.z=v;
-    }
 }
 
