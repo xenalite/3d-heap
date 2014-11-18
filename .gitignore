@@ -8,6 +8,7 @@ Layout/bin/*
 HeapVisualizer/build/*
 HeapVisualizer/bin/*
 */reports/*
+*/bin/*
 
 # Eclipse files
 .classpath
