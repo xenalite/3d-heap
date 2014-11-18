@@ -19,10 +19,6 @@ class Main {
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Running Layout");
-//        LayoutService layout = new SpringBasedLayout();
-//        LayoutService layout = new IterativeSpringBasedLayout();
-//        LayoutService layout = new CircularLayout();
-//        LayoutService layout = new ISOLayout();
 
         Map<String, LayoutNode> g = randomGraph(100, 0.0f);
         Graph<LayoutNode,String> graph = new GraphImpl<LayoutNode, String>();
@@ -46,7 +42,7 @@ class Main {
             }
         }
 
-        Layout<LayoutNode,String> layout = new FRLayout<LayoutNode,String>(graph);
+        Layout<LayoutNode,String> layout = new SpringLayout<LayoutNode, String>(graph);
         layout.layout();
 
         VisualizationImageServer vs =

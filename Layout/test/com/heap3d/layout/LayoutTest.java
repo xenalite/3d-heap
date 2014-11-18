@@ -1,24 +1,64 @@
 package com.heap3d.layout;
 
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+
+@RunWith(Parameterized.class)
 public class LayoutTest {
-
-    @Test
-    public void testLayoutEmptyPass() {
-        GraphImpl<LayoutNode, String> graph = new GraphImpl<LayoutNode, String>();
-
-        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
-        layout.layout();
-        //Make sure the layout doesn't throw an exceptions
+    @Parameterized.Parameters
+    public static Collection<Object[]> createInstances()
+    {
+        return Arrays.asList(
+                new Object[]{FRLayout.class},
+                new Object[]{SpringLayout.class}
+//                ,
+//                new Object[]{ISOLayout.class},
+//                new Object[]{CircularLayout.class}
+        );
     }
+
+    private class LayoutFactory
+    {
+        public <V,E> Layout<V,E> getLayout(Class layoutClass, Graph<V,E> graph)
+        {
+            if(layoutClass == FRLayout.class)
+            {
+                return new FRLayout<V, E>(graph);
+            } else if(layoutClass == ISOLayout.class)
+            {
+                return new ISOLayout<V, E>(graph);
+            }else if(layoutClass == SpringLayout.class)
+            {
+                return new SpringLayout<V, E>(graph);
+            }else if(layoutClass == CircularLayout.class)
+            {
+                return new CircularLayout<V, E>(graph);
+            } else
+            {
+                return null;
+            }
+        }
+    }
+
+        public LayoutTest(Class layout)  {
+            this.layoutClass = layout;
+            factory = new LayoutFactory();
+        }
+    Class layoutClass;
+    LayoutFactory factory;
+
 
     @Test
     public void testLayoutPairNonDestructivePass() throws Exception {
@@ -33,7 +73,9 @@ public class LayoutTest {
         graph.addEdge("ab", a, b, EdgeType.DIRECTED);
         graph.addEdge("ba",b,a, EdgeType.DIRECTED);
 
-        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
+//        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
+        Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
+
         layout.layout();
 
         //What is this testing
@@ -47,7 +89,9 @@ public class LayoutTest {
         LayoutNode a = new LayoutNode("root", 10, 10, 10);
         graph.addVertex(a);
 
-        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
+//        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
+        Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
+
         layout.layout(a);
 
         Point2D transform = layout.transform(a);
@@ -61,7 +105,9 @@ public class LayoutTest {
         LayoutNode a = new LayoutNode("root", 10, 10, 10);
         graph.addVertex(a);
 
-        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
+//        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
+        Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
+
         layout.layout(a);
         layout.setSize(new Dimension(500,500));
         //layout.layout();
@@ -77,7 +123,9 @@ public class LayoutTest {
         LayoutNode a = new LayoutNode("root", 10, 10, 10);
         graph.addVertex(a);
 
-        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
+//        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
+        Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
+
         layout.layout(a);
         layout.setSize(new Dimension(500,500));
         layout.layout();
@@ -98,7 +146,9 @@ public class LayoutTest {
         graph.addVertex(b);
         graph.addVertex(c);
 
-        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
+//        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
+        Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
+
         layout.setLocation(a, new Point2D.Double(10,10));
         layout.setLocation(b, new Point2D.Double(0,0));
         layout.setLocation(c, new Point2D.Double(1000, 1000));
