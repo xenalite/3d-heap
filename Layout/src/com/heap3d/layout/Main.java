@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class Main {
+class Main {
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Running Layout");
