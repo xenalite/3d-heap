@@ -33,6 +33,9 @@ public class DebuggedProcess {
     private Map<String, Entry<Vector<String>, Vector<String>>> _cachedPoints;
     private ThreadReference _threadRef;
 
+    private Set<Node> allHeapNodes = new HashSet<>();
+    private Stack<StackNode> stackNodes = new Stack<>();
+
     public DebuggedProcess(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus) {
         _definition = definition;
         _provider = provider;
@@ -166,17 +169,27 @@ public class DebuggedProcess {
 
                 StackNode stackNode = null;
 
-                if(v instanceof ObjectReference){
+                if (v instanceof ObjectReference) {
                     ObjectReference objRef = (ObjectReference) v;
                     HeapNode heapNode = new HeapNode("NULL", objRef.uniqueID());
-                    heapNode = drillDown(heapNode, objRef, sb);
-                    stackNode = new StackNode(lv.name(), heapNode);
-                    allHeapNodes.add(heapNode);
-                }else{
+
+                    /* Check for cycles in the heap nodes. */
+                    if (!allHeapNodes.contains(heapNode)) {
+                        heapNode = drillDown(heapNode, objRef, sb);
+                        stackNode = new StackNode(lv.name(), heapNode);
+                        allHeapNodes.add(heapNode);
+                    }
+
+                } else {
                     stackNode = new StackNode(lv.name(), v);
                 }
 
                 stackNodes.push(stackNode);
+            }
+
+            System.out.println("============================");
+            for (Node node : allHeapNodes) {
+                System.out.println(node.getName());
             }
 
             List<Field> allFields = referenceType.fields();
@@ -214,9 +227,6 @@ public class DebuggedProcess {
             System.out.println("Exception");
         }
     }
-
-    List<Node> allHeapNodes = new ArrayList<Node>();
-    Stack<StackNode> stackNodes = new Stack<StackNode>();
 
     // TODO -- AND THIS -- ONLY WORKS FOR ONE LAYER
     private HeapNode drillDown(HeapNode parent, ObjectReference objectValue, StringBuilder sb) {

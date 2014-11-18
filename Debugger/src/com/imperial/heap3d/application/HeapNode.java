@@ -45,4 +45,27 @@ public class HeapNode extends Node{
         return builder.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof HeapNode)) {
+            return false;
+        }
+
+        HeapNode heapNode = (HeapNode) o;
+
+        if (id != heapNode.id) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
 }
