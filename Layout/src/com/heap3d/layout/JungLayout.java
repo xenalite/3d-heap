@@ -111,36 +111,50 @@ public abstract class JungLayout<V,E> implements Layout<V,E>, IterativeContext{
      */
     @Override
     public void setLocation(V v, Point2D location) {
-        layout.setLocation(v,location);
+        layout.setLocation(v,convertToCoord(location));
     }
 
     @Override
     public Point2D transform(V v) {
-        return layout.transform(v);
+        return convertFromCoord(layout.transform(v));
     }
 
 
     public void layout() {
+        layout(null);
+    }
+
+    public void layout(V root)
+    {
         //Initialize the graph
+        //Actually not sure if this is correct
         initialize();
-
-        double midx = getSize().width/2.0;
-        double midy = getSize().height/2.0;
-
         //Freeze the root node at 0,0
-//        if(rootNodeId != null)
-//        {
-//            if(nodes.containsKey(rootNodeId))
-//            {
-//                T root = nodes.get(rootNodeId);
-//
-//                layout.setLocation(root, midx, midy);
-//                layout.lock(root, true);
-//            }
-//        }
+        if(root != null)
+        {
+            if(getGraph().containsVertex(root))
+            {
+                setLocation(root, new Point2D.Double(0,0));
+                lock(root, true);
+            }
+        }
 
         //run the layout
         run();
+    }
+
+    protected Point2D convertToCoord(Point2D location)
+    {
+        double midx = getSize().width/2.0;
+        double midy = getSize().height/2.0;
+        return new Point2D.Double(location.getX()+midx, location.getY()+midy);
+    }
+
+    protected Point2D convertFromCoord(Point2D location)
+    {
+        double midx = getSize().width/2.0;
+        double midy = getSize().height/2.0;
+        return new Point2D.Double(location.getX()-midx, location.getY()-midy);
     }
 
     protected abstract void run();

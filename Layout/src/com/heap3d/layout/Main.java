@@ -4,7 +4,12 @@ package com.heap3d.layout;
 import com.heap3d.*;
 import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.visualization.VisualizationImageServer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +17,7 @@ import java.util.Random;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         System.out.println("Running Layout");
 //        LayoutService layout = new SpringBasedLayout();
 //        LayoutService layout = new IterativeSpringBasedLayout();
@@ -22,9 +27,12 @@ public class Main {
         Map<String, LayoutNode> g = randomGraph(100, 0.0f);
         Graph<LayoutNode,String> graph = new GraphImpl<LayoutNode, String>();
         //Add all the nodes to the graph as keys
+        LayoutNode root = null;
         for(LayoutNode n : g.values())
         {
             graph.addVertex(n);
+            if(root != null)
+                root = n;
         }
 
         //Add all the edges
@@ -39,20 +47,33 @@ public class Main {
         }
 
         Layout<LayoutNode,String> layout = new FRLayout<LayoutNode,String>(graph);
-        layout.setGraph(graph);
-
         layout.layout();
 
+        VisualizationImageServer vs =
+                new VisualizationImageServer(
+                        layout, new Dimension(1000, 1000));
 
-//        float maxDistance = 0;
-//        for (LayoutNode n : graph.getVertices()) {
-//            float x = graph.;
-//            float y = n.y();
-//            System.out.println(String.format("Node: %s at (%f,%f)", n.getId(), x, y));
-//            maxDistance = Math.max(x * x + y * y, maxDistance);
-//
+        JFrame frame = new JFrame();
+        frame.getContentPane().add(vs);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+
+//        for (int i = 1; i < 10; i++) {
+//            Thread.sleep(1000);
+//            layout.setSize(new Dimension(1000+(50*i), 1000+(50*i)));
+//            System.out.println(layout.transform(root).getX());
 //        }
-//        System.out.println("Max distance = " + (Math.sqrt(maxDistance)));
+
+        float maxDistance = 0;
+        for (LayoutNode n : graph.getVertices()) {
+            float x = (float)layout.transform(n).getX();
+            float y = (float)layout.transform(n).getY();
+            System.out.println(String.format("Node: %s at (%f,%f)", n.getId(), x, y));
+            maxDistance = Math.max(x * x + y * y, maxDistance);
+
+        }
+        System.out.println("Max distance = " + (Math.sqrt(maxDistance)));
 
     }
 

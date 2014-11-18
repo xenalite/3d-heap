@@ -1,6 +1,5 @@
 package com.heap3d.layout;
 
-import com.heap3d.Node;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
