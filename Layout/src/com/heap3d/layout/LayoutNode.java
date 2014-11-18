@@ -1,17 +1,15 @@
 package com.heap3d.layout;
 
-import com.heap3d.Node;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class LayoutNode implements Node, Spatial {
+class LayoutNode  {
 
     private float x;
     private float y;
     private float z;
     private String id;
-    List<Node> children = new ArrayList<Node>();
+    List<LayoutNode> children = new ArrayList<LayoutNode>();
 
     public LayoutNode(String id, float x, float y, float z)
     {
@@ -21,31 +19,14 @@ public class LayoutNode implements Node, Spatial {
         this.z = z;
     }
 
-    @Override
     public String getId() {
         return id;
     }
 
-    @Override
-    public List<Node> getChildren() {
+    public List<LayoutNode> getChildren() {
         return children;
     }
 
-
-    @Override
-    public float x() {
-        return x;
-    }
-
-    @Override
-    public float y() {
-        return y;
-    }
-
-    @Override
-    public float z() {
-        return z;
-    }
 
 
     @Override
@@ -69,19 +50,5 @@ public class LayoutNode implements Node, Spatial {
         return id + " (" + x+","+y+","+z+")";
     }
 
-    @Override
-    public void setX(float v) {
-        this.x = v;
-    }
-
-    @Override
-    public void setY(float v) {
-        this.y=v;
-    }
-
-    @Override
-    public void setZ(float v) {
-        this.z=v;
-    }
 }
 

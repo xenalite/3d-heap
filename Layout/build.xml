@@ -57,8 +57,9 @@
     <target name="test" depends="compile">
         <mkdir dir="${reports.dir}"/>
 
-        <junit printsummary="yes" fork="true" haltonfailure="yes">
 
+        <junit printsummary="yes" fork="true" haltonfailure="yes">
+            <formatter type="plain" usefile="false" /> <!-- to screen -->
             <classpath refid="junit.class.path" />
             <classpath>
                 <pathelement location="${build.test.dir}"/>

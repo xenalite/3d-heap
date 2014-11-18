@@ -1,29 +1,23 @@
 package com.heap3d;
 
 import com.graphics.RenderEngine;
-import com.graphics.shapes.Colour;
-import com.graphics.shapes.Cube;
-import com.heap3d.layout.LayoutNode;
-import com.heap3d.layout.LayoutService;
+import com.graphics.shapes.Shape;
+import edu.uci.ics.jung.graph.util.EdgeType;
 
 
 import java.util.*;
 
 public class HeapGraph extends RenderEngine {
 
-    private Map<String, LayoutNode> allNodes = new HashMap<String, LayoutNode>();
-    private List<Map<String, LayoutNode>> levels = new ArrayList<Map<String, LayoutNode>>(100000);
-    private Map<String, Cube> cubes = new HashMap<String, Cube>();
+    private Set<HeapNode> allNodes = new HashSet<HeapNode>();
+    private Set<HeapGraphLevel> levels = new HashSet<HeapGraphLevel>();
 
     int currentLevel = 0;
 
     private Random rand;
 
-    private LayoutService layout;
-
-    public HeapGraph(LayoutService layout) {
+    public HeapGraph() {
         super("Heap Visualizer!!!", 1280, 720, false);
-        this.layout = layout;
         super.setBackgroundColour(0f, 0.1f, 0.2f, 1f);
         super.start();
 
@@ -32,32 +26,35 @@ public class HeapGraph extends RenderEngine {
     @Override
     protected void beforeLoop() {
         rand = new Random();
+        d = new Date();
     }
 
-    static float level = 0;
+    Date d;
+    static int level = 0;
 
     @Override
     protected void inLoop() {
-        if (currentLevel < 50) {
+        if (currentLevel < 100 && new Date().after(d)) {
 
             int numberOfNodes = (int) (Math.random() * 100);
-            Map<String, LayoutNode> graph = randomGraph(numberOfNodes, 0.1);
+            Map<String, HeapNode> graph = randomGraph(numberOfNodes, 0.1);
             addLevel(graph.values());
             interConnectLevels();
+            d = new Date(System.currentTimeMillis()+500);
         }
     }
 
-    private static Map<String, LayoutNode> randomGraph(int numberOfNodes, double edgeProbability)
+    private static Map<String, HeapNode> randomGraph(int numberOfNodes, double edgeProbability)
     {
-        Map<String, LayoutNode> nodes = new HashMap<String, LayoutNode>();
+        Map<String, HeapNode> nodes = new HashMap<String, HeapNode>();
 
-        LayoutNode root = new LayoutNode("0", 0f, 0f, 0f);
+        HeapNode root = new HeapNode("0");
         nodes.put("0", root);
-        LayoutNode prev = root;
+        HeapNode prev = root;
 
         for (int i = 1; i < numberOfNodes/2; i++) {
             String id = i +"";
-            LayoutNode newNode = new LayoutNode(id, 0f, 0f, 0f);
+            HeapNode newNode = new HeapNode(id);
             //Make the graph connected
             newNode.getChildren().add(prev);
             nodes.put(id, newNode);
@@ -67,17 +64,17 @@ public class HeapGraph extends RenderEngine {
 
         for (int i = numberOfNodes/2; i < numberOfNodes; i++) {
             String id = i +"";
-            LayoutNode newNode = new LayoutNode(id, 0f, 0f, 0f);
+            HeapNode newNode = new HeapNode(id);
             nodes.put(id,newNode);
             int randomNodeNumber = (int)(Math.random() * i);
-            LayoutNode randomNode = nodes.get(""+randomNodeNumber);
+            HeapNode randomNode = nodes.get(""+randomNodeNumber);
             randomNode.getChildren().add(newNode);
 
         }
 
         for (int i = 0; i < numberOfNodes; i++) {
             String id = i +"";
-            LayoutNode n = nodes.get(id);
+            HeapNode n = nodes.get(id);
 
 
 
@@ -85,7 +82,7 @@ public class HeapGraph extends RenderEngine {
             double probability = Math.random();
             if(probability <= edgeProbability)
             {
-                LayoutNode randomNode = nodes.get(""+randomNodeNumber);
+                HeapNode randomNode = nodes.get(""+randomNodeNumber);
                 n.getChildren().add(randomNode);
             }
         }
@@ -98,16 +95,16 @@ public class HeapGraph extends RenderEngine {
     {
         int connections = (int)(Math.random() * 5);
 
-        for (int i = 1; i < connections; i++) {
-            int l1 = (int)(Math.random() * currentLevel);
-            int l2 = (int)(Math.random() * currentLevel);
-            int r1 = (int)(Math.random() * levels.get(l1).size());
-            int r2 = (int)(Math.random() * levels.get(l2).size());
-
-            Cube c1 = cubes.get(r1+""+l1*100);
-            Cube c2 = cubes.get(r2+""+l2*100);
-            c1.addConnection(c2,null);
-        }
+//        for (int i = 1; i < connections; i++) {
+//            int l1 = (int)(Math.random() * currentLevel);
+//            int l2 = (int)(Math.random() * currentLevel);
+//            int r1 = (int)(Math.random() * levels.get(l1).size());
+//            int r2 = (int)(Math.random() * levels.get(l2).size());
+//
+//            Cube c1 = cubes.get(r1+""+l1*100);
+//            Cube c2 = cubes.get(r2+""+l2*100);
+//            c1.addConnection(c2,null);
+//        }
     }
 
     @Override
@@ -115,45 +112,43 @@ public class HeapGraph extends RenderEngine {
 
     }
 
-    public void addLevel(Collection<LayoutNode> nodes) {
-        HashMap<String, LayoutNode> levelGraph = new HashMap<String, LayoutNode>();
+    public void addLevel(Collection<HeapNode> nodes) {
+        HeapGraphLevel levelGraph = new HeapGraphLevel(currentLevel);
         levels.add(levelGraph);
 
-        for (LayoutNode n : nodes) {
-            allNodes.put(n.getId(), n);
-            levelGraph.put(n.getId(), n);
-        }
-        float r = (float) Math.random();
-        float g = (float) Math.random();
-        float b = (float) Math.random();
-
-        Colour color = new Colour(r, g, b);
-        float offset = r+g+b > 2 ? 0.7f : 1.3f;
-        Colour linecolor = new Colour(r*offset, g*offset, b*offset);
-
-        layout.layout(levelGraph);
-        for (LayoutNode n : levelGraph.values()) {
-            float x = n.x() / 10;
-            float y = n.y() / 10;
-            Cube c = new Cube(x - 10, y - 50, level, 0, 0, 0, 1, color);
-            cubes.put(n.getId()+currentLevel*100, c);
-            addEntityTo3DSpace(c);
+        for (HeapNode n : nodes) {
+            allNodes.add(n);
+            levelGraph.buildNode(n, this);
         }
 
-        for (LayoutNode n : levelGraph.values()) {
-            List<Node> children = n.getChildren();
-            for (int i = 0; i < children.size(); i++) {
-                Node child = children.get(i);
-                Cube c1 = cubes.get(n.getId()+currentLevel*100);
-                Cube c2 = cubes.get(child.getId()+currentLevel*100);
-                c1.addConnection(c2,linecolor);
+        int edgeCount = 0;
+        for (HeapNode n : levelGraph.getVertices()) {
+            Set<HeapNode> children = n.getChildren();
+            for(HeapNode child : children)
+            {
+                levelGraph.addEdge(""+edgeCount++, n, child, EdgeType.DIRECTED );
             }
         }
 
-        level += 15;
+        levelGraph.layout.layout();
+        for (HeapNode n : nodes) {
+            n.updatePosition();
+        }
+
+        for (HeapNode n : nodes) {
+            Collection<String> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
+            for(String edge : outEdges)
+            {
+                HeapNode child = levelGraph.layout.getGraph().getOpposite(n,edge);
+                n.connectTo(child);
+            }
+        }
 
         currentLevel++;
     }
 
-
+    @Override
+    public void addEntityTo3DSpace(Shape shape) {
+        super.addEntityTo3DSpace(shape);
+    }
 }
