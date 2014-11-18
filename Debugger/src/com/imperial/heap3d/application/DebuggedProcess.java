@@ -166,25 +166,7 @@ public class DebuggedProcess {
                 LocalVariable lv = entry.getKey();
                 Value v = entry.getValue();
                 sb.append(String.format("%s (%s) = %s\n", lv.name(), lv.typeName(), v));
-
-                StackNode stackNode = null;
-
-                if (v instanceof ObjectReference) {
-                    ObjectReference objRef = (ObjectReference) v;
-                    HeapNode heapNode = new HeapNode("NULL", objRef.uniqueID());
-
-                    /* Check for cycles in the heap nodes. */
-                    if (!allHeapNodes.contains(heapNode)) {
-                        heapNode = drillDown(heapNode, objRef, sb);
-                        stackNode = new StackNode(lv.name(), heapNode);
-                        allHeapNodes.add(heapNode);
-                    }
-
-                } else {
-                    stackNode = new StackNode(lv.name(), v);
-                }
-
-                stackNodes.push(stackNode);
+                walkHeap(lv.name(), v, sb);
             }
 
             System.out.println("============================");
@@ -202,8 +184,7 @@ public class DebuggedProcess {
                     Value v = entry.getValue();
                     String typeName = (f.isStatic()) ? "static " + f.typeName() : f.typeName();
                     sb.append(String.format("%s (%s) = %s\n", f.name(), typeName, v));
-
-                    //drillDown(null, v, sb);
+                    walkHeap(f.name(), v, sb);
                 }
             }
             else {
@@ -217,8 +198,7 @@ public class DebuggedProcess {
                     Field f = entry.getKey();
                     Value v = entry.getValue();
                     sb.append(String.format("%s (%s) = %s\n", f.name(), f.typeName(), v));
-
-                   // drillDown(null, v, sb);
+                    walkHeap(f.name(), v, sb);
                 }
             }
             _eventBus.post(new ProcessEvent(DEBUG_MSG, sb.toString()));
@@ -228,19 +208,41 @@ public class DebuggedProcess {
         }
     }
 
-    // TODO -- AND THIS -- ONLY WORKS FOR ONE LAYER
-    private HeapNode drillDown(HeapNode parent, ObjectReference objectValue, StringBuilder sb) {
-        /*
-        if(value instanceof ArrayReference) {
-            ArrayReference arrayValue = (ArrayReference) value;
-            List<Value> arrayValues = arrayValue.getValues();
-            int i = 0;
-            for(Value valueEntry : arrayValues) {
-                sb.append(String.format("\t [%d] (%s) = %s\n", i, valueEntry.type().name(), value));
-                ++i;
+    private void walkHeap(String name, Value v, StringBuilder sb){
+    	
+        StackNode stackNode = null;
+        
+        //TODO I think this is wrong... Task in Sonic for this
+        if (v instanceof ArrayReference){
+        	ArrayReference arrayRef = (ArrayReference) v;
+        	HeapNode heapNode = new HeapNode("NULL", arrayRef.uniqueID());
+        	
+        	 /* Check for cycles in the heap nodes. */
+            if (!allHeapNodes.contains(heapNode)) {
+                heapNode = drillDownArrayReference(heapNode, arrayRef, sb);
+                stackNode = new StackNode(name, heapNode);
+                allHeapNodes.add(heapNode);
             }
+            
+        } else if (v instanceof ObjectReference) {
+            ObjectReference objRef = (ObjectReference) v;
+            HeapNode heapNode = new HeapNode("NULL", objRef.uniqueID());
+
+            /* Check for cycles in the heap nodes. */
+            if (!allHeapNodes.contains(heapNode)) {
+                heapNode = drillDownObjectReference(heapNode, objRef, sb);
+                stackNode = new StackNode(name, heapNode);
+                allHeapNodes.add(heapNode);
+            }
+
+        } else {
+            stackNode = new StackNode(name, v);
         }
-        */
+
+        stackNodes.push(stackNode);
+    }
+    
+    private HeapNode drillDownObjectReference(HeapNode parent, ObjectReference objectValue, StringBuilder sb) {
 
         ReferenceType referenceType = objectValue.referenceType();
         List<Field> fields = referenceType.fields();
@@ -255,15 +257,36 @@ public class DebuggedProcess {
             if(v instanceof ObjectReference){
                 ObjectReference objRef = (ObjectReference) v;
                 HeapNode childNode = new HeapNode(f.name(), objRef.uniqueID());
-                childNode = drillDown(childNode, objRef, sb);
+                childNode = drillDownObjectReference(childNode, objRef, sb);
                 allHeapNodes.add(childNode);
                 parent.addHeapNodeRef(childNode);
             }else{
-                // Its a primitive or a collection (assume primitive for now)
+            	// Its a primitive or a collection (i,e, ArrayRef)
+                // TODO :: for ArrayRef
                 parent.setChildPrimitive(f.name(), v);
             }
         }
         return parent;
+    }
+
+    private HeapNode drillDownArrayReference(HeapNode parent, ArrayReference arrayValue, StringBuilder sb) {
+
+    	List<Value> arrayValues = arrayValue.getValues();
+    	int i = 0;
+    	for(Value valueEntry : arrayValues) {
+    		sb.append(String.format("\t [%d] (%s) = %s\n", i, valueEntry.type().name(), arrayValue));
+    		++i;
+    		if(valueEntry instanceof ObjectReference){
+    			System.err.println("here--------------");
+                 ObjectReference objRef = (ObjectReference) valueEntry;
+                 HeapNode childNode = new HeapNode(valueEntry.type().name(), objRef.uniqueID());
+                 childNode = drillDownObjectReference(childNode, objRef, sb);
+                 allHeapNodes.add(childNode);
+                 parent.addHeapNodeRef(childNode);
+             }
+    	}
+
+    	return parent;
     }
 
     private void removeStepRequests() {
