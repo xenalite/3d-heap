@@ -1,25 +1,15 @@
 package com.graphics.rendering;
 
-import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Map;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-
 import com.graphics.entities.Entity;
-import com.graphics.models.Loader;
 import com.graphics.models.RawModel;
-import com.graphics.models.TexturedModel;
 import com.graphics.shaders.StaticShader;
-import com.graphics.textures.ModelTexture;
 import com.graphics.utils.Maths;
 
 public class Renderer {
@@ -30,6 +20,7 @@ public class Renderer {
 	
 	private Matrix4f projectionMatrix;
 	private StaticShader shader;
+	private float damper = 10, refelectivity = 0.2f;
 	
 	public Renderer(StaticShader shader){
 		
@@ -46,7 +37,6 @@ public class Renderer {
 		
 		for(RawModel model : entities.keySet()){
 			
-	//		prepareTextureModel(model);
 			prepareModel(model);
 			List<Entity> batch = entities.get(model);
 			for(Entity entity : batch){
@@ -58,34 +48,12 @@ public class Renderer {
 		}
 	}
 	
-	/*
-	private void prepareTextureModel(TexturedModel model){
-		RawModel rawModel = model.getRawModel();
-		GL30.glBindVertexArray(rawModel.getVaoID());
-		
-		GL20.glEnableVertexAttribArray(0);	// points
-		GL20.glEnableVertexAttribArray(1);	// texture coords
-		GL20.glEnableVertexAttribArray(2);	// normals
-
-		ModelTexture texture = model.getTexture();
-		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureID());
-		
-	}
-	*/
-	
 	private void prepareModel(RawModel rawModel){
 		GL30.glBindVertexArray(rawModel.getVaoID());
 		GL20.glEnableVertexAttribArray(0);	// points
 		GL20.glEnableVertexAttribArray(1);	// colours
 		GL20.glEnableVertexAttribArray(2);	// normals
-		shader.loadShineVariables(10, 1);
-		//ModelTexture texture = model.getTexture();
-		//shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
-		//GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		//GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureID());
-		
+		shader.loadShineVariables(damper, refelectivity);
 	}
 	
 	private void unbindRawModel(){
@@ -115,5 +83,9 @@ public class Renderer {
 		projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
 		projectionMatrix.m33 = 0;
 	}
-
+	
+	public void setLightVars(float damper, float refelectivity) {
+		this.damper = damper;
+		this.refelectivity = refelectivity;
+	}
 }

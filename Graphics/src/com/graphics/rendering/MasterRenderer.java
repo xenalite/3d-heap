@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.lwjgl.opengl.GL11;
-
 import com.graphics.entities.Camera;
 import com.graphics.entities.Entity;
 import com.graphics.entities.Light;
 import com.graphics.models.RawModel;
-import com.graphics.models.TexturedModel;
 import com.graphics.shaders.StaticShader;
 
 public class MasterRenderer {
@@ -79,6 +76,10 @@ public class MasterRenderer {
 
 	public void setBackA(float backA) {
 		this.backA = backA;
+	}
+
+	public void setLightVars(float damper, float refelectivity) {
+		renderer.setLightVars(damper, refelectivity);
 	}
 	
 }

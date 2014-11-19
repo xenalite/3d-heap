@@ -4,9 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
+
 import com.graphics.RenderEngine;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Cube;
+import com.graphics.shapes.Line;
 
 public class PerfTest extends RenderEngine{
 
@@ -31,7 +33,7 @@ public class PerfTest extends RenderEngine{
 		rand = new Random();
 		c = new Colour(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
 		cubesStringBuilder = new StringBuilder();
-		System.out.print("Starting cubes perf test");
+		System.out.println("\n### Starting cubes perf test ###\n");
 	}
 
 	private boolean finishedCubeTest, finishedLineTest;
@@ -47,24 +49,23 @@ public class PerfTest extends RenderEngine{
 			
 			cubeTest(x, y, z);
 			
-			if(getNumberOfEntities() >= MAX_CUBES){
+			if(getNumberOfShapes() >= MAX_CUBES){
 				finishedCubeTest = true;
-				clearEntitiesFrom3DSpace();
+				clearShapesFrom3DSpace();
 				writeResults("cubes");
 				cubesStringBuilder = new StringBuilder();
-				System.out.print("Starting lines perf test");
+				System.out.println("\n### Starting lines perf test ###\n");
 				centre = new Cube(0, 0, -150, rand.nextFloat()*180f, rand.nextFloat()*180f, 0f, 1f, c);
-				addEntityTo3DSpace(centre);
+				addShapeTo3DSpace(centre);
 			}
 			
 		}else if(!finishedLineTest){
 
 			lineTest(x, y, z);
 			
-			if(getNumberOfEntities() >= MAX_CUBES){
+			if(getNumberOfShapes() >= MAX_CUBES){
 				finishedLineTest = true;
 				writeResults("lines");
-				
 			}
 			
 		}else{
@@ -95,11 +96,11 @@ public class PerfTest extends RenderEngine{
 	
 	private void cubeTest(float x, float y, float z){
 		
-		addEntityTo3DSpace(new Cube(x, y, z, rand.nextFloat()*180f, rand.nextFloat()*180f, 0f, 1f, c));
+		addShapeTo3DSpace(new Cube(x, y, z, rand.nextFloat()*180f, rand.nextFloat()*180f, 0f, 1f, c));
 		
-		String output = getNumberOfEntities() + " " + getFPS() + "\n";
+		String output = getNumberOfShapes() + " " + getFPS() + "\n";
 		
-		if(getNumberOfEntities() % 50 == 0)
+		if(getNumberOfShapes() % 50 == 0)
 			System.out.print(output);
 		
 		cubesStringBuilder.append(output);
@@ -108,13 +109,14 @@ public class PerfTest extends RenderEngine{
 	private void lineTest(float x, float y, float z){
 		
 		Cube cube = new Cube(x, y, z, rand.nextFloat()*180f, rand.nextFloat()*180f, 0f, 1f, c);
-		addEntityTo3DSpace(cube);
+		addShapeTo3DSpace(cube);
 		
-		centre.addConnection(cube, null);
+		Line line = new Line(centre, cube, Colour.GREEN);
+		addShapeTo3DSpace(line);
 		
-		String output = getNumberOfEntities() + " " + getFPS() + "\n";
+		String output = getNumberOfShapes() + " " + getFPS() + "\n";
 		
-		if(getNumberOfEntities() % 50 == 0)
+		if(getNumberOfShapes() % 100 == 1)
 			System.out.print(output);
 		
 		cubesStringBuilder.append(output);

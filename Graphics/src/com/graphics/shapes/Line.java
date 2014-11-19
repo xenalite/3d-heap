@@ -9,11 +9,21 @@ import com.graphics.models.RawModel;
 
 public class Line extends Shape{
 
-	public Line(Entity e1, Entity e2, Colour colour){
+	public Line(Cube cubeA, Cube cubeB, Colour colour){
+		
+		super(colour);
+		
+		Entity e1 = cubeA.getEntity();
+		Entity e2 = cubeB.getEntity();
 		
 		float[] vertices = new float[]{			
 				e1.getPosition().x, e1.getPosition().y, e1.getPosition().z,
 				e2.getPosition().x, e2.getPosition().y, e2.getPosition().z
+		};
+		
+		float[] normals = new float[]{			
+				0f, 0f, 0f,	
+				0f, 0f, 0f,
 		};
 		
 		int[] indices = new int[]{0, 1};
@@ -26,9 +36,7 @@ public class Line extends Shape{
 			colourValues[i+2] = colour.getB();
 		}
 		
-
-		RawModel model = Loader.getInstance().loadToVAO(vertices, colourValues, null, indices);
-		
+		RawModel model = Loader.getInstance().loadToVAO(vertices, colourValues, normals, indices);
 		entity = new Entity(model, new Vector3f(0,0,0), 0, 0, 0, 1, GL11.GL_LINES);
 	}
 	

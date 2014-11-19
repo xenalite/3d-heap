@@ -1,17 +1,13 @@
 package com.graphics;
 
-import java.awt.color.CMMException;
 import java.util.ArrayList;
 import java.util.List;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
-
 import com.graphics.entities.Camera;
 import com.graphics.entities.Light;
 import com.graphics.rendering.MasterRenderer;
-import com.graphics.shapes.Cube;
-import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
 
 public abstract class RenderEngine {
@@ -20,7 +16,7 @@ public abstract class RenderEngine {
 	private Light sun = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 	private long lastFps;
 	private int fpsInc, fps;
-	private List<Shape> entities = new ArrayList<Shape>();
+	private List<Shape> shapes = new ArrayList<Shape>();
 	private boolean breakFromLoop;
 	
 	public RenderEngine(String title, int width, int height, boolean resizable){
@@ -28,8 +24,9 @@ public abstract class RenderEngine {
 		renderer = new MasterRenderer();
 	}
 	
-	protected void setMainLight(float x, float y, float z, float r, float g, float b){
+	protected void setMainLight(float x, float y, float z, float r, float g, float b, float damper, float refelectivity){
 		sun = new Light(new Vector3f(x, y, z), new Vector3f(r, g, b));
+		renderer.setLightVars(damper, refelectivity);
 	}
 	
 	protected void start(){
@@ -46,16 +43,13 @@ public abstract class RenderEngine {
 			
 			inLoop();
 			
-			for(Shape e : entities){
+			for(Shape e : shapes){
 				renderer.processEntity(e.getEntity());
-				for(Line c : ((Cube)e).getLinks().values())
-					renderer.processEntity(c.getEntity());
 			}
 			
 			renderer.render(sun, camera);
 			DisplayManager.updateDisplay();
 			updateFPS();
-			//System.out.println(camera.);
 		}
 		
 		afterLoop();
@@ -74,25 +68,24 @@ public abstract class RenderEngine {
 		breakFromLoop = true;
 	}
 	
-	protected void addEntityTo3DSpace(Shape e){
-		entities.add(e);
+	protected void addShapeTo3DSpace(Shape e){
+		shapes.add(e);
 	}
 	
-	protected void removeEntityFrom3DSpace(Shape e){
-		entities.remove(e);
+	protected void removeShapeFrom3DSpace(Shape e){
+		shapes.remove(e);
 	}
 	
-	protected void clearEntitiesFrom3DSpace(){
-		entities.clear();
+	protected void clearShapesFrom3DSpace(){
+		shapes.clear();
 	}
 	
-	protected int getNumberOfEntities() {
-		return entities.size();
+	protected int getNumberOfShapes() {
+		return shapes.size();
 	}
 	
 	private void cleanUp(){
 		renderer.cleanUp();
-		//EntityBuilder.getBuilder().destroyBuilder();
 		DisplayManager.closeDisplay();
 	}
 	
