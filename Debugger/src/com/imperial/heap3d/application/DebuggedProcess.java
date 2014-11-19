@@ -4,24 +4,21 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
+import com.imperial.heap3d.snapshot.*;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
 
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import static com.imperial.heap3d.application.ProcessState.*;
 import static com.imperial.heap3d.events.ProcessEventType.DEBUG_MSG;
 import static java.util.Map.Entry;
 
-/**
- * Created by oskar on 11/11/14.
- */
 public class DebuggedProcess {
 
     private StartDefinition _definition;
@@ -33,15 +30,14 @@ public class DebuggedProcess {
     private EventBus _eventBus;
 
     private ThreadReference _threadRef;
-
-    private Set<Node> allHeapNodes = new HashSet<>();
-    private Stack<StackNode> stackNodes = new Stack<>();
+    private Snapshot _snapshot;
 
     public DebuggedProcess(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus) {
         _definition = definition;
         _provider = provider;
         _eventBus = eventBus;
         _eventBus.register(this);
+        _snapshot = new Snapshot();
     }
 
     public void dispose() {
@@ -134,147 +130,133 @@ public class DebuggedProcess {
         return true;
     }
 
-    // -- TODO REFACTOR THIS INTO A SEPARATE INTERFACE
-    private static final String delim = "------\n";
-    private void analyseVariables(LocatableEvent e) {
-        stackNodes.clear();
-        allHeapNodes.clear();
+    private void analyseVariables(LocatableEvent event) {
+        _snapshot.clear();
+
         try {
-            StringBuilder sb = new StringBuilder();
-            ThreadReference threadReference = e.thread();
-            Location location = e.location();
-            ReferenceType referenceType = location.declaringType();
-            StackFrame stackFrame = threadReference.frame(0);
-            ObjectReference thisObject = stackFrame.thisObject();
+            StackFrame stackFrame = event.thread().frame(0);
+            processLocalVariables(stackFrame);
 
-            List<LocalVariable> localVariables = stackFrame.visibleVariables();
-            Map<LocalVariable, Value> valuesOfLocalVars = stackFrame.getValues(localVariables);
-            sb.append(delim);
-            sb.append("Local variables:\n");
-            for(Entry<LocalVariable, Value> entry : valuesOfLocalVars.entrySet()) {
-                LocalVariable lv = entry.getKey();
-                Value v = entry.getValue();
-                sb.append(String.format("%s (%s) = %s\n", lv.name(), lv.typeName(), v));
-                walkHeap(lv.name(), v, sb);
-            }
-
-            System.out.println("============================");
-            for (Node node : allHeapNodes) {
-                System.out.println(node.getName());
-            }
-
-            List<Field> allFields = referenceType.fields();
-            if(thisObject != null) {
-                Map<Field, Value> valuesOfFields = thisObject.getValues(allFields);
-                sb.append(delim);
-                sb.append("Instance variables:\n");
-                for(Entry<Field, Value> entry : valuesOfFields.entrySet()) {
-                    Field f = entry.getKey();
-                    Value v = entry.getValue();
-                    String typeName = (f.isStatic()) ? "static " + f.typeName() : f.typeName();
-                    sb.append(String.format("%s (%s) = %s\n", f.name(), typeName, v));
-                    walkHeap(f.name(), v, sb);
-                }
-            }
-            else {
-                List<Field> staticFields = allFields.stream().filter(TypeComponent::isStatic)
-                        .collect(Collectors.toCollection(LinkedList::new));
-
-                Map<Field, Value> valuesOfFields = referenceType.getValues(staticFields);
-                sb.append(delim);
-                sb.append("Static variables:\n");
-                for(Entry<Field, Value> entry : valuesOfFields.entrySet()) {
-                    Field f = entry.getKey();
-                    Value v = entry.getValue();
-                    sb.append(String.format("%s (%s) = %s\n", f.name(), f.typeName(), v));
-                    walkHeap(f.name(), v, sb);
-                }
-            }
-            _eventBus.post(new ProcessEvent(DEBUG_MSG, sb.toString()));
+            // TODO: Write toString() for Snapshot and pass it in here.
+            //_eventBus.post(new ProcessEvent(DEBUG_MSG, sb.toString()));
         }
         catch(Exception ex) {
             System.out.println("Exception");
         }
     }
 
-    private void walkHeap(String name, Value v, StringBuilder sb){
-    	
-        StackNode stackNode = null;
-        
-        //TODO I think this is wrong... Task in Sonic for this
-        if (v instanceof ArrayReference){
-        	ArrayReference arrayRef = (ArrayReference) v;
-        	HeapNode heapNode = new HeapNode("NULL", arrayRef.uniqueID());
-        	
-        	 /* Check for cycles in the heap nodes. */
-            if (!allHeapNodes.contains(heapNode)) {
-                heapNode = drillDownArrayReference(heapNode, arrayRef, sb);
-                stackNode = new StackNode(name, heapNode);
-                allHeapNodes.add(heapNode);
-            }
-            
-        } else if (v instanceof ObjectReference) {
-            ObjectReference objRef = (ObjectReference) v;
-            HeapNode heapNode = new HeapNode("NULL", objRef.uniqueID());
+    private void processLocalVariables(StackFrame stackFrame) throws AbsentInformationException {
 
-            /* Check for cycles in the heap nodes. */
-            if (!allHeapNodes.contains(heapNode)) {
-                heapNode = drillDownObjectReference(heapNode, objRef, sb);
-                stackNode = new StackNode(name, heapNode);
-                allHeapNodes.add(heapNode);
-            }
+        ObjectReference thisObject = stackFrame.thisObject();
 
+        if (thisObject != null) {
+            String name = "this";
+            _snapshot.addStackNode(new StackNode(name, drillDown(name, thisObject)));
+        }
+
+        for (Entry<LocalVariable, Value> entry : stackFrame.getValues(stackFrame.visibleVariables()).entrySet()) {
+            String name = entry.getKey().name();
+            Value value = entry.getValue();
+
+            if (value instanceof PrimitiveValue) {
+                _snapshot.addStackNode(new StackNode(name, processValue(value)));
+            } else {
+                _snapshot.addStackNode(new StackNode(name, drillDown(name, value)));
+            }
+        }
+    }
+
+    private static Node drillDown(String name, Value value) {
+        ObjectReference reference = (ObjectReference) value;
+        long id = reference.uniqueID();
+
+        Node node;
+        if (reference instanceof ArrayReference) {
+            ArrayReference arrayReference = (ArrayReference) reference;
+            node = new ArrayNode(name, id);
+            List<Value> arrayValues = arrayReference.getValues();
+            for (int index = 0; index < arrayValues.size(); ++index) {
+                Value arrayValue = arrayValues.get(index);
+                addArrayNodeValue((ArrayNode) node, index, arrayValue);
+            }
+        } else if (reference instanceof StringReference) {
+            StringReference stringReference = (StringReference) reference;
+            node = new StringNode(name, id, stringReference.toString());
         } else {
-            stackNode = new StackNode(name, v);
-        }
-
-        stackNodes.push(stackNode);
-    }
-    
-    private HeapNode drillDownObjectReference(HeapNode parent, ObjectReference objectValue, StringBuilder sb) {
-
-        ReferenceType referenceType = objectValue.referenceType();
-        List<Field> fields = referenceType.fields();
-        Map<Field, Value> valuesOfFields = objectValue.getValues(fields);
-
-        for (Entry<Field, Value> entry : valuesOfFields.entrySet()) {
-            Field f = entry.getKey();
-            Value v = entry.getValue();
-            String typeName = (f.isStatic()) ? "static " + f.typeName() : f.typeName();
-            sb.append(String.format("\t %s (%s) = %s\n", f.name(), typeName, v));
-
-            if(v instanceof ObjectReference){
-                ObjectReference objRef = (ObjectReference) v;
-                HeapNode childNode = new HeapNode(f.name(), objRef.uniqueID());
-                childNode = drillDownObjectReference(childNode, objRef, sb);
-                allHeapNodes.add(childNode);
-                parent.addHeapNodeRef(childNode);
-            }else{
-            	// Its a primitive or a collection (i,e, ArrayRef)
-                // TODO :: for ArrayRef
-                parent.setChildPrimitive(f.name(), v);
+            node = new HeapNode(name, id);
+            for (Entry<Field, Value> entry : reference.getValues(reference.referenceType().allFields()).entrySet()) {
+                String fieldName = entry.getKey().name();
+                Value fieldValue = entry.getValue();
+                addHeapNodeValue((HeapNode) node, fieldName, fieldValue);
             }
         }
-        return parent;
+
+        return node;
     }
 
-    private HeapNode drillDownArrayReference(HeapNode parent, ArrayReference arrayValue, StringBuilder sb) {
+    private static void addArrayNodeValue(ArrayNode node, int index, Value value) {
+        if (value instanceof PrimitiveValue) {
+            node.addPrimitive(processValue(value));
+        } else if (value instanceof ArrayReference) {
+            node.addArray((ArrayNode) drillDown(arrayIndexToString(node.getName(), index), value));
+        } else if (value instanceof StringReference) {
+            node.addString((StringNode) drillDown(arrayIndexToString(node.getName(), index), value));
+        } else {
+            node.addReference((HeapNode) drillDown(arrayIndexToString(node.getName(), index), value));
+        }
+    }
 
-    	List<Value> arrayValues = arrayValue.getValues();
-    	int i = 0;
-    	for(Value valueEntry : arrayValues) {
-    		sb.append(String.format("\t [%d] (%s) = %s\n", i, valueEntry.type().name(), arrayValue));
-    		++i;
-    		if(valueEntry instanceof ObjectReference){
-    			System.err.println("here--------------");
-                 ObjectReference objRef = (ObjectReference) valueEntry;
-                 HeapNode childNode = new HeapNode(valueEntry.type().name(), objRef.uniqueID());
-                 childNode = drillDownObjectReference(childNode, objRef, sb);
-                 allHeapNodes.add(childNode);
-                 parent.addHeapNodeRef(childNode);
-             }
-    	}
-    	return parent;
+    private static String arrayIndexToString(String name, int index) {
+        return name + "[" + String.valueOf(index) + "]";
+    }
+
+    private static void addHeapNodeValue(HeapNode node, String name, Value value) {
+        if (value instanceof PrimitiveValue) {
+            node.addPrimitive(name, processValue(value));
+        } else if (value instanceof ArrayReference) {
+            node.addArray((ArrayNode) drillDown(name, value));
+        } else if (value instanceof StringReference) {
+            node.addString((StringNode) drillDown(name, value));
+        } else {
+            node.addReference((HeapNode) drillDown(name, value));
+        }
+    }
+
+    private static Object processValue(Value value) {
+        PrimitiveValue primitive = (PrimitiveValue) value;
+        if (primitive instanceof BooleanValue) {
+            return ((BooleanValue) primitive).value();
+        }
+
+        if (primitive instanceof ByteValue) {
+            return ((ByteValue) primitive).value();
+        }
+
+        if (primitive instanceof CharValue) {
+            return ((CharValue) primitive).value();
+        }
+
+        if (primitive instanceof DoubleValue) {
+            return ((DoubleValue) primitive).value();
+        }
+
+        if (primitive instanceof FloatValue) {
+            return ((FloatValue) primitive).value();
+        }
+
+        if (primitive instanceof IntegerValue) {
+            return ((IntegerValue) primitive).value();
+        }
+
+        if (primitive instanceof LongValue) {
+            return ((LongValue) primitive).value();
+        }
+
+        if (primitive instanceof ShortValue) {
+            return ((ShortValue) primitive).value();
+        }
+
+        return null;
     }
 
     private void removeStepRequests() {
