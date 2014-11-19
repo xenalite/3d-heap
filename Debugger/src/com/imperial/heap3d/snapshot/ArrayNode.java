@@ -3,19 +3,13 @@ package com.imperial.heap3d.snapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArrayNode extends Node {
+public class ArrayNode extends IDNode {
 
-    private long id;
     private List<Object> elements;
 
     public ArrayNode(String name, long id) {
-        super(name);
-        this.id = id;
+        super(name, id);
         this.elements = new ArrayList<>();
-    }
-
-    public long getId() {
-        return id;
     }
 
     public Object getElementAt(int index) {
