@@ -2,6 +2,7 @@
 *.class
 Graphics/build/*
 Graphics/bin/*
+Tests/GraphicsPerf/build/*
 out/
 Layout/build/*
 Layout/bin/*
@@ -13,6 +14,7 @@ HeapVisualizer/bin/*
 # Eclipse files
 .classpath
 .project
+.settings
 
 #IntelliJ files
 *.iml
