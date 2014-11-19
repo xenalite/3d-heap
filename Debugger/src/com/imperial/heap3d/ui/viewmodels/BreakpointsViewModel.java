@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
 import static com.imperial.heap3d.events.EventType.BREAKPOINT;
 import static com.imperial.heap3d.events.EventType.WATCHPOINT;
@@ -49,19 +48,6 @@ public class BreakpointsViewModel {
         _breakpoints = new SimpleObjectProperty<>(this, "", FXCollections.observableList(new ArrayList<>()));
         _watchpoints = new SimpleObjectProperty<>(this, "", FXCollections.observableList(new ArrayList<>()));
         _cachedElements = new Vector<>();
-
-        // TODO: REMOVE AFTER TESTING -- THIS IS FOR CONVENIENCE ONLY
-        _breakpointClass.set("test.Program");
-        _breakpointMethod.set("main");
-//        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
-
-        _breakpointClass.set("test.Program");
-        _breakpointMethod.set("method");
-//        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
-
-        _breakpointClass.set("test.Program");
-        _breakpointMethod.set("append");
-//        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
     }
 
     @Subscribe
@@ -150,16 +136,24 @@ public class BreakpointsViewModel {
     public void removeBreakpointAction(String selectedItem) {
         String[] values = selectedItem.split(DELIM);
         _breakpoints.getValue().remove(selectedItem);
-        _cachedElements = _cachedElements.stream().filter(ce -> Objects.equals(ce.className, values[0]) &&
-                Objects.equals(ce.argument, values[1]) &&
-                ce.type == BREAKPOINT).collect(Collectors.toCollection(Vector::new));
+        for (ControlEvent ce : _cachedElements)
+            if (Objects.equals(ce.className, values[0]) && Objects.equals(ce.argument, values[1]) &&
+                    ce.type == BREAKPOINT) {
+
+                _cachedElements.remove(ce);
+                return;
+            }
     }
 
     public void removeWatchpointAction(String selectedItem) {
         String[] values = selectedItem.split(DELIM);
         _watchpoints.getValue().remove(selectedItem);
-        _cachedElements = _cachedElements.stream().filter(ce -> Objects.equals(ce.className, values[0]) &&
-                Objects.equals(ce.argument, values[1]) &&
-                ce.type == WATCHPOINT).collect(Collectors.toCollection(Vector::new));
+        for(ControlEvent ce : _cachedElements)
+            if(Objects.equals(ce.className, values[0]) && Objects.equals(ce.argument, values[1]) &&
+                    ce.type == WATCHPOINT) {
+
+                _cachedElements.remove(ce);
+                return;
+            }
     }
 }
