@@ -1,13 +1,9 @@
 package com.graphics.shapes;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
-
 import com.graphics.entities.Entity;
 import com.graphics.models.Loader;
 import com.graphics.models.RawModel;
@@ -15,37 +11,37 @@ import com.graphics.models.RawModel;
 public class Cube extends Shape{
 	
 	private final float[] vertices = new float[]{			
-			//Back
+			// Back
 			-0.5f,0.5f,-0.5f,	
 			-0.5f,-0.5f,-0.5f,	
 			0.5f,-0.5f,-0.5f,	
 			0.5f,0.5f,-0.5f,		
 			
-			//Front
+			// Front
 			-0.5f,0.5f,0.5f,	
 			-0.5f,-0.5f,0.5f,	
 			0.5f,-0.5f,0.5f,	
 			0.5f,0.5f,0.5f,
 			
-			//Right
+			// Right
 			0.5f,0.5f,-0.5f,	
 			0.5f,-0.5f,-0.5f,	
 			0.5f,-0.5f,0.5f,	
 			0.5f,0.5f,0.5f,
 			
-			//Left
+			// Left
 			-0.5f,0.5f,-0.5f,	
 			-0.5f,-0.5f,-0.5f,	
 			-0.5f,-0.5f,0.5f,	
 			-0.5f,0.5f,0.5f,
 			
-			//Top
+			// Top
 			-0.5f,0.5f,0.5f,
 			-0.5f,0.5f,-0.5f,
 			0.5f,0.5f,-0.5f,
 			0.5f,0.5f,0.5f,
 			
-			//Bottom
+			// Bottom
 			-0.5f,-0.5f,0.5f,
 			-0.5f,-0.5f,-0.5f,
 			0.5f,-0.5f,-0.5f,
@@ -85,22 +81,22 @@ public class Cube extends Shape{
 	};
 	
 	private final int[] indices = new int[]{
-			//Back
+			// Back
 			0,3,1,	
 			3,2,1,	
-			//Front
+			// Front
 			4,5,7,
 			7,5,6,
-			//Right -- changed
+			// Right
 			8,11,9,
 			11,10,9,
-			//Left
+			// Left
 			12,13,15,
 			15,13,14,
-			//Top --changed
+			// Top
 			17,16,19,
 			19,18,17,
-			//Bottom
+			// Bottom
 			20,21,23,
 			23,21,22
 
@@ -110,11 +106,9 @@ public class Cube extends Shape{
 	
 	private static Map<Colour, RawModel> usedModels = new HashMap<Colour, RawModel>(); 
 	
-	private Map<Cube, Line> links = new HashMap<Cube, Line>();
-	
 	public Cube(float x, float y, float z, float rotX, float rotY, float rotZ, float scale, Colour colour){
 		
-		
+		super(colour);
 		RawModel m = usedModels.get(colour);
 		
 		if(m!=null){
@@ -135,24 +129,7 @@ public class Cube extends Shape{
 		entity = new Entity(model, new Vector3f(x, y, z), rotX, rotY, rotZ, scale, GL11.GL_TRIANGLES);
 	}
 
-	/**
-	 * Connect this cube to another with a line
-	 * @param cubeToLink The cub that will be linked to this cube
-	 * @param lineColour The colour of the line
-	 */
-	public void addConnection(Cube cubeToLink, Colour lineColour){
-		Line l = new Line(getEntity(), cubeToLink.getEntity(), lineColour==null?Colour.GREEN:lineColour);
-		links.put(cubeToLink, l);
-	}
-	
-	//public boolean removeConnection(Cube cubeToRemove){
-	//	return links.remove(cubeToRemove);
-	//}
-	
-	public Map<Cube, Line> getLinks(){
-		return links;
-	}
-	
+	/*
 	private Vector3f getNormal(Vector3f p1, Vector3f p2, Vector3f p3) {
 
 	    //Create normal vector we are going to output.
@@ -198,4 +175,5 @@ public class Cube extends Shape{
 		}
 		return normals;
 	}
+	*/
 }

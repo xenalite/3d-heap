@@ -12,6 +12,8 @@ public class RelayCommand implements ICommand {
     private Runnable _task;
 
     public RelayCommand(Runnable task) {
+        if(task == null)
+            throw new IllegalArgumentException("task");
         _task = task;
         _enabled = new SimpleBooleanProperty(this, "enabled", false);
     }

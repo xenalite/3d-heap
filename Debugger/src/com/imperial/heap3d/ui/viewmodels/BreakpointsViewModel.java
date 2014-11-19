@@ -37,6 +37,8 @@ public class BreakpointsViewModel {
     private boolean _cacheEnabled;
 
     public BreakpointsViewModel(EventBus eventBus) {
+        if(eventBus == null)
+            throw new IllegalArgumentException("eventBus");
         _eventBus = eventBus;
         _eventBus.register(this);
         _cacheEnabled = true;
@@ -51,15 +53,15 @@ public class BreakpointsViewModel {
         // TODO: REMOVE AFTER TESTING -- THIS IS FOR CONVENIENCE ONLY
         _breakpointClass.set("test.Program");
         _breakpointMethod.set("main");
-        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
+//        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
 
         _breakpointClass.set("test.Program");
         _breakpointMethod.set("method");
-        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
+//        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
 
         _breakpointClass.set("test.Program");
         _breakpointMethod.set("append");
-        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
+//        addElement(_breakpointClass, _breakpointMethod, _breakpoints.getValue(), BREAKPOINT);
     }
 
     @Subscribe
