@@ -18,7 +18,7 @@
 
     <target name="compile">
         <mkdir dir="${classes.dir}"/>
-        <javac includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+        <javac target="1.7" includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
         <copy todir="${classes.dir}">
     		<fileset dir="${resources.dir}" />
 		</copy>
