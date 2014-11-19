@@ -9,6 +9,7 @@ HeapVisualizer/build/*
 HeapVisualizer/bin/*
 */reports/*
 */bin/*
+build
 
 # Eclipse files
 .classpath

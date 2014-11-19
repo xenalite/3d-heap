@@ -21,6 +21,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        System.out.println(System.getProperty("user.dir"));
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../ui/views/MainWindow.fxml"));
         loader.setControllerFactory(new ControllerFactory(_typeRegistry.getInjector()));
         Parent root = loader.load();
