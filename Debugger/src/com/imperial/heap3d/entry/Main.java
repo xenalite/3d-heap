@@ -1,7 +1,6 @@
 package com.imperial.heap3d.entry;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.application.ControlEventHandler;
 import com.imperial.heap3d.events.ControlEvent;
 import com.imperial.heap3d.events.EventType;
 import com.imperial.heap3d.factories.ControllerFactory;
