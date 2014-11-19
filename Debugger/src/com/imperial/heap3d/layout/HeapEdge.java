@@ -21,7 +21,7 @@ public class HeapEdge {
         this.from = from;
         this.to = to;
         //TODO choose from's color?
-        line = new Line((Cube)from.getGeometry(), (Cube)to.getGeometry(), color); //TODO geometry should be encapsulated better
+        line = new Line((Cube)from.getGeometry(), (Cube)to.getGeometry(), Colour.GREEN); //TODO geometry should be encapsulated better
         graph.addShapeTo3DSpace(line);
     }
 	

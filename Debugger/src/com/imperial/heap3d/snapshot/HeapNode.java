@@ -42,6 +42,8 @@ public class HeapNode extends IDNode {
     	
     	Set<IDNode> nodes = new HashSet<IDNode>();
     	
+    	nodes.add(this);
+    	
     	for(HeapNode hNode : references){
     		nodes.add(hNode);
     		for(IDNode childHNode : hNode.walkHeap())

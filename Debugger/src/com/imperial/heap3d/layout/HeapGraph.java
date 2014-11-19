@@ -11,6 +11,7 @@ import com.imperial.heap3d.snapshot.HeapNode;
 import com.imperial.heap3d.snapshot.IDNode;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
+import com.sun.glass.ui.Window.Level;
 
 public class HeapGraph extends RenderEngine{
 
@@ -22,7 +23,7 @@ public class HeapGraph extends RenderEngine{
 
 	public HeapGraph(Set<StackNode> stackNodes) {
 		super("Heap Visualizer!!!", 1280, 720, false);
-		super.setBackgroundColour(0f, 0.1f, 0.2f, 1f);
+		super.setBackgroundColour(0f, 0f, 0f, 1f);
 		for(StackNode stackNode : stackNodes)
 			addLevel(stackNode);
 		super.start();
@@ -56,7 +57,9 @@ public class HeapGraph extends RenderEngine{
 		levelGraph.buildNode(stackNode, this);
 		
 		if(!stackNode.doesRefNode()){
-			// TODO::Then it is a primitive
+			levelGraph.layout.layout(stackNode);
+			stackNode.updatePosition();
+			currentLevel++;
 			return;
 		}
 		
@@ -77,24 +80,31 @@ public class HeapGraph extends RenderEngine{
 			
 		}
 	
-		levelGraph.layout.layout();
+		levelGraph.layout.layout(stackNode);
 		stackNode.updatePosition();
 		for (IDNode n : nodesOnThisLayer) {
 			n.updatePosition();
 		}
 
+		makeEdges(levelGraph, stackNode);
 		for (IDNode n : nodesOnThisLayer) {
-			Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
-			for(HeapEdge edge : outEdges){
-
-				Node child = levelGraph.layout.getGraph().getOpposite(n,edge);
-				if(child.getGeometry() != null){
-					edge.connect(n,child, levelGraph.linecolor, this);
-				}
-			}
+			makeEdges(levelGraph, n);
 		}
 
 		currentLevel++;
+	}
+	
+	
+	private void makeEdges(HeapGraphLevel levelGraph, Node n){
+		Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
+		for(HeapEdge edge : outEdges){
+
+			System.out.println("helo---------------");
+			Node child = levelGraph.layout.getGraph().getOpposite(n,edge);
+			if(child.getGeometry() != null){
+				edge.connect(n,child, levelGraph.linecolor, this);
+			}
+		}
 	}
 
 	@Override

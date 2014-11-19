@@ -76,7 +76,7 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 
 	public float getZ(Node n) {
 		return isRoot(n) ? levelOffset * id
-				: ((float) Math.random() * levelOffset) + id * levelOffset;
+				: /*((float) Math.random() * levelOffset)*/ + id * levelOffset;
 	}
 
 	public float getScale(Node n) {
@@ -84,7 +84,8 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 	}
 
 	public Boolean isRoot(Node n) {
-		return n.equals(root);
+		//TODO improve 
+		return n == root;
 	}
 
 	@Override

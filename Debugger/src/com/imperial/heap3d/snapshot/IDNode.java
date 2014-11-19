@@ -20,4 +20,28 @@ public abstract class IDNode extends Node{
 		return new HashSet<IDNode>();
 	}
 	
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof IDNode)) {
+            return false;
+        }
+
+        IDNode idNode = (IDNode) o;
+
+        if (id != idNode.getID()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
+	
 }
