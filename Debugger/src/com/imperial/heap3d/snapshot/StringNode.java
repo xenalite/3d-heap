@@ -1,13 +1,15 @@
 package com.imperial.heap3d.snapshot;
 
-public class StringNode extends Node {
+public class StringNode extends IDNode {
 
     private String str;
-    private long id;
 
     public StringNode(String name, long id, String str) {
-        super(name);
-        this.id = id;
+        super(name, id);
         this.str = str;
+    }
+    
+    public String getString(){
+    	return str;
     }
 }

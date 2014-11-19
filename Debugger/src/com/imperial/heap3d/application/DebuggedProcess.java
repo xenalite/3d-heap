@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
+import com.imperial.heap3d.layout.HeapGraph;
 import com.imperial.heap3d.snapshot.*;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
@@ -143,6 +144,10 @@ public class DebuggedProcess {
         catch(Exception ex) {
             System.out.println("Exception");
         }
+        
+        //TODO render
+        HeapGraph hg = new HeapGraph(_snapshot.getStackNodes());
+        
     }
 
     private void processLocalVariables(StackFrame stackFrame) throws AbsentInformationException {
