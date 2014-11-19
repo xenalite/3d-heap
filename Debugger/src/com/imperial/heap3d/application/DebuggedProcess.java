@@ -4,10 +4,11 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
-import com.imperial.heap3d.variables.implementation.ConcreteStackFrame;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
-import com.sun.jdi.request.*;
+import com.sun.jdi.request.EventRequest;
+import com.sun.jdi.request.EventRequestManager;
+import com.sun.jdi.request.StepRequest;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -16,7 +17,6 @@ import java.util.stream.Collectors;
 
 import static com.imperial.heap3d.application.ProcessState.*;
 import static com.imperial.heap3d.events.ProcessEventType.DEBUG_MSG;
-import static java.util.AbstractMap.SimpleImmutableEntry;
 import static java.util.Map.Entry;
 
 /**
@@ -29,8 +29,9 @@ public class DebuggedProcess {
     private VirtualMachine _instance;
     private Process _process;
     private ProcessState _state;
+    private BreakpointManager _manager;
     private EventBus _eventBus;
-    private Map<String, Entry<Vector<String>, Vector<String>>> _cachedPoints;
+
     private ThreadReference _threadRef;
 
     private Set<Node> allHeapNodes = new HashSet<>();
@@ -40,7 +41,6 @@ public class DebuggedProcess {
         _definition = definition;
         _provider = provider;
         _eventBus = eventBus;
-        _cachedPoints = new HashMap<>();
         _eventBus.register(this);
     }
 
@@ -61,6 +61,7 @@ public class DebuggedProcess {
         ConnectedProcess cp = _provider.establish(port, () -> _definition.buildProcess(port));
         _instance = cp.virtualMachine;
         _process = cp.process;
+        _manager = new BreakpointManager(_instance);
         _state = RUNNING;
     }
 
@@ -96,14 +97,7 @@ public class DebuggedProcess {
                 }
                 else if(e instanceof ClassPrepareEvent) {
                     ReferenceType classReference = ((ClassPrepareEvent) e).referenceType();
-                    if(_cachedPoints.containsKey(classReference.name())) {
-                        Vector<String> watchpoints = _cachedPoints.get(classReference.name()).getValue();
-                        for(String watchpoint : watchpoints)
-                            createWatchpointRequest(classReference, watchpoint);
-                        Vector<String> breakpoints = _cachedPoints.get(classReference.name()).getKey();
-                        for(String breakpoint : breakpoints)
-                            createBreakpointRequest(classReference, breakpoint);
-                    }
+                    _manager.notifyClassLoaded(classReference);
                 }
                 else if(e instanceof ModificationWatchpointEvent) {
                     _state = PAUSED;
@@ -132,11 +126,6 @@ public class DebuggedProcess {
                             String.format("Step into @%s", se.location())));
                     e.request().disable();
                     analyseVariables((LocatableEvent) e);
-
-                    try {
-                        new ConcreteStackFrame(_threadRef.frame(0));
-                    } catch (IncompatibleThreadStateException ignored) {
-                    }
                 }
             }
             if(_state == RUNNING)
@@ -285,7 +274,6 @@ public class DebuggedProcess {
                  parent.addHeapNodeRef(childNode);
              }
     	}
-
     	return parent;
     }
 
@@ -293,56 +281,6 @@ public class DebuggedProcess {
         _instance.eventRequestManager().stepRequests().stream()
                 .filter(sr -> _threadRef.equals(sr.thread()))
                 .forEach(EventRequest::disable);
-    }
-
-    private void createBreakpointRequest(ReferenceType classReference, String breakpoint) {
-        EventRequestManager erm = _instance.eventRequestManager();
-        Location l = classReference.methodsByName(breakpoint).get(0).location();
-        BreakpointRequest br = erm.createBreakpointRequest(l);
-        br.enable();
-    }
-
-    private void createWatchpointRequest(ReferenceType classReference, String watchpoint) {
-        EventRequestManager erm = _instance.eventRequestManager();
-        Field f = classReference.fieldByName(watchpoint);
-        ModificationWatchpointRequest mwe = erm.createModificationWatchpointRequest(f);
-        mwe.enable();
-    }
-
-    public void addWatchpoint(String className, String argument) {
-        List<ReferenceType> classes = _instance.classesByName(className);
-        if(!classes.isEmpty()) {
-            createWatchpointRequest(classes.get(0), argument);
-        }
-        else {
-            Vector<String> entries;
-            if (_cachedPoints.containsKey(className)) {
-                entries = _cachedPoints.get(className).getValue();
-            } else {
-                createClassPrepareRequest(className);
-                entries = new Vector<>();
-                _cachedPoints.put(className, new SimpleImmutableEntry<>(new Vector<>(), entries));
-            }
-            entries.add(argument);
-        }
-    }
-
-    public void addBreakpoint(String className, String argument) {
-        List<ReferenceType> classes = _instance.classesByName(className);
-        if(!classes.isEmpty()) {
-            createBreakpointRequest(classes.get(0), argument);
-        }
-        else {
-            Vector<String> entries;
-            if (_cachedPoints.containsKey(className)) {
-                entries = _cachedPoints.get(className).getKey();
-            } else {
-                createClassPrepareRequest(className);
-                entries = new Vector<>();
-                _cachedPoints.put(className, new SimpleImmutableEntry<>(entries, new Vector<>()));
-            }
-            entries.add(argument);
-        }
     }
 
     public void createStepRequest() {
@@ -356,10 +294,11 @@ public class DebuggedProcess {
         }
     }
 
-    private void createClassPrepareRequest(String filter) {
-        EventRequestManager erm = _instance.eventRequestManager();
-        ClassPrepareRequest cpr = erm.createClassPrepareRequest();
-        cpr.addClassFilter(filter);
-        cpr.enable();
+    public void addBreakpoint(String className, String argument) {
+        _manager.addBreakpoint(className, argument);
+    }
+
+    public void addWatchpoint(String className, String argument) {
+        _manager.addWatchpoint(className, argument);
     }
 }
