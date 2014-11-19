@@ -1,12 +1,18 @@
 package com.imperial.heap3d.entry;
 
+import com.google.common.eventbus.EventBus;
+import com.imperial.heap3d.events.ControlEvent;
+import com.imperial.heap3d.events.EventType;
 import com.imperial.heap3d.factories.ControllerFactory;
 import com.imperial.heap3d.utilities.TypeRegistry;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+
 
 public class Main extends Application {
 
@@ -29,5 +35,12 @@ public class Main extends Application {
         stage.setTitle(WINDOW_TITLE);
         stage.setScene(new Scene(root, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT));
         stage.show();
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                EventBus c = _typeRegistry.getInjector().getComponent(EventBus.class);
+                c.post(new ControlEvent(EventType.STOP,null,null));
+            }
+        });
     }
 }
