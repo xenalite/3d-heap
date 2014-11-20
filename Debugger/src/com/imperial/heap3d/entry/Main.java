@@ -1,10 +1,14 @@
 package com.imperial.heap3d.entry;
 
+import java.io.File;
+import java.net.URL;
+
 import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.events.ControlEvent;
 import com.imperial.heap3d.events.EventType;
 import com.imperial.heap3d.factories.ControllerFactory;
 import com.imperial.heap3d.utilities.TypeRegistry;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -27,8 +31,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        System.out.println(System.getProperty("user.dir"));
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../ui/views/MainWindow.fxml"));
+    	String dir = System.getProperty("user.dir");
+        File f = new File(dir + "/src/com/imperial/heap3d/ui/views/MainWindow.fxml");
+        FXMLLoader loader = new FXMLLoader(f.toURI().toURL());
         loader.setControllerFactory(new ControllerFactory(_typeRegistry.getInjector()));
         Parent root = loader.load();
 

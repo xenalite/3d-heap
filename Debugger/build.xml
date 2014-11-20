@@ -5,19 +5,20 @@
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
     <property name="main-class"  value="com.imperial.heap3d.entry.Main"/>
-    <property name="lib.dir"     value="lib"/>
 
+    <property name="lib.dir"     value="lib"/>
     <path id="classpath">
         <fileset dir="${lib.dir}" includes="jar/*"/>
     </path>
 
+    
     <target name="clean">
         <delete dir="${build.dir}"/>
     </target>
 
     <target name="compile">
         <mkdir dir="${classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+        <javac target="1.8" source="1.8" includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
     </target>
 
     <target name="jar" depends="compile">
@@ -31,6 +32,7 @@
 
     <target name="run" depends="jar">
         <java fork="true" classname="${main-class}">
+            <jvmarg value="-Djava.library.path=lib/native/lwjgl/linux" />
             <classpath>
                 <path refid="classpath"/>
                 <path location="${jar.dir}/${ant.project.name}.jar"/>
@@ -43,3 +45,4 @@
     <target name="main" depends="clean,run"/>
 
 </project>
+
