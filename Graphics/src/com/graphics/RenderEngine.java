@@ -2,9 +2,12 @@ package com.graphics;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.lwjgl.Sys;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
+
 import com.graphics.entities.Camera;
 import com.graphics.entities.Light;
 import com.graphics.rendering.MasterRenderer;
@@ -18,6 +21,7 @@ public abstract class RenderEngine {
 	private int fpsInc, fps;
 	private List<Shape> shapes = new ArrayList<Shape>();
 	private boolean breakFromLoop;
+	private Screenshot screenshot = new Screenshot();
 	
 	public RenderEngine(String title, int width, int height, boolean resizable){
 		DisplayManager.createDisplay(title, width, height, resizable);
@@ -38,6 +42,9 @@ public abstract class RenderEngine {
 		beforeLoop();
 		
 		while(!Display.isCloseRequested() && !breakFromLoop){
+			
+			if(Keyboard.isKeyDown(Keyboard.KEY_P))
+				screenshot.capture();
 			
 			camera.move();
 			
