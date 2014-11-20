@@ -6,6 +6,7 @@ import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
 import com.imperial.heap3d.layout.HeapGraph;
 import com.imperial.heap3d.snapshot.*;
+import com.imperial.heap3d.ui.controllers.MainWindowController;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.EventRequest;
@@ -147,6 +148,7 @@ public class DebuggedProcess {
         
         //TODO render
         HeapGraph hg = new HeapGraph(_snapshot.getStackNodes());
+        hg.attachCanvas(MainWindowController.GLOBAL_CANVAS_THIS_IS_HORRIBLE);
         
     }
 

@@ -1,17 +1,17 @@
 package com.imperial.heap3d.layout;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-
 import com.graphics.RenderEngine;
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.snapshot.HeapNode;
 import com.imperial.heap3d.snapshot.IDNode;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
-import com.sun.glass.ui.Window.Level;
+
+import java.awt.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 public class HeapGraph extends RenderEngine{
 
@@ -112,4 +112,7 @@ public class HeapGraph extends RenderEngine{
 		super.addShapeTo3DSpace(geometry);
 	}
 
+	public void attachCanvas(Canvas canvas) {
+
+	}
 }
