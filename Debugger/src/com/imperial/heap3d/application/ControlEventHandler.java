@@ -9,6 +9,7 @@ import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by oskar on 31/10/14.
@@ -18,10 +19,12 @@ public class ControlEventHandler {
     private DebuggedProcess _dprocess;
     private EventBus _eventBus;
     private ConcurrentLinkedDeque<ControlEvent> _controlEventQueue;
+    private Semaphore _semaphore;
 
     public ControlEventHandler(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus) {
         _dprocess = new DebuggedProcess(definition, provider, eventBus);
         _controlEventQueue = new ConcurrentLinkedDeque<>();
+        _semaphore = new Semaphore(0, true);
         _eventBus = eventBus;
         _eventBus.register(this);
     }
@@ -29,20 +32,26 @@ public class ControlEventHandler {
     @Subscribe
     public void handleEvent(ControlEvent e) {
         _controlEventQueue.add(e);
+        _semaphore.release();
     }
 
     public void loop() throws InterruptedException {
         while (true) {
             while (!_controlEventQueue.isEmpty())
-                if(!handleControlQueueItem(_controlEventQueue.removeFirst()))
+                if (!handleControlQueueItem(_controlEventQueue.removeFirst()))
                     return;
 
-            if(!_dprocess.waitForEvents())
+            if (!_dprocess.waitForEvents())
                 return;
+
+            try {
+                _semaphore.acquire();
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 
-    private boolean handleControlQueueItem(ControlEvent e) throws InterruptedException {
+    private boolean handleControlQueueItem(ControlEvent e) {
         switch (e.type) {
             case START: {
                 _dprocess.start();
