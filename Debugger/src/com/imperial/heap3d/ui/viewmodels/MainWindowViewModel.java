@@ -54,8 +54,8 @@ public class MainWindowViewModel {
         _stepActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEP)));
 
         _className = new SimpleStringProperty(this, "", "test.Program");
-        _classPath = new SimpleStringProperty(this, "", System.getProperty("user.home") + "\\Documents\\Programming\\3rdYearGroupProject\\3d-heap\\Debugger\\bin\\");
-        _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + "\\bin\\java");
+        _classPath = new SimpleStringProperty(this, "", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
+        _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + "/bin/java");
         _status = new SimpleStringProperty(this, "status", "");
         _debugeeOutput = new SimpleStringProperty("this", "", "");
         _debugeeInput = new SimpleStringProperty("this", "", "");

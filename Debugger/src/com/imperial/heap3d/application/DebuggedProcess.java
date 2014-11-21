@@ -83,10 +83,13 @@ public class DebuggedProcess {
         }
     }
 
-    public boolean waitForEvents() throws InterruptedException {
+    public boolean waitForEvents() {
         if(_instance != null && _state == RUNNING) {
             EventQueue vmQueue = _instance.eventQueue();
-            EventSet set = vmQueue.remove();
+            EventSet set = null;
+            try {
+                set = vmQueue.remove(0);
+            } catch (InterruptedException e) { return true; }
             for(Event e : set) {
                 System.out.println(e);
                 if(e instanceof VMDeathEvent) {
