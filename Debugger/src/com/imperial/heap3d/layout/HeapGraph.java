@@ -2,45 +2,45 @@ package com.imperial.heap3d.layout;
 
 import com.graphics.RenderEngine;
 import com.graphics.shapes.Shape;
-import com.imperial.heap3d.snapshot.HeapNode;
 import com.imperial.heap3d.snapshot.IDNode;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
-
 import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 public class HeapGraph extends RenderEngine{
 
-	private Set<HeapNode> allNodes = new HashSet<HeapNode>();
 	private Set<HeapGraphLevel> levels = new HashSet<HeapGraphLevel>();
+	private int currentLevel = 0;
+	private boolean newStack = false;
+	private Set<StackNode> stackNodes;
 
-	int currentLevel = 0;
-	private Random rand;
-
+	public HeapGraph(Canvas canvas, Set<StackNode> stackNodes) {
+		super(canvas);
+		this.stackNodes = stackNodes;
+	}
+	
 	public HeapGraph(Set<StackNode> stackNodes) {
-		super("Heap Visualizer!!!", 1280, 720, false);
-		super.setBackgroundColour(0f, 0f, 0f, 1f);
-		for(StackNode stackNode : stackNodes)
-			addLevel(stackNode);
-		super.start();
+		super("Heap Visualizer", 1280, 720, false);
+		this.stackNodes = stackNodes;
 	}
 
 	@Override
 	protected void beforeLoop() {
-		rand = new Random();
+		super.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
+		for(StackNode stackNode : stackNodes)
+			addLevel(stackNode);
 	}
-
-	static int level = 0;
 
 	@Override
 	protected void inLoop() {
-		
+		if(newStack){
+			beforeLoop();
+			newStack = false;
+		}
 	}
-
 
 	@Override
 	protected void afterLoop() {
@@ -99,7 +99,6 @@ public class HeapGraph extends RenderEngine{
 		Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
 		for(HeapEdge edge : outEdges){
 
-			System.out.println("helo---------------");
 			Node child = levelGraph.layout.getGraph().getOpposite(n,edge);
 			if(child.getGeometry() != null){
 				edge.connect(n,child, levelGraph.linecolor, this);
@@ -111,8 +110,16 @@ public class HeapGraph extends RenderEngine{
 	public void addShapeTo3DSpace(Shape geometry) {
 		super.addShapeTo3DSpace(geometry);
 	}
-
-	public void attachCanvas(Canvas canvas) {
-
+	
+	public void finish(){
+		super.breakOutOfLoop();
+	}
+	
+	public void giveStackNodes(Set<StackNode> stackNodes){
+		super.clearShapesFrom3DSpace();
+		currentLevel = 0;
+		levels.clear();
+		this.stackNodes = stackNodes;
+		newStack = true;
 	}
 }

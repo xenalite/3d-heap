@@ -1,5 +1,6 @@
 package com.graphics;
 
+import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import com.graphics.entities.Light;
 import com.graphics.rendering.MasterRenderer;
 import com.graphics.shapes.Shape;
 
-public abstract class RenderEngine {
+public abstract class RenderEngine implements Runnable{
 
 	private MasterRenderer renderer;
 	private Light sun = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
@@ -23,9 +24,22 @@ public abstract class RenderEngine {
 	private boolean breakFromLoop;
 	private Screenshot screenshot = new Screenshot();
 	
+	private String title ="";
+	private int width, height;
+	private boolean resizable;
+	private final Canvas canvas;
+	private float r, g, b, a;
+	
 	public RenderEngine(String title, int width, int height, boolean resizable){
-		DisplayManager.createDisplay(title, width, height, resizable);
-		renderer = new MasterRenderer();
+		this.title = title;
+		this.width = width;
+		this.height = height;
+		this.resizable = resizable;
+		canvas = null;
+	}
+	
+	public RenderEngine(final Canvas canvas){
+		this.canvas = canvas;
 	}
 	
 	protected void setMainLight(float x, float y, float z, float r, float g, float b, float damper, float refelectivity){
@@ -33,7 +47,20 @@ public abstract class RenderEngine {
 		renderer.setLightVars(damper, refelectivity);
 	}
 	
-	protected void start(){
+	@Override
+	public void run() {
+		
+		if(canvas == null)
+			DisplayManager.createDisplay(title, width, height, resizable);
+		else
+			DisplayManager.createDisplay(canvas);
+		
+		renderer = new MasterRenderer();
+		
+		renderer.setBackR(r);
+		renderer.setBackG(g);
+		renderer.setBackB(b);
+		renderer.setBackA(a);
 		
 		Camera camera = new Camera();
 		
@@ -99,7 +126,8 @@ public abstract class RenderEngine {
 	private void updateFPS() {
 	    if (getTime() - lastFps > 1000) {
 	    	fps = fpsInc;
-	        Display.setTitle("FPS: " + fps); 
+	    	if(canvas != null)
+	    		Display.setTitle("FPS: " + fps); 
 	        fpsInc = 0;
 	        lastFps += 1000;
 	    }
@@ -109,11 +137,15 @@ public abstract class RenderEngine {
 	private long getTime() {
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
-
+	
 	protected void setBackgroundColour(float r, float g, float b, float a) {
-		renderer.setBackR(r);
-		renderer.setBackG(g);
-		renderer.setBackB(b);
-		renderer.setBackA(a);
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = a;
+	}
+	
+	protected void captureScreen(String pathFromWorkspace, String filenameWithoutExtention){
+		screenshot.capture(pathFromWorkspace, filenameWithoutExtention);
 	}
 }

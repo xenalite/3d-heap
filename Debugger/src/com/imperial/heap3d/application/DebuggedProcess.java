@@ -12,11 +12,9 @@ import com.sun.jdi.event.*;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
-
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import static com.imperial.heap3d.application.ProcessState.*;
 import static com.imperial.heap3d.events.ProcessEventType.DEBUG_MSG;
 import static java.util.Map.Entry;
@@ -34,6 +32,9 @@ public class DebuggedProcess {
     private ThreadReference _threadRef;
     private Snapshot _snapshot;
 
+    private Thread renderThread = null;
+    private HeapGraph heapGraphRender = null;
+    
     public DebuggedProcess(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus) {
         _definition = definition;
         _provider = provider;
@@ -146,12 +147,16 @@ public class DebuggedProcess {
             System.out.println("Exception");
         }
         
-        //TODO render
-        HeapGraph hg = new HeapGraph(_snapshot.getStackNodes());
-        hg.attachCanvas(MainWindowController.GLOBAL_CANVAS_THIS_IS_HORRIBLE);
-        
+        if(renderThread != null){
+        	heapGraphRender.giveStackNodes(_snapshot.getStackNodes());
+        }else{
+        	heapGraphRender = new HeapGraph(_snapshot.getStackNodes());
+        	renderThread = new Thread(heapGraphRender, "lwjgl");
+            renderThread.start();
+        }
     }
-
+    
+    
     private void processLocalVariables(StackFrame stackFrame) throws AbsentInformationException {
 
         ObjectReference thisObject = stackFrame.thisObject();

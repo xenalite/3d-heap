@@ -1,6 +1,7 @@
 package com.imperial.heap3d.ui.controllers;
 
 import com.imperial.heap3d.ui.viewmodels.MainWindowViewModel;
+
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,6 +11,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -105,21 +107,6 @@ public class MainWindowController implements Initializable {
         }
     }
 
-    private class CustomAwtCanvas extends Canvas {
-        public CustomAwtCanvas(int width, int height) {
-            setSize(width, height);
-        }
-
-        public void paint(Graphics g) {
-            Graphics2D g2;
-            g2 = (Graphics2D) g;
-            g2.setColor(Color.GRAY);
-            g2.fillRect(0, 0, (int) getSize().getWidth(), (int) getSize().getHeight());
-            g2.setColor(Color.BLACK);
-            g2.drawString("It is a custom canvas area", 25, 50);
-        }
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         startButton.disableProperty().bind(_viewModel.getStartActionCommand().canExecute().not());
@@ -139,9 +126,9 @@ public class MainWindowController implements Initializable {
 
         final AwtInitializerTask awtInitializerTask = new AwtInitializerTask(() -> {
             JPanel jPanel = new JPanel();
-            GLOBAL_CANVAS_THIS_IS_HORRIBLE = new CustomAwtCanvas(906, 690);
+            GLOBAL_CANVAS_THIS_IS_HORRIBLE = new Canvas();
+            GLOBAL_CANVAS_THIS_IS_HORRIBLE.setSize(906, 690);
             jPanel.add(GLOBAL_CANVAS_THIS_IS_HORRIBLE);
-
             return jPanel;
         });
 
@@ -151,6 +138,7 @@ public class MainWindowController implements Initializable {
         JComponent component = null;
         try {
             component = awtInitializerTask.get();
+            
         } catch (InterruptedException | ExecutionException ignored) {}
 
         swingNode.setContent(component);

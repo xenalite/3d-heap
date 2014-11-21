@@ -16,10 +16,14 @@ public class Screenshot {
 	private int count = 0;
 	
 	public void capture(){
-		capture(System.getProperty("user.dir")+"/screenshots/shot"+(count++)+".png");
+		captureWithAbsolutePath(System.getProperty("user.dir")+"/screenshots/shot"+(count++)+".png");
 	}
 	
-	public void capture(String dest){
+	public void capture(String dest, String filename){
+		captureWithAbsolutePath(System.getProperty("user.dir")+"/"+dest+"/"+filename+".png");
+	}
+	
+	public void captureWithAbsolutePath(String dest){
 		
 		GL11.glReadBuffer(GL11.GL_FRONT);
 		int width = Display.getDisplayMode().getWidth();

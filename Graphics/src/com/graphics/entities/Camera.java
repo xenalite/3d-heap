@@ -12,11 +12,21 @@ public class Camera {
 	private static final float SPEED = 0.2f;
 	private static float MOUSE_SENSITIVITY = 0.05f;
 	
+	private static int MOUSE_LEFT = 0;
+	private static int MOUSE_RIGHT = 1;
+	
 	public Camera() {
 		Mouse.setGrabbed(true);
 	}
 	
 	public void move(){
+		
+		if(!Mouse.isGrabbed()){
+			if(Mouse.isInsideWindow() && Mouse.isButtonDown(MOUSE_LEFT))
+				Mouse.setGrabbed(true);
+			else
+				return;
+		}
 		
 		float multi = 1;
 		

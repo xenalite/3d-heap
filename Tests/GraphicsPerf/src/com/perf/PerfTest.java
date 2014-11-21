@@ -19,13 +19,18 @@ public class PerfTest extends RenderEngine{
 	private static final int MAX_CUBES = 15000;
 	
 	public static void main(String[] args){
-		new PerfTest();
+		Thread t = new Thread(new PerfTest(), "LwjglThread");
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public PerfTest() {
 		super("Perf Test", 1280, 720, false);
 		super.setBackgroundColour(0f, 0f, 0f, 1f);
-		super.start();
 	}
 	
 	@Override

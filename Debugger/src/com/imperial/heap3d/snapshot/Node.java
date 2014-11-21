@@ -1,7 +1,5 @@
 package com.imperial.heap3d.snapshot;
 
-import org.lwjgl.util.vector.Vector3f;
-
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Cube;
 import com.graphics.shapes.Shape;
@@ -39,6 +37,6 @@ public abstract class Node {
 	
 	public void updatePosition(){
         if(geometry != null)
-            geometry.getEntity().setPosition(new Vector3f(level.getX(this),level.getY(this),level.getZ(this)));
+            geometry.setPosition(level.getX(this),level.getY(this),level.getZ(this));
     }
 }
