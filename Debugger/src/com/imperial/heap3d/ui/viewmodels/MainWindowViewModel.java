@@ -53,7 +53,7 @@ public class MainWindowViewModel {
         _resumeActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(RESUME)));
         _stepActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEP)));
 
-        _className = new SimpleStringProperty(this, "", "test.Program");
+        _className = new SimpleStringProperty(this, "", "test_programs.small_stack.Program");
         _classPath = new SimpleStringProperty(this, "", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
         _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + "/bin/java");
         _status = new SimpleStringProperty(this, "status", "");
