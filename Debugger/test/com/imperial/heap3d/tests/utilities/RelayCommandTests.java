@@ -44,6 +44,7 @@ public class RelayCommandTests extends EasyMockSupport {
     @Test
     public void canExecute_RunnableCalled() {
         //arrange
+        _sut.canExecute().set(true);
         mRunnable.run();
         replayAll();
 
