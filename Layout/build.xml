@@ -58,7 +58,7 @@
         <mkdir dir="${reports.dir}"/>
 
 
-        <junit printsummary="yes" fork="true" haltonfailure="yes">
+        <junit printsummary="yes" fork="true" haltonfailure="no" failureproperty="test.failed">
             <formatter type="plain" usefile="false" /> <!-- to screen -->
             <classpath refid="junit.class.path" />
             <classpath>
@@ -80,6 +80,7 @@
             </fileset>
             <report todir="${reports.dir}" />
         </junitreport>
+		<fail message="Test failure detected, check test results." if="test.failed" />
     </target>
 
     <target name="clean-build" depends="clean,jar"/>

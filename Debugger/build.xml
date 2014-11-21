@@ -1,48 +1,91 @@
 <project name="debugger" basedir="." default="main">
 
-    <property name="src.dir"     value="src"/>
-    <property name="build.dir"   value="build"/>
-    <property name="classes.dir" value="${build.dir}/classes"/>
-    <property name="jar.dir"     value="${build.dir}/jar"/>
-    <property name="main-class"  value="com.imperial.heap3d.entry.Main"/>
+	<property name="src.dir" value="src" />
+	<property name="build.dir" value="build" />
+	<property name="build.test.dir" value="${build.dir}/tests" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="main-class" value="com.imperial.heap3d.entry.Main" />
+	<property name="lib.dir" value="lib" />
+	<property name="test.dir" value="test" />
+	<property name="reports.dir" value="reports" />
 
-    <property name="lib.dir"     value="lib"/>
-    <path id="classpath">
-        <fileset dir="${lib.dir}" includes="jar/*"/>
-    </path>
+	<path id="junit.class.path">
+		<fileset dir="${lib.dir}" includes="jar/*" />
+		<pathelement location="${classes.dir}" />
+	</path>
 
-    
-    <target name="clean">
-        <delete dir="${build.dir}"/>
-    </target>
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="jar/*" />
+	</path>
 
-    <target name="compile">
-        <mkdir dir="${classes.dir}"/>
-        <javac target="1.8" source="1.8" includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
-    </target>
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${reports.dir}" />
+	</target>
 
-    <target name="jar" depends="compile">
-        <mkdir dir="${jar.dir}"/>
-        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
-            <manifest>
-                <attribute name="Main-Class" value="${main-class}"/>
-            </manifest>
-        </jar>
-    </target>
+	<target name="compile">
+		<mkdir dir="${classes.dir}" />
+		<javac target="1.8" source="1.8" includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+	</target>
 
-    <target name="run" depends="jar">
-        <java fork="true" classname="${main-class}">
-            <jvmarg value="-Djava.library.path=lib/native/lwjgl/linux" />
-            <classpath>
-                <path refid="classpath"/>
-                <path location="${jar.dir}/${ant.project.name}.jar"/>
-            </classpath>
-        </java>
-    </target>
+	<target name="compileTest" depends="compile">
+		<mkdir dir="${build.test.dir}" />
+		<javac target="1.8" source="1.8" includeantruntime="false" srcdir="${test.dir}" destdir="${build.test.dir}">
+			<classpath refid="junit.class.path" />
+		</javac>
+	</target>
 
-    <target name="clean-build" depends="clean,jar"/>
+	<target name="jar" depends="compile">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}" />
+			</manifest>
+		</jar>
+	</target>
 
-    <target name="main" depends="clean,run"/>
+	<target name="run" depends="jar">
+		<java fork="true" classname="${main-class}">
+			<jvmarg value="-Djava.library.path=lib/native/lwjgl/linux" />
+			<classpath>
+				<path refid="classpath" />
+				<path location="${jar.dir}/${ant.project.name}.jar" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="test" depends="compileTest">
+		<mkdir dir="${reports.dir}" />
+		
+		<junit printsummary="yes" fork="true" haltonfailure="no" failureproperty="test.failed">
+			<formatter type="plain" usefile="false" />
+			<!-- to screen -->
+			<classpath refid="junit.class.path" />
+			<classpath>
+				<pathelement location="${build.test.dir}" />
+			</classpath>
+
+			<formatter type="plain" />
+			<formatter type="xml" />
+
+			<batchtest todir="${reports.dir}">
+				<fileset dir="${test.dir}">
+					<include name="**/*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+		<junitreport todir="${reports.dir}">
+			<fileset dir="${reports.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report todir="${reports.dir}" />
+		</junitreport>
+		<fail message="Test failure detected, check test results." if="test.failed" />
+	</target>
+
+	<target name="clean-build" depends="clean,jar" />
+
+	<target name="main" depends="clean,run" />
 
 </project>
-
