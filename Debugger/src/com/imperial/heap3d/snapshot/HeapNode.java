@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.graphics.shapes.Colour;
+
 public class HeapNode extends IDNode {
 
     private List<HeapNode> references;
@@ -20,6 +22,7 @@ public class HeapNode extends IDNode {
         this.arrays = new ArrayList<>();
         this.strings = new ArrayList<>();
         this.primitives = new HashMap<>();
+        this.colour = Colour.ORANGE;
     }
 
     public void addPrimitive(String name, Object value){

@@ -8,11 +8,27 @@ public abstract class Shape {
 
 	protected Entity entity;
 	protected Colour colour;
+	protected float[] vertices;
+	protected float[] normals;
+	protected int[] indices;
 	
 	public Shape(Colour colour){
 		this.colour = colour;
 	}
+	
+	public Shape(Colour colour, float[] vertices, float[] normals, int[] indices){
+		this.colour = colour;
+		this.vertices = vertices;
+		this.normals = normals;
+		this.indices = indices;
+	}
 
+	public void setShapeAttribs(float[] vertices, float[] normals, int[] indices){
+		this.vertices = vertices;
+		this.normals = normals;
+		this.indices = indices;
+	}
+	
 	public Entity getEntity(){
 		return entity;
 	}
@@ -42,5 +58,17 @@ public abstract class Shape {
 	
 	public float[] getRotation(){
 		return new float[]{entity.getRx(), entity.getRy(), entity.getRz()};
+	}
+
+	public float[] getVertices() {
+		return vertices;
+	}
+
+	public float[] getNormals() {
+		return normals;
+	}
+
+	public int[] getIndices() {
+		return indices;
 	}
 }

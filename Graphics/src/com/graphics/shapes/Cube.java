@@ -9,78 +9,78 @@ import com.graphics.models.Loader;
 import com.graphics.models.RawModel;
 
 public class Cube extends Shape{
-	
-	private final float[] vertices = new float[]{			
+
+	private static final float[] vertices = new float[]{			
 			// Back
 			-0.5f,0.5f,-0.5f,	
 			-0.5f,-0.5f,-0.5f,	
 			0.5f,-0.5f,-0.5f,	
 			0.5f,0.5f,-0.5f,		
-			
+
 			// Front
 			-0.5f,0.5f,0.5f,	
 			-0.5f,-0.5f,0.5f,	
 			0.5f,-0.5f,0.5f,	
 			0.5f,0.5f,0.5f,
-			
+
 			// Right
 			0.5f,0.5f,-0.5f,	
 			0.5f,-0.5f,-0.5f,	
 			0.5f,-0.5f,0.5f,	
 			0.5f,0.5f,0.5f,
-			
+
 			// Left
 			-0.5f,0.5f,-0.5f,	
 			-0.5f,-0.5f,-0.5f,	
 			-0.5f,-0.5f,0.5f,	
 			-0.5f,0.5f,0.5f,
-			
+
 			// Top
 			-0.5f,0.5f,0.5f,
 			-0.5f,0.5f,-0.5f,
 			0.5f,0.5f,-0.5f,
 			0.5f,0.5f,0.5f,
-			
+
 			// Bottom
 			-0.5f,-0.5f,0.5f,
 			-0.5f,-0.5f,-0.5f,
 			0.5f,-0.5f,-0.5f,
 			0.5f,-0.5f,0.5f
 	};
-	
-	private final float[] normals = new float[]{			
+
+	private static final float[] normals = new float[]{			
 			0f, 0f,-1f,	
 			0f, 0f,-1f,	
 			0f, 0f,-1f,	
 			0f, 0f,-1f,		
-			
+
 			0f, 0f, 1f,	
 			0f, 0f, 1f,	
 			0f, 0f, 1f,	
 			0f, 0f, 1f,
-			
+
 			1f, 0f, 0f,	
 			1f, 0f, 0f,	
 			1f, 0f, 0f,	
 			1f, 0f, 0f,	
-			
+
 			-1f, 0f, 0f,	
 			-1f, 0f, 0f,
 			-1f, 0f, 0f,
 			-1f, 0f, 0f,
-			
+
 			0f, 1f, 0f,	
 			0f, 1f, 0f,	
 			0f, 1f, 0f,		
 			0f, 1f, 0f,	
-			
+
 			0f, -1f, 0f,		
 			0f, -1f, 0f,	
 			0f, -1f, 0f,
 			0f, -1f, 0f,
 	};
-	
-	private final int[] indices = new int[]{
+
+	private static final int[] indices = new int[]{
 			// Back
 			0,3,1,	
 			3,2,1,	
@@ -101,14 +101,15 @@ public class Cube extends Shape{
 			23,21,22
 
 	};
-	
+
 	private final float[] colourValues = new float[vertices.length];
 	
 	private static Map<Colour, RawModel> usedModels = new HashMap<Colour, RawModel>(); 
 	
 	public Cube(float x, float y, float z, float rotX, float rotY, float rotZ, float scale, Colour colour){
 		
-		super(colour);
+		super(colour, vertices, normals, indices);
+		
 		RawModel m = usedModels.get(colour);
 		
 		if(m!=null){

@@ -1,10 +1,12 @@
 package com.imperial.heap3d.layout;
 
 import com.graphics.RenderEngine;
+import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.snapshot.IDNode;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
+
 import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
@@ -101,7 +103,7 @@ public class HeapGraph extends RenderEngine{
 
 			Node child = levelGraph.layout.getGraph().getOpposite(n,edge);
 			if(child.getGeometry() != null){
-				edge.connect(n,child, levelGraph.linecolor, this);
+				edge.connect(n,child, new Colour(1, 1, 1), this);
 			}
 		}
 	}
