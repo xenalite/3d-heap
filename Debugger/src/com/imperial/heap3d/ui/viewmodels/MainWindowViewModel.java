@@ -65,24 +65,29 @@ public class MainWindowViewModel {
 
     @Subscribe
     public void handleProcessStopped(ProcessEvent pe) {
-        switch(pe.type) {
-            case STARTED: {
+        try {
+            switch (pe.type) {
+                case STARTED: {
 
+                }
+                break;
+                case STOPPED: {
+                    Platform.runLater(this::setButtonsOnStop);
+                }
+                break;
+                case DEBUG_MSG: {
+                    //TODO these runlater should be removed
+                    Platform.runLater(() -> _variables.set(pe.message));
+                }
+                break;
+                case PROCESS_MSG: {
+                    Platform.runLater(() -> _debugeeOutput.set(_debugeeOutput.get()
+                            + System.lineSeparator() + pe.message));
+                }
+                break;
             }
-            break;
-            case STOPPED: {
-                Platform.runLater(this::setButtonsOnStop);
-            }
-            break;
-            case DEBUG_MSG: {
-                Platform.runLater(() -> _variables.set(pe.message));
-            }
-            break;
-            case PROCESS_MSG: {
-                Platform.runLater(() -> _debugeeOutput.set(_debugeeOutput.get()
-                + System.lineSeparator() + pe.message));
-            }
-            break;
+        }catch (Exception e){
+            //e.printStackTrace();
         }
     }
 
