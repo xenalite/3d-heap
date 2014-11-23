@@ -10,6 +10,7 @@ public abstract class Node {
     private String name;
     private HeapGraphLevel level;
     private Shape geometry;
+    protected Colour colour;
 
     public Node(String name) {
         this.name = name;
@@ -29,6 +30,10 @@ public abstract class Node {
 	
 	public void buildGeometry(float x, float y, float z, float scale, Colour c){
         this.geometry = new Cube(x,y,z,0,0,0,scale,c);
+    }
+	
+	public void buildGeometry(float x, float y, float z, float scale){
+        this.geometry = new Cube(x,y,z,0,0,0,scale,colour);
     }
 
 	public Shape getGeometry() {

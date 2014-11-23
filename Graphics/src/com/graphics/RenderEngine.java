@@ -1,23 +1,31 @@
 package com.graphics;
 
 import java.awt.Canvas;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.graphics.entities.Camera;
 import com.graphics.entities.Light;
+import com.graphics.raycasting.RayCastUtil;
+import com.graphics.raycasting.UnprojectUtil;
 import com.graphics.rendering.MasterRenderer;
 import com.graphics.shapes.Shape;
 
 public abstract class RenderEngine implements Runnable{
 
 	private MasterRenderer renderer;
-	private Light sun = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+	private Light sun = new Light(new Vector3f(40, 40, 40), new Vector3f(1, 1, 1));
 	private long lastFps;
 	private int fpsInc, fps;
 	private List<Shape> shapes = new ArrayList<Shape>();
@@ -84,12 +92,31 @@ public abstract class RenderEngine implements Runnable{
 			renderer.render(sun, camera);
 			DisplayManager.updateDisplay();
 			updateFPS();
+
+			// ##################################
+			// Ray Picking - Needs fixing
+			if(!Mouse.isButtonDown(1))
+				down = false;
+
+			if(Mouse.isButtonDown(1) && !down){
+				down = true;
+				Vector3f near = UnprojectUtil.unproject(Mouse.getX(), Mouse.getY(), 0);
+				Vector3f far = UnprojectUtil.unproject(Mouse.getX(), Mouse.getY(), 1);
+				//---
+				for(Shape e : shapes){
+
+					Vector3f vec = RayCastUtil.rayTest(near, far, e);
+					System.out.println(vec);
+				}
+				
+			}
+			// ##################################
 		}
 		
 		afterLoop();
 		cleanUp();
 	}
-	
+	boolean down;
 	protected abstract void beforeLoop();
 	protected abstract void inLoop();
 	protected abstract void afterLoop();

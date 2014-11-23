@@ -20,7 +20,7 @@ public class HeapEdge {
     public void connect(Node from, Node to, Colour color, HeapGraph graph){
         this.from = from;
         this.to = to;
-        line = new Line((Cube)from.getGeometry(), (Cube)to.getGeometry(), new Colour(1, 1, 1)); //TODO geometry should be encapsulated better
+        line = new Line((Cube)from.getGeometry(), (Cube)to.getGeometry(), color); //TODO geometry should be encapsulated better
         graph.addShapeTo3DSpace(line);
     }
 	

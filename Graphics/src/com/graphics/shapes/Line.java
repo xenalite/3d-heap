@@ -28,6 +28,8 @@ public class Line extends Shape{
 		
 		int[] indices = new int[]{0, 1};
 		
+		setShapeAttribs(vertices, normals, indices);
+		
 		float[] colourValues = new float[vertices.length];
 		
 		for(int i = 0; i < colourValues.length; i+=3){

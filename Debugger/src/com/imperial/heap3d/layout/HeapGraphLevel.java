@@ -13,21 +13,12 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 
 	int id;
 	Layout<Node, HeapEdge> layout;
-	private final Colour color;
-	public final Colour linecolor;
 	public static float levelOffset = 10f;
 	protected StackNode root;
 
 	public HeapGraphLevel(int id) {
 		this.id = id;
 		this.layout = new FRLayout<Node, HeapEdge>(this);
-		float r = (float) Math.random();
-		float g = (float) Math.random();
-		float b = (float) Math.random();
-
-		color = new Colour(r, g, b);
-		float offset = r + g + b > 2 ? 0.7f : 1.3f;
-		linecolor = new Colour(r * offset, g * offset, b * offset);
 	}
 
 	@Override
@@ -60,8 +51,10 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 				} else {
 					y += spacing;
 				}
+				n.buildGeometry(x, y, z, getScale(n));
+			}else{
+				n.buildGeometry(x, y, z, getScale(n), new Colour((float)Math.random(), (float)Math.random(), (float)Math.random()));
 			}
-			n.buildGeometry(x, y, z, getScale(n), color);
 			r.addShapeTo3DSpace(n.getGeometry());
 		}
 	}
@@ -76,7 +69,7 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 
 	public float getZ(Node n) {
 		return isRoot(n) ? levelOffset * id
-				: /*((float) Math.random() * levelOffset)*/ + id * levelOffset;
+				: ((float) Math.random() * levelOffset) + id * levelOffset;
 	}
 
 	public float getScale(Node n) {

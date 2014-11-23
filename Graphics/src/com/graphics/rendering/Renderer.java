@@ -14,11 +14,11 @@ import com.graphics.utils.Maths;
 
 public class Renderer {
 
-	private static final float FOV = 70f;
-	private static final float NEAR_PLANE = 0.1f;
-	private static final float FAR_PLANE = 300f;//was 1000
+	public static final float FOV = 70f;
+	public static final float NEAR_PLANE = 0.1f;
+	public static final float FAR_PLANE = 300f;//was 1000
 	
-	private Matrix4f projectionMatrix;
+	public static Matrix4f projectionMatrix;
 	private StaticShader shader;
 	private float damper = 10, refelectivity = 0.2f;
 	

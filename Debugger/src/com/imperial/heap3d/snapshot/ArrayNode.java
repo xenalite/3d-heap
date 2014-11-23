@@ -3,6 +3,8 @@ package com.imperial.heap3d.snapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.graphics.shapes.Colour;
+
 public class ArrayNode extends IDNode {
 
     private List<Object> elements;
@@ -10,6 +12,7 @@ public class ArrayNode extends IDNode {
     public ArrayNode(String name, long id) {
         super(name, id);
         this.elements = new ArrayList<>();
+        this.colour = Colour.YELLOW;
     }
 
     public Object getElementAt(int index) {
