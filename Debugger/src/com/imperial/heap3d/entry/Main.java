@@ -28,7 +28,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         String dir = System.getProperty("user.dir");
-        File f = new File(dir + "/src/com/imperial/heap3d/ui/views/MainWindow.fxml");
+        File f = new File(dir + "/src/com/imperial/heap3d/ui/views/Sidebar.fxml");
         FXMLLoader loader = new FXMLLoader(f.toURI().toURL());
         loader.setControllerFactory(new ControllerFactory(_typeRegistry.getInjector()));
         Parent root = loader.load();

@@ -17,48 +17,84 @@ import java.io.IOException;
  * Created by oskar on 22/11/14.
  */
 public class SwingWrappedApplication {
-
-    public static Canvas CANVAS;
     private static String WINDOW_TITLE = "3D HEAP VISUALISER";
-    private static int MIN_WINDOW_HEIGHT = 690;
-    private static int MIN_WINDOW_WIDTH = 906;
+
+    private static final int MIN_FRAME_HEIGHT = 700;
+    private static final int MIN_SIDEBAR_HEIGHT = MIN_FRAME_HEIGHT;
+    private static final int MIN_BOTTOM_PANEL_HEIGHT = 100;
+    private static final int MIN_CANVAS_HEIGHT = MIN_FRAME_HEIGHT - MIN_BOTTOM_PANEL_HEIGHT;
+
+    private static final int MIN_FRAME_WIDTH = 1250;
+    private static final int MIN_SIDEBAR_WIDTH = 400;
+    private static final int MIN_BOTTOM_PANEL_WIDTH = MIN_FRAME_WIDTH - MIN_SIDEBAR_WIDTH;
+    private static final int MIN_CANVAS_WIDTH = MIN_FRAME_WIDTH - MIN_SIDEBAR_WIDTH;
+
     private final TypeRegistry _typeRegistry = new TypeRegistry();
+
+    // TODO FACTORISE
+    public static Canvas CANVAS;
 
     public static void main(String[] args) {
         new SwingWrappedApplication().run();
     }
 
     private void run() {
-        SwingUtilities.invokeLater(this::initGui);
+        SwingUtilities.invokeLater(this::initFrame);
     }
 
-    private Scene initFx() {
+    private Scene initFXSideBar() {
         try {
             String dir = System.getProperty("user.dir");
-            File f = new File(dir + "/src/com/imperial/heap3d/ui/views/MainWindow.fxml");
+            File f = new File(dir + "/src/com/imperial/heap3d/ui/views/Sidebar.fxml");
             FXMLLoader loader = new FXMLLoader(f.toURI().toURL());
             loader.setControllerFactory(new ControllerFactory(_typeRegistry.getInjector()));
             Parent root = loader.load();
-            return new Scene(root, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
+            return new Scene(root, MIN_SIDEBAR_WIDTH, MIN_SIDEBAR_HEIGHT);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        throw new IllegalStateException("loader");
+        throw new IllegalStateException("loader sidebar");
     }
 
-    private void initGui() {
+    private Scene initFXBottomPanel() {
+        try {
+            String dir = System.getProperty("user.dir");
+            File f = new File(dir + "/src/com/imperial/heap3d/ui/views/BottomPanel.fxml");
+            FXMLLoader loader = new FXMLLoader(f.toURI().toURL());
+            loader.setControllerFactory(new ControllerFactory(_typeRegistry.getInjector()));
+            Parent root = loader.load();
+            return new Scene(root, MIN_BOTTOM_PANEL_WIDTH, MIN_BOTTOM_PANEL_HEIGHT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        throw new IllegalStateException("loader bottompanel");
+    }
+
+    private void initFrame() {
         JFrame frame = new JFrame();
-        JPanel panel = new JPanel();
-        JFXPanel fxPanel = new JFXPanel();
-        Platform.runLater(() -> fxPanel.setScene(initFx()));
+        JSplitPane pane = new JSplitPane();
+        JSplitPane leftPane = new JSplitPane();
+
+        JFXPanel fxSidebar = new JFXPanel();
+        Platform.runLater(() -> fxSidebar.setScene(initFXSideBar()));
+
+        JFXPanel fxBottomPanel = new JFXPanel();
+        Platform.runLater(() -> fxBottomPanel.setScene(initFXBottomPanel()));
+
         CANVAS = new Canvas();
-        CANVAS.setSize(100, 100);
+        CANVAS.setSize(MIN_CANVAS_WIDTH, MIN_CANVAS_HEIGHT);
         CANVAS.setVisible(true);
-        frame.setSize(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
+
+        leftPane.setTopComponent(CANVAS);
+        leftPane.setBottomComponent(fxBottomPanel);
+        leftPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+
+        pane.setLeftComponent(leftPane);
+        pane.setRightComponent(fxSidebar);
+
+        frame.add(pane);
+        frame.setSize(MIN_FRAME_WIDTH, MIN_FRAME_HEIGHT);
         frame.setTitle(WINDOW_TITLE);
-        panel.add(CANVAS);
-        panel.add(fxPanel);
-        frame.add(panel);
         frame.setVisible(true);
     }
 }

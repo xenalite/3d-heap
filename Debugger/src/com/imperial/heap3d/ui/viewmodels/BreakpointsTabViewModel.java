@@ -21,7 +21,7 @@ import static com.imperial.heap3d.events.EventType.WATCHPOINT;
 /**
  * Created by oskar on 29/10/14.
  */
-public class BreakpointsViewModel {
+public class BreakpointsTabViewModel {
 
     private final String DELIM = ":";
     private EventBus _eventBus;
@@ -35,7 +35,7 @@ public class BreakpointsViewModel {
     private Property<ObservableList<String>> _watchpoints;
     private boolean _cacheEnabled;
 
-    public BreakpointsViewModel(EventBus eventBus) {
+    public BreakpointsTabViewModel(EventBus eventBus) {
         if(eventBus == null)
             throw new IllegalArgumentException("eventBus");
         _eventBus = eventBus;

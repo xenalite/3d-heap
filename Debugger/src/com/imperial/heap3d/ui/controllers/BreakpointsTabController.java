@@ -1,6 +1,6 @@
 package com.imperial.heap3d.ui.controllers;
 
-import com.imperial.heap3d.ui.viewmodels.BreakpointsViewModel;
+import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
  * Created by oskar on 13/11/14.
  */
 
-public class BreakpointsController implements Initializable {
+public class BreakpointsTabController implements Initializable {
 
     @FXML
     private TextField watchpointClassNameTextField;
@@ -53,9 +53,9 @@ public class BreakpointsController implements Initializable {
         _viewModel.removeBreakpointAction(breakpointsListView.getSelectionModel().getSelectedItem());
     }
 
-    private final BreakpointsViewModel _viewModel;
+    private final BreakpointsTabViewModel _viewModel;
 
-    public BreakpointsController(BreakpointsViewModel viewModel) {
+    public BreakpointsTabController(BreakpointsTabViewModel viewModel) {
         _viewModel = viewModel;
     }
 

@@ -21,27 +21,30 @@ import static com.imperial.heap3d.events.EventType.*;
 /**
  * Created by oskar on 29/10/14.
  */
-public class MainWindowViewModel {
+public class ApplicationTabViewModel {
+
 
     private EventBus _eventBus;
     private IVirtualMachineProvider _VMProvider;
 
     private ICommand _resumeActionCommand;
     private ICommand _pauseActionCommand;
-    private ICommand _stepActionCommand;
+    private ICommand _stepOverActionCommand;
+    private ICommand _stepIntoActionCommand;
+    private ICommand _stepOutActionCommand;
     private ICommand _startActionCommand;
     private ICommand _stopActionCommand;
 
-    private StringProperty _status;
     private StringProperty _javaPath;
     private StringProperty _classPath;
     private StringProperty _className;
-    private SimpleStringProperty _debugeeOutput;
+    private SimpleStringProperty _processConsole;
     private SimpleStringProperty _debugeeInput;
-    private StringProperty _jvmArguments;
-    private StringProperty _variables;
+    private StringProperty _arguments;
+    private StringProperty _debuggerConsole;
 
-    public MainWindowViewModel(EventBus eventBus, IVirtualMachineProvider VMProvider) {
+
+    public ApplicationTabViewModel(EventBus eventBus, IVirtualMachineProvider VMProvider) {
         _VMProvider = VMProvider;
         _eventBus = eventBus;
         _eventBus.register(this);
@@ -51,16 +54,17 @@ public class MainWindowViewModel {
         _stopActionCommand = new RelayCommand(this::stopAction);
         _pauseActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(PAUSE)));
         _resumeActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(RESUME)));
-        _stepActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEP)));
+        _stepOverActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEP)));
+        _stepIntoActionCommand = new RelayCommand(() -> System.out.println("Step into!"));
+        _stepOutActionCommand = new RelayCommand(() -> System.out.println("Step out!"));
 
-        _className = new SimpleStringProperty(this, "", "test_programs.small_stack.Program");
+        _className = new SimpleStringProperty(this, "", "test_programs.linked_list.Program");
         _classPath = new SimpleStringProperty(this, "", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
         _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + "/bin/java");
-        _status = new SimpleStringProperty(this, "status", "");
-        _debugeeOutput = new SimpleStringProperty("this", "", "");
+        _processConsole = new SimpleStringProperty("this", "", "");
         _debugeeInput = new SimpleStringProperty("this", "", "");
-        _jvmArguments = new SimpleStringProperty(this, "", "");
-        _variables = new SimpleStringProperty(this, "","");
+        _arguments = new SimpleStringProperty(this, "", "");
+        _debuggerConsole = new SimpleStringProperty(this, "","");
     }
 
     @Subscribe
@@ -85,6 +89,7 @@ public class MainWindowViewModel {
                             + System.lineSeparator() + pe.message));
                 }
                 break;
+
             }
         }catch (Exception e){
             //e.printStackTrace();
@@ -92,10 +97,11 @@ public class MainWindowViewModel {
     }
 
     private void setButtonsOnStop() {
-        _status.set("STOPPED");
         _startActionCommand.canExecute().set(true);
         _stopActionCommand.canExecute().set(false);
-        _stepActionCommand.canExecute().set(false);
+        _stepOverActionCommand.canExecute().set(false);
+        _stepIntoActionCommand.canExecute().set(false);
+        _stepOutActionCommand.canExecute().set(false);
         _pauseActionCommand.canExecute().set(false);
         _resumeActionCommand.canExecute().set(false);
     }
@@ -106,12 +112,13 @@ public class MainWindowViewModel {
     }
 
     private void startAction() {
-        _status.set("RUNNING");
         _debugeeInput.set("");
-        _debugeeOutput.set("");
+        _processConsole.set("");
         _startActionCommand.canExecute().set(false);
         _stopActionCommand.canExecute().set(true);
-        _stepActionCommand.canExecute().set(true);
+        _stepOverActionCommand.canExecute().set(true);
+        _stepIntoActionCommand.canExecute().set(true);
+        _stepOutActionCommand.canExecute().set(true);
         _pauseActionCommand.canExecute().set(true);
         _resumeActionCommand.canExecute().set(true);
 
@@ -133,8 +140,8 @@ public class MainWindowViewModel {
     }
 
     //region Properties
-    public StringProperty getJvmArgumentsProperty() {
-        return _jvmArguments;
+    public StringProperty getArgumentsProperty() {
+        return _arguments;
     }
 
     public StringProperty getJavaPathProperty() { return _javaPath; }
@@ -147,26 +154,28 @@ public class MainWindowViewModel {
         return _className;
     }
 
-    public StringProperty getStatusProperty() {
-        return _status;
-    }
+    public StringProperty getProcessConsoleProperty() { return _processConsole; }
 
-    public StringProperty getDebugeeOutputProperty() { return _debugeeOutput; }
-
-    public StringProperty getDebugeeInputProperty() { return _debugeeInput; }
-
-    public StringProperty getVariablesProperty() {
-        return _variables;
+    public StringProperty getDebuggerConsoleProperty() {
+        return _debuggerConsole;
     }
 
     public ICommand getPauseActionCommand() { return _pauseActionCommand; }
 
     public ICommand getResumeActionCommand() { return _resumeActionCommand; }
 
-    public ICommand getStepActionCommand() { return _stepActionCommand; }
+    public ICommand getStepOverActionCommand() { return _stepOverActionCommand; }
 
     public ICommand getStartActionCommand() { return _startActionCommand; }
 
     public ICommand getStopActionCommand() { return _stopActionCommand; }
+
+    public ICommand getStepIntoActionCommand() {
+        return _stepIntoActionCommand;
+    }
+
+    public ICommand getStepOutActionCommand() {
+        return _stepOutActionCommand;
+    }
     //endregion
 }
