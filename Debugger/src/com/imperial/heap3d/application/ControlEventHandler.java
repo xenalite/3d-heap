@@ -77,6 +77,11 @@ public class ControlEventHandler {
                 _dprocess.addWatchpoint(e.className, e.argument);
             }
             break;
+            case SCREENSHOT: {
+                System.out.println("taking screen shot");
+                _dprocess.screenShot(e.argument);
+            }
+            break;
             case STOP: {
                 return false;
             }

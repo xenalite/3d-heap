@@ -11,5 +11,6 @@ public enum EventType {
     RESUME,
     BREAKPOINT,
     WATCHPOINT,
+    SCREENSHOT,
     STEP
 }

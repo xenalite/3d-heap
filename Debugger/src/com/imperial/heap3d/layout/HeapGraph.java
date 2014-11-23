@@ -124,4 +124,7 @@ public class HeapGraph extends RenderEngine {
 		this.stackNodes = stackNodes;
 		newStack = true;
 	}
+	public void screenShot(String path, String name ){
+		this.captureScreen(path, name);
+	}
 }
