@@ -17,5 +17,7 @@ public class Program {
         a = 12 * a + i;
         i = (++i) + ((++i) ^ a);
         a = 5003 - 45 * i - a;
+
+        System.out.println(a);
     }
 }
