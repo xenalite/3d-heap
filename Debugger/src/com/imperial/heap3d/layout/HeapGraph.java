@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class HeapGraph extends RenderEngine{
+public class HeapGraph extends RenderEngine {
 
 	private Set<HeapGraphLevel> levels = new HashSet<HeapGraphLevel>();
 	private int currentLevel = 0;

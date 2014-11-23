@@ -1,20 +1,22 @@
 package com.imperial.heap3d.application;
 
 import com.google.common.eventbus.EventBus;
+import com.imperial.heap3d.entry.SwingWrappedApplication;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
 import com.imperial.heap3d.layout.HeapGraph;
 import com.imperial.heap3d.snapshot.*;
-import com.imperial.heap3d.ui.controllers.MainWindowController;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import static com.imperial.heap3d.application.ProcessState.*;
 import static com.imperial.heap3d.events.ProcessEventType.DEBUG_MSG;
 import static java.util.Map.Entry;
@@ -152,10 +154,11 @@ public class DebuggedProcess {
         
         if(renderThread != null){
         	heapGraphRender.giveStackNodes(_snapshot.getStackNodes());
-        }else{
-        	heapGraphRender = new HeapGraph(_snapshot.getStackNodes());
-        	renderThread = new Thread(heapGraphRender, "lwjgl");
-            renderThread.start();
+        } else {
+        	heapGraphRender = new HeapGraph(SwingWrappedApplication.CANVAS, _snapshot.getStackNodes());
+            ExecutorService service = Executors.newSingleThreadExecutor();
+            service.submit(heapGraphRender);
+            service.shutdown();
         }
     }
     
