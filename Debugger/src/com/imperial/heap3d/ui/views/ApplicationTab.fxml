@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.imperial.heap3d.ui.controllers.ApplicationTabController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="126.0" minHeight="5.0" prefHeight="70.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="372.0" minHeight="10.0" prefHeight="70.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="462.0" minHeight="10.0" prefHeight="70.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="460.0" minHeight="10.0" prefHeight="70.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="530.0" minHeight="10.0" prefHeight="194.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="459.0" minHeight="10.0" prefHeight="119.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <TextArea fx:id="javaPathTextArea" prefHeight="134.0" prefWidth="329.0" wrapText="true" GridPane.columnIndex="1">
+                    <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" />
+                    </HBox.margin>
+                </TextArea>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Java path" />
+            </children>
+            <padding>
+                <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+            </padding>
+        </GridPane>
+        <GridPane GridPane.rowIndex="1">
+            <children>
+                <TextArea fx:id="argumentsTextArea" prefHeight="134.0" prefWidth="329.0" wrapText="true" GridPane.columnIndex="1">
+                    <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" />
+                    </HBox.margin>
+                </TextArea>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Arguments" />
+            </children>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+            </columnConstraints>
+            <padding>
+                <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+            </padding>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <GridPane.margin>
+                <Insets />
+            </GridPane.margin>
+        </GridPane>
+        <GridPane GridPane.rowIndex="2">
+            <children>
+                <TextArea fx:id="classPathTextArea" prefHeight="134.0" prefWidth="329.0" wrapText="true" GridPane.columnIndex="1">
+                    <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" />
+                    </HBox.margin>
+                </TextArea>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Classpath" />
+            </children>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+            </columnConstraints>
+            <padding>
+                <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+            </padding>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+        </GridPane>
+        <GridPane GridPane.rowIndex="3">
+            <children>
+                <TextArea fx:id="classNameTextArea" prefHeight="134.0" prefWidth="329.0" wrapText="true" GridPane.columnIndex="1">
+                    <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" />
+                    </HBox.margin>
+                </TextArea>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Class name" />
+            </children>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+            </columnConstraints>
+            <padding>
+                <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+            </padding>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+        </GridPane>
+        <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" GridPane.rowIndex="5">
+            <items>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Debugger console" />
+                <TextArea fx:id="debuggerConsole" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
+            </items>
+        </SplitPane>
+        <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" GridPane.rowIndex="4">
+            <items>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Program Console" />
+                <TextArea fx:id="programConsole" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
+            </items>
+        </SplitPane>
+    </children>
+</GridPane>

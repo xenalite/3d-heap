@@ -5,7 +5,7 @@ import com.imperial.heap3d.events.ControlEvent;
 import com.imperial.heap3d.events.EventType;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.ProcessEventType;
-import com.imperial.heap3d.ui.viewmodels.BreakpointsViewModel;
+import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
 import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class BreakpointsViewModelTests extends EasyMockSupport {
 
-    private BreakpointsViewModel _sut;
+    private BreakpointsTabViewModel _sut;
     private EventBus mEventBus;
     private static final String VALUE = "VALUE";
 
@@ -30,7 +30,7 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         mEventBus.register(anyObject());
         expectLastCall();
         replayAll();
-        _sut = new BreakpointsViewModel(mEventBus);
+        _sut = new BreakpointsTabViewModel(mEventBus);
         verifyAll();
         resetAllToDefault();
     }
@@ -38,7 +38,7 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
     @Test
     public void constructor_WithInvalidArguments_Throws() {
         try {
-            _sut = new BreakpointsViewModel(null);
+            _sut = new BreakpointsTabViewModel(null);
         }
         catch(IllegalArgumentException ignored) {}
     }

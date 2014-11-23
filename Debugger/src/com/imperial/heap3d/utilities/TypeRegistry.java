@@ -1,12 +1,12 @@
 package com.imperial.heap3d.utilities;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.application.ControlEventHandler;
 import com.imperial.heap3d.factories.VirtualMachineProvider;
-import com.imperial.heap3d.ui.controllers.BreakpointsController;
-import com.imperial.heap3d.ui.controllers.MainWindowController;
-import com.imperial.heap3d.ui.viewmodels.BreakpointsViewModel;
-import com.imperial.heap3d.ui.viewmodels.MainWindowViewModel;
+import com.imperial.heap3d.ui.controllers.ApplicationTabController;
+import com.imperial.heap3d.ui.controllers.BottomPanelController;
+import com.imperial.heap3d.ui.controllers.BreakpointsTabController;
+import com.imperial.heap3d.ui.viewmodels.ApplicationTabViewModel;
+import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
 import org.picocontainer.Characteristics;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
@@ -25,13 +25,13 @@ public class TypeRegistry {
 
         _injector.as(Characteristics.CACHE).addComponent(VirtualMachineProvider.class);
         _injector.as(Characteristics.CACHE).addComponent(EventBus.class);
-        _injector.as(Characteristics.CACHE).addComponent(ControlEventHandler.class);
 
-        _injector.addComponent(MainWindowController.class);
-        _injector.addComponent(BreakpointsController.class);
+        _injector.addComponent(ApplicationTabController.class);
+        _injector.addComponent(BreakpointsTabController.class);
+        _injector.addComponent(BottomPanelController.class);
 
-        _injector.addComponent(BreakpointsViewModel.class);
-        _injector.addComponent(MainWindowViewModel.class);
+        _injector.as(Characteristics.CACHE).addComponent(ApplicationTabViewModel.class);
+        _injector.addComponent(BreakpointsTabViewModel.class);
     }
 
     public PicoContainer getInjector() {

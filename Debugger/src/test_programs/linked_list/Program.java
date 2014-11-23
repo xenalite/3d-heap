@@ -13,5 +13,9 @@ public class Program {
                 new ListNode(new ListNode(new ListNode(new ListNode(
                         new ListNode(new ListNode(new ListNode(new ListNode(
                                 new ListNode(new ListNode(new ListNode(new ListNode())))))))))))))));
+
+        int i = 0;
+        System.out.println(root);
+        System.out.println(i);
     }
 }
