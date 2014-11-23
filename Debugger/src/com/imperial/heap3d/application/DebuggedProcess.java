@@ -149,7 +149,7 @@ public class DebuggedProcess {
             //_eventBus.post(new ProcessEvent(DEBUG_MSG, sb.toString()));
         }
         catch(Exception ex) {
-            System.out.println("Exception");
+            System.out.println(ex);
         }
         
         if(renderThread != null){
