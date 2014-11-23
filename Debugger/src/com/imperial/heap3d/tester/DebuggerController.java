@@ -11,18 +11,18 @@ import java.io.File;
 
 public class DebuggerController {
 
-    private MainWindowViewModel _windowVM;
-    private BreakpointsViewModel _breakpointsVM;
+    private ApplicationTabViewModel _windowVM;
+    private BreakpointsTabViewModel _breakpointsVM;
 
     public DebuggerController(){
         EventBus e = new EventBus();
-        setBreakpointsVM(new BreakpointsViewModel(e));
-        setWindowVM(new MainWindowViewModel(e, new VirtualMachineProvider()));
+        setBreakpointsVM(new BreakpointsTabViewModel(e));
+        setWindowVM(new ApplicationTabViewModel(e, new VirtualMachineProvider()));
     }
 
-    public void setWindowVM(MainWindowViewModel windowVM) { this._windowVM = windowVM; }
+    public void setWindowVM(ApplicationTabViewModel windowVM) { this._windowVM = windowVM; }
 
-    public void setBreakpointsVM(BreakpointsViewModel breakpointsVM) {
+    public void setBreakpointsVM(BreakpointsTabViewModel breakpointsVM) {
         this._breakpointsVM = breakpointsVM;
     }
 
@@ -55,16 +55,7 @@ public class DebuggerController {
         _windowVM.getStartActionCommand().execute();
     }
     public void step(){
-        _windowVM.getStepActionCommand().execute();
-    }
-    public void verbalStep(){
-        _windowVM.getStepActionCommand().execute();
-        System.out.println(_windowVM.getDebugeeOutputProperty().toString());
-    }
-    public void verbalStep(int times){
-        for(int i = 0; i < times; i++){
-            verbalStep();
-        }
+        _windowVM.getStepIntoActionCommand().execute();
     }
 
 }

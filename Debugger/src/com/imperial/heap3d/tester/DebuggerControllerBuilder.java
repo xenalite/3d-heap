@@ -1,9 +1,5 @@
 package com.imperial.heap3d.tester;
 
-import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.factories.VirtualMachineProvider;
-import com.imperial.heap3d.ui.viewmodels.BreakpointsViewModel;
-import com.imperial.heap3d.ui.viewmodels.MainWindowViewModel;
 
 /**
  * Created by zhouyou_robert on 23/11/14.

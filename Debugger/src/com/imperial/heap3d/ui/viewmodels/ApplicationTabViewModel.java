@@ -68,29 +68,28 @@ public class ApplicationTabViewModel {
     }
 
     @Subscribe
-    public void handleProcessStopped(ProcessEvent pe) {
-        try {
-            switch (pe.type) {
-                case STARTED: {
 
-                }
-                break;
-                case STOPPED: {
-                    Platform.runLater(this::setButtonsOnStop);
-                }
-                break;
-                case DEBUG_MSG: {
-                    //TODO these runlater should be removed
-                    Platform.runLater(() -> _variables.set(pe.message));
-                }
-                break;
-                case PROCESS_MSG: {
-                    Platform.runLater(() -> _debugeeOutput.set(_debugeeOutput.get()
-                            + System.lineSeparator() + pe.message));
-                }
-                break;
+
+    public void handleProcessEvent(ProcessEvent pe) {
+        try {
+        switch(pe.type) {
+            case STARTED: {
 
             }
+            break;
+            case STOPPED: {
+                Platform.runLater(this::setButtonsOnStop);
+            }
+            break;
+            case DEBUG_MSG: {
+                Platform.runLater(() -> _debuggerConsole.set(pe.message));
+            }
+            break;
+            case PROCESS_MSG: {
+                Platform.runLater(() -> _processConsole.set(_processConsole.get()
+                        + System.lineSeparator() + pe.message));
+            }
+        }
         }catch (Exception e){
             //e.printStackTrace();
         }
