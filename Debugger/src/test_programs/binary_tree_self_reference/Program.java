@@ -20,5 +20,7 @@ public class Program {
 
         // level 4
         root = new TreeNode(root, root);
+
+        System.out.println(root);
     }
 }

@@ -29,5 +29,7 @@ public class Program {
         root = new TreeNode(new TreeNode(new TreeNode(new TreeNode(new TreeNode(new TreeNode(),
                 null), null), null), null),
                 new TreeNode(null, new TreeNode(null, new TreeNode(null, new TreeNode(null, new TreeNode())))));
+
+        System.out.println(root);
     }
 }
