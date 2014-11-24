@@ -54,7 +54,11 @@ public class DebuggerController {
         _windowVM.getStartActionCommand().execute();
     }
     public void step(){
-        _windowVM.getStepIntoActionCommand().execute();
+        _windowVM.getStepOverActionCommand().execute();
+    }
+    public void screenShot(String path){
+        _windowVM.getScreenShotPath().setValue(path);
+        _windowVM.getScreenShotActionCommand().execute();
     }
 
 }

@@ -11,13 +11,15 @@ public class DebuggerRunner {
         DebuggerController d = new DebuggerControllerBuilder().setClassPath(path).setClassName(name).getDebuggerController();
         d.addBreakpoint(name, "main");
         d.start();
+
         for(int i = 0; i < 10; i++) {
             try {
-                Thread.sleep(1000);                 //1000 milliseconds is one second.
+                Thread.sleep(2000);                 //1000 milliseconds is one second.
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
             d.step();
+            d.screenShot("ScreenShot/pic");
         }
     }
 }

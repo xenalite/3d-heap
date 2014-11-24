@@ -32,10 +32,11 @@ public class ApplicationTabViewModel {
     private ICommand _stepOutActionCommand;
     private ICommand _startActionCommand;
     private ICommand _stopActionCommand;
-
+    private ICommand _screenShotCommand;
     private StringProperty _javaPath;
     private StringProperty _classPath;
     private StringProperty _className;
+    private StringProperty _screenShotPath;
     private SimpleStringProperty _processConsole;
     private SimpleStringProperty _debugeeInput;
     private StringProperty _arguments;
@@ -55,7 +56,8 @@ public class ApplicationTabViewModel {
         _stepOverActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEP)));
         _stepIntoActionCommand = new RelayCommand(() -> System.out.println("Step into!"));
         _stepOutActionCommand = new RelayCommand(() -> System.out.println("Step out!"));
-
+        _screenShotCommand = new RelayCommand(this::screenShotAction);
+        _screenShotPath = new SimpleStringProperty(this, "", "ScreenShot/img");
         _className = new SimpleStringProperty(this, "", "test_programs.linked_list.Program");
         _classPath = new SimpleStringProperty(this, "", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
         _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + "/bin/java");
@@ -95,6 +97,7 @@ public class ApplicationTabViewModel {
         _stepOutActionCommand.canExecute().set(false);
         _pauseActionCommand.canExecute().set(false);
         _resumeActionCommand.canExecute().set(false);
+        _screenShotCommand.canExecute().set(false);
     }
 
     private void stopAction() {
@@ -132,7 +135,9 @@ public class ApplicationTabViewModel {
         });
         service.shutdown();
     }
-
+    private void screenShotAction(){
+        _eventBus.post(ControlEventFactory.createScreenShotEvent(_screenShotPath.getValue()));
+    }
     //region Properties
     public StringProperty getArgumentsProperty() {
         return _arguments;
@@ -147,7 +152,9 @@ public class ApplicationTabViewModel {
     public StringProperty getClassNameProperty() {
         return _className;
     }
-
+    public StringProperty getScreenShotPath() {
+        return _screenShotPath;
+    }
     public StringProperty getProcessConsoleProperty() { return _processConsole; }
 
     public StringProperty getDebuggerConsoleProperty() {
@@ -171,5 +178,7 @@ public class ApplicationTabViewModel {
     public ICommand getStepOutActionCommand() {
         return _stepOutActionCommand;
     }
+
+    public ICommand getScreenShotActionCommand() { return _screenShotCommand; }
     //endregion
 }

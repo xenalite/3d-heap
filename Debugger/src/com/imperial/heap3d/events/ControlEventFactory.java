@@ -8,7 +8,9 @@ public class ControlEventFactory {
     public static ControlEvent createEventOfType(EventType type) {
         return new ControlEvent(type, null, null);
     }
-
+    public static ControlEvent createScreenShotEvent(String path) {
+        return new ControlEvent(EventType.SCREENSHOT, null, path);
+    }
     public static ControlEvent createBreakpointEvent(String className, String methodName) {
         return new ControlEvent(EventType.BREAKPOINT, className, methodName);
     }

@@ -301,4 +301,11 @@ public class DebuggedProcess {
     public void addWatchpoint(String className, String argument) {
         _manager.addWatchpoint(className, argument);
     }
+
+    public void screenShot(String path){
+        if(heapGraphRender!= null){
+            java.io.File f = new java.io.File(path);
+            heapGraphRender.screenShot(f.getParent(), f.getName());
+        }
+    }
 }
