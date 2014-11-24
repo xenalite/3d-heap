@@ -20,6 +20,11 @@ public class HeapEdge {
     public void connect(Node from, Node to, Colour color, HeapGraph graph){
         this.from = from;
         this.to = to;
+        if(line != null)
+        {
+            System.out.println("Removing old line");
+            graph.removeShapeFrom3DSpace(line);
+        }
         line = new Line((Cube)from.getGeometry(), (Cube)to.getGeometry(), color); //TODO geometry should be encapsulated better
         graph.addShapeTo3DSpace(line);
     }

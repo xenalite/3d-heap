@@ -1,6 +1,7 @@
 package com.imperial.heap3d.layout;
 
 import com.graphics.RenderEngine;
+import com.graphics.entities.Entity;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.snapshot.IDNode;
@@ -120,6 +121,10 @@ public class HeapGraph extends RenderEngine {
 //		{
 //			stackNodeHasChanged = true;
 //		}
+		if(!stackNode.doesRefNode()){
+			currentLevel++;
+			return;
+		}
 
 
 		boolean nodesHaveChanged = false;
@@ -130,21 +135,40 @@ public class HeapGraph extends RenderEngine {
 			nodesHaveChanged |= levelGraph.buildNode(n, this);
 		}
 
+		boolean edgesHaveChanged = false;
+		int edgeCount = 0;
+		// From stack to the first object on the heap
+		edgesHaveChanged |= levelGraph.addEdge( new HeapEdge(edgeCount++), stackNode, (Node) stackNode.getValue());
+
+		for (IDNode n : nodesOnThisLayer) {
+			for(IDNode child : n.getChildren())
+				if(levelGraph.addEdge(new HeapEdge(edgeCount++), n, child))
+				{
+					//new edge added
+					edgesHaveChanged = true;
+				} else
+				{
+					//old edge
+
+				}
+
+		}
 
 
-		if(nodesHaveChanged || stackNodeHasChanged )
+
+		if(edgesHaveChanged|| nodesHaveChanged || stackNodeHasChanged )
 		{
-			System.out.println("Sonmething changed: updating the layout");
+			System.out.println("Something changed: updating the layout");
 			levelGraph.layout.layout(stackNode);
 			stackNode.updatePosition();
 			for (IDNode n : nodesOnThisLayer) {
 				n.updatePosition();
 			}
 			//TODO check edges
-//			makeEdges(levelGraph, stackNode);
-//			for (IDNode n : nodesOnThisLayer) {
-//				makeEdges(levelGraph, n);
-//			}
+			makeEdges(levelGraph, stackNode);
+			for (IDNode n : nodesOnThisLayer) {
+				makeEdges(levelGraph, n);
+			}
 
 		}
 
@@ -155,9 +179,8 @@ public class HeapGraph extends RenderEngine {
 	private void makeEdges(HeapGraphLevel levelGraph, Node n){
 		Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
 		for(HeapEdge edge : outEdges){
-
 			Node child = levelGraph.layout.getGraph().getOpposite(n,edge);
-			if(child.getGeometry() != null){
+			if(child.getGeometry() != null && n.getGeometry() != null){
 				edge.connect(n,child, new Colour(1, 1, 1), this);
 			}
 		}
@@ -168,7 +191,12 @@ public class HeapGraph extends RenderEngine {
 		super.addShapeTo3DSpace(geometry);
 	}
 
-	
+
+	public void removeShapeFrom3DSpace(Shape shape)
+	{
+		super.removeShapeFrom3DSpace(shape);
+	}
+
 	public void finish(){
 		super.breakOutOfLoop();
 	}
