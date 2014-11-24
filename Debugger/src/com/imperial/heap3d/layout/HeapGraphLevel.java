@@ -14,6 +14,11 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 	int id;
 	Layout<Node, HeapEdge> layout;
 	public static float levelOffset = 10f;
+
+	public StackNode getRoot() {
+		return root;
+	}
+
 	protected StackNode root;
 
 	public HeapGraphLevel(int id) {

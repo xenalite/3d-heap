@@ -37,4 +37,8 @@ public class StackNode extends Node {
     	return nodes;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return true;
+    }
 }

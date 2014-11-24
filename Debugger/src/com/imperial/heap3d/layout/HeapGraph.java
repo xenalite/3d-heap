@@ -8,13 +8,11 @@ import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
 
 import java.awt.*;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 public class HeapGraph extends RenderEngine {
 
-	private Collection<HeapGraphLevel> levels = new LinkedList<>();
+	private java.util.List<HeapGraphLevel> levels = new LinkedList<>();
 	private int currentLevel = 0;
 	private boolean newStack = false;
 	private Collection<StackNode> stackNodes;
@@ -32,7 +30,21 @@ public class HeapGraph extends RenderEngine {
 	@Override
 	protected void beforeLoop() {
 		super.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
-		stackNodes.forEach(this::addLevel);
+		System.out.println("Start Before Loop");
+			for(StackNode stackNode : stackNodes)
+			{
+				if(currentLevel < levels.size())
+				{
+					System.out.println("Update "+currentLevel);
+					updateCurrentLevel(stackNode);
+				} else
+				{
+					System.out.println("Add at "+currentLevel);
+					addLevel(stackNode);
+				}
+
+			}
+		System.out.println("End Before Loop");
 	}
 
 	@Override
@@ -52,7 +64,7 @@ public class HeapGraph extends RenderEngine {
 
 	}
 
-	public void addLevel(StackNode stackNode) {
+	protected void addLevel(StackNode stackNode) {
 		
 		// stackNode is root
 		HeapGraphLevel levelGraph = new HeapGraphLevel(currentLevel);
@@ -98,7 +110,19 @@ public class HeapGraph extends RenderEngine {
 
 		currentLevel++;
 	}
-	
+
+	protected void updateCurrentLevel(StackNode stackNode)
+	{
+		HeapGraphLevel levelGraph = levels.get(currentLevel);
+		//stacknode has been updated
+		if(! levelGraph.getRoot().equals(stackNode))
+		{
+
+		}
+		//otherwise do nothing
+
+		currentLevel++;
+	}
 	
 	private void makeEdges(HeapGraphLevel levelGraph, Node n){
 		Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
@@ -115,17 +139,28 @@ public class HeapGraph extends RenderEngine {
 	public void addShapeTo3DSpace(Shape geometry) {
 		super.addShapeTo3DSpace(geometry);
 	}
+
 	
 	public void finish(){
 		super.breakOutOfLoop();
 	}
 	
 	public void giveStackNodes(Collection<StackNode> stackNodes){
-		super.clearShapesFrom3DSpace();
+		//Don't remove geometry
+		//Reset the current level
 		currentLevel = 0;
-		levels.clear();
+		//Don't clear the levels since we need them for comparison
+		//Update the new stackNodes we would like to add
 		this.stackNodes = stackNodes;
 		newStack = true;
+	}
+
+	protected void removeLevelFrom3DSpace(HeapGraphLevel levelGraph)
+	{
+		if(levelGraph == null)
+			return;
+
+
 	}
 	
 	private boolean takeScreenShot;
