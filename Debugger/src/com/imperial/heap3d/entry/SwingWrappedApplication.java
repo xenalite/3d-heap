@@ -1,12 +1,24 @@
 package com.imperial.heap3d.entry;
 
+import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.factories.ControllerFactory;
+import com.imperial.heap3d.factories.HeapGraphFactory;
+import com.imperial.heap3d.factories.VirtualMachineProvider;
+import com.imperial.heap3d.ui.controllers.ApplicationTabController;
+import com.imperial.heap3d.ui.controllers.BottomPanelController;
+import com.imperial.heap3d.ui.controllers.BreakpointsTabController;
+import com.imperial.heap3d.ui.viewmodels.ApplicationTabViewModel;
+import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
 import com.imperial.heap3d.utilities.TypeRegistry;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import org.picocontainer.Characteristics;
+import org.picocontainer.DefaultPicoContainer;
+import org.picocontainer.MutablePicoContainer;
+import org.picocontainer.behaviors.OptInCaching;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,16 +41,23 @@ public class SwingWrappedApplication {
     private static final int MIN_BOTTOM_PANEL_WIDTH = MIN_FRAME_WIDTH - MIN_SIDEBAR_WIDTH;
     private static final int MIN_CANVAS_WIDTH = MIN_FRAME_WIDTH - MIN_SIDEBAR_WIDTH;
 
-    private final TypeRegistry _typeRegistry = new TypeRegistry();
-
-    // TODO FACTORISE
-    public static Canvas CANVAS;
+    private final MutablePicoContainer _injector = new DefaultPicoContainer(new OptInCaching());
 
     public static void main(String[] args) {
         new SwingWrappedApplication().run();
     }
 
     private void run() {
+        _injector.as(Characteristics.CACHE).addComponent(VirtualMachineProvider.class);
+        _injector.as(Characteristics.CACHE).addComponent(EventBus.class);
+
+        _injector.addComponent(ApplicationTabController.class);
+        _injector.addComponent(BreakpointsTabController.class);
+        _injector.addComponent(BottomPanelController.class);
+
+        _injector.as(Characteristics.CACHE).addComponent(ApplicationTabViewModel.class);
+        _injector.addComponent(BreakpointsTabViewModel.class);
+
         SwingUtilities.invokeLater(this::initFrame);
     }
 
@@ -47,7 +66,7 @@ public class SwingWrappedApplication {
             String dir = System.getProperty("user.dir");
             File f = new File(dir + "/src/com/imperial/heap3d/ui/views/Sidebar.fxml");
             FXMLLoader loader = new FXMLLoader(f.toURI().toURL());
-            loader.setControllerFactory(new ControllerFactory(_typeRegistry.getInjector()));
+            loader.setControllerFactory(new ControllerFactory(_injector));
             Parent root = loader.load();
             return new Scene(root, MIN_SIDEBAR_WIDTH, MIN_SIDEBAR_HEIGHT);
         } catch (IOException e) {
@@ -61,7 +80,7 @@ public class SwingWrappedApplication {
             String dir = System.getProperty("user.dir");
             File f = new File(dir + "/src/com/imperial/heap3d/ui/views/BottomPanel.fxml");
             FXMLLoader loader = new FXMLLoader(f.toURI().toURL());
-            loader.setControllerFactory(new ControllerFactory(_typeRegistry.getInjector()));
+            loader.setControllerFactory(new ControllerFactory(_injector));
             Parent root = loader.load();
             return new Scene(root, MIN_BOTTOM_PANEL_WIDTH, MIN_BOTTOM_PANEL_HEIGHT);
         } catch (IOException e) {
@@ -81,11 +100,14 @@ public class SwingWrappedApplication {
         JFXPanel fxBottomPanel = new JFXPanel();
         Platform.runLater(() -> fxBottomPanel.setScene(initFXBottomPanel()));
 
-        CANVAS = new Canvas();
-        CANVAS.setSize(MIN_CANVAS_WIDTH, MIN_CANVAS_HEIGHT);
-        CANVAS.setVisible(true);
+        Canvas canvas = new Canvas();
+        canvas.setSize(MIN_CANVAS_WIDTH, MIN_CANVAS_HEIGHT);
+        canvas.setVisible(true);
 
-        leftPane.setTopComponent(CANVAS);
+        HeapGraphFactory factory = new HeapGraphFactory(canvas);
+        _injector.as(Characteristics.CACHE).addComponent(factory);
+
+        leftPane.setTopComponent(canvas);
         leftPane.setBottomComponent(fxBottomPanel);
         leftPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 

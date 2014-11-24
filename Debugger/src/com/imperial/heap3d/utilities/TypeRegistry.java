@@ -19,24 +19,7 @@ import org.picocontainer.behaviors.OptInCaching;
  */
 public class TypeRegistry {
 
-    private final MutablePicoContainer _injector;
-
     public TypeRegistry() {
-        _injector = new DefaultPicoContainer(new OptInCaching());
 
-        _injector.as(Characteristics.CACHE).addComponent(VirtualMachineProvider.class);
-        _injector.as(Characteristics.CACHE).addComponent(EventBus.class);
-        _injector.as(Characteristics.CACHE).addComponent(HeapGraphFactory.class);
-
-        _injector.addComponent(ApplicationTabController.class);
-        _injector.addComponent(BreakpointsTabController.class);
-        _injector.addComponent(BottomPanelController.class);
-
-        _injector.as(Characteristics.CACHE).addComponent(ApplicationTabViewModel.class);
-        _injector.addComponent(BreakpointsTabViewModel.class);
-    }
-
-    public PicoContainer getInjector() {
-        return _injector;
     }
 }

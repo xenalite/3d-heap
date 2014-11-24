@@ -1,8 +1,14 @@
 package com.imperial.heap3d.tester;
+import EDU.oswego.cs.dl.util.concurrent.Heap;
 import com.google.common.eventbus.EventBus;
+import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.VirtualMachineProvider;
 import com.imperial.heap3d.ui.viewmodels.ApplicationTabViewModel;
 import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
+
+import javax.swing.*;
+import javax.swing.undo.CannotRedoException;
+import java.awt.*;
 
 /**
  * Created by Robert on 23/11/14.
@@ -14,9 +20,19 @@ public class DebuggerController {
     private BreakpointsTabViewModel _breakpointsVM;
 
     public DebuggerController(){
+        JFrame frame = new JFrame();
+        JPanel panel = new JPanel();
+        Canvas canvas = new Canvas();
+        panel.add(canvas);
+        frame.add(panel);
+        frame.setSize(1200, 720);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        HeapGraphFactory heapGraphFactory = new HeapGraphFactory(canvas);
         EventBus e = new EventBus();
         setBreakpointsVM(new BreakpointsTabViewModel(e));
-        setWindowVM(new ApplicationTabViewModel(e, new VirtualMachineProvider()));
+        setWindowVM(new ApplicationTabViewModel(e, new VirtualMachineProvider(), heapGraphFactory));
     }
 
     public void setWindowVM(ApplicationTabViewModel windowVM) { this._windowVM = windowVM; }

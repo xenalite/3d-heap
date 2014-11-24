@@ -6,6 +6,7 @@ import com.imperial.heap3d.application.ControlEventHandler;
 import com.imperial.heap3d.events.ControlEventFactory;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
+import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
 import com.imperial.heap3d.utilities.ICommand;
 import com.imperial.heap3d.utilities.RelayCommand;
@@ -24,6 +25,7 @@ import static com.imperial.heap3d.events.EventType.*;
 public class ApplicationTabViewModel {
     private EventBus _eventBus;
     private IVirtualMachineProvider _VMProvider;
+    private HeapGraphFactory _heapGraphFactory;
 
     private ICommand _resumeActionCommand;
     private ICommand _pauseActionCommand;
@@ -42,11 +44,11 @@ public class ApplicationTabViewModel {
     private StringProperty _arguments;
     private StringProperty _debuggerConsole;
 
-
-    public ApplicationTabViewModel(EventBus eventBus, IVirtualMachineProvider VMProvider) {
+    public ApplicationTabViewModel(EventBus eventBus, IVirtualMachineProvider VMProvider, HeapGraphFactory heapGraphFactory) {
         _VMProvider = VMProvider;
         _eventBus = eventBus;
         _eventBus.register(this);
+        _heapGraphFactory = heapGraphFactory;
 
         _startActionCommand = new RelayCommand(this::startAction);
         _startActionCommand.canExecute().set(true);
@@ -117,7 +119,7 @@ public class ApplicationTabViewModel {
         _resumeActionCommand.canExecute().set(true);
 
         StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), _classPath.get());
-        ControlEventHandler handler = new ControlEventHandler(sd, _VMProvider, _eventBus);
+        ControlEventHandler handler = new ControlEventHandler(sd, _VMProvider, _eventBus, _heapGraphFactory);
         _eventBus.post(ControlEventFactory.createEventOfType(START));
 
         ExecutorService service = Executors.newSingleThreadScheduledExecutor(r -> {
