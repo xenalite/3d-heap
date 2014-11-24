@@ -1,13 +1,11 @@
-package com.imperial.heap3d.tester;
+package tests.system.snapshotTest;
 
 import javafx.embed.swing.JFXPanel;
-
 import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.VirtualMachineProvider;
 import com.imperial.heap3d.ui.viewmodels.ApplicationTabViewModel;
 import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
-
 
 public class DebuggerController {
 

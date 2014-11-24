@@ -1,6 +1,6 @@
-package test_programs.linked_list_cycles;
+package tests.system.testprograms.linked_list_cycles;
 
-import test_programs.utilities.ListNode;
+import tests.system.testprograms.utilities.ListNode;
 
 /**
  * Created by oskar on 21/11/14.

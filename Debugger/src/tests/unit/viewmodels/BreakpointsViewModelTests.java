@@ -1,4 +1,4 @@
-package com.imperial.heap3d.tests.viewmodels;
+package tests.unit.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.events.ControlEvent;

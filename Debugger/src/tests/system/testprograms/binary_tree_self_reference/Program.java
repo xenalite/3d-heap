@@ -1,11 +1,10 @@
-package test_programs.binary_tree_self_reference;
+package tests.system.testprograms.binary_tree_self_reference;
 
-import test_programs.utilities.TreeNode;
+import tests.system.testprograms.utilities.TreeNode;
 
 /**
  * Created by oskar on 21/11/14.
  */
-@SuppressWarnings("ALL")
 public class Program {
 
     public static void main(String[] args) {

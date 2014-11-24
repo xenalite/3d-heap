@@ -1,11 +1,10 @@
-package test_programs.linked_list;
+package tests.system.testprograms.linked_list;
 
-import test_programs.utilities.ListNode;
+import tests.system.testprograms.utilities.ListNode;
 
 /**
  * Created by oskar on 21/11/14.
  */
-@SuppressWarnings("ALL")
 public class Program {
 
     public static void main(String[] args) {

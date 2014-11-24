@@ -1,4 +1,4 @@
-package test_programs.utilities;
+package tests.system.testprograms.utilities;
 
 /**
  * Created by oskar on 21/11/14.

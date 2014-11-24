@@ -1,9 +1,5 @@
-package com.imperial.heap3d.tester;
+package tests.system.snapshotTest;
 
-
-/**
- * Created by zhouyou_robert on 23/11/14.
- */
 public class DebuggerControllerBuilder{
     private DebuggerController result;
 

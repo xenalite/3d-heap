@@ -1,11 +1,10 @@
-package test_programs.binary_tree;
+package tests.system.testprograms.binary_tree;
 
-import test_programs.utilities.TreeNode;
+import tests.system.testprograms.utilities.TreeNode;;
 
 /**
  * Created by oskar on 21/11/14.
  */
-@SuppressWarnings("ALL")
 public class Program {
 
     public static void main(String[] args) {

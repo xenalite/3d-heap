@@ -1,9 +1,9 @@
-package test_programs.small_stack;
+package tests.system.testprograms.small_stack;
 
 /**
  * Created by oskar on 29/10/14.
  */
-@SuppressWarnings("ALL")
+@SuppressWarnings("all")
 public class Program {
 
 	private String s = "hello";

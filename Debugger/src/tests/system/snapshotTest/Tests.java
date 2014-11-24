@@ -1,14 +1,14 @@
-package com.imperial.heap3d.tester;
+package tests.system.snapshotTest;
 
-/**
- * Created by zhouyou_robert on 23/11/14.
- */
-public class DebuggerRunner {
+import org.junit.Test;
+
+public class Tests {
+
+	private static final String PATH = System.getProperty("user.dir") + "\\bin\\";//"/out/production/Debugger/";
+    private static final String NAME = "tests.system.testprograms.small_stack.Program";
 	
-    private static final String PATH = System.getProperty("user.dir") + "/out/production/Debugger/";
-    private static final String NAME = "test_programs.small_stack.Program";
-
-    public static void main(String[] args) {
+    @Test
+    public void hello(){
     	DebuggerController d = new DebuggerControllerBuilder().setClassPath(PATH).setClassName(NAME).getDebuggerController();
     	d.addBreakpoint(NAME, "main");
     	d.start();
@@ -20,8 +20,14 @@ public class DebuggerRunner {
     		Thread.currentThread().interrupt();
     	}
     	//		d.step();
-    	d.screenShot("ScreenShot/pic");
+    	d.screenShot("ScreenShot/pic1");
     	//  	}
+    	try {
+    		Thread.sleep(7000);
+    	} catch (InterruptedException ex) {
+    		Thread.currentThread().interrupt();
+    	}
+    	d.screenShot("ScreenShot/pic2");
     	try {
     		Thread.sleep(1000);
     	} catch (InterruptedException ex) {
@@ -29,4 +35,5 @@ public class DebuggerRunner {
     	}
     	d.stop();
     }
+
 }

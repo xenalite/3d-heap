@@ -1,4 +1,4 @@
-package com.imperial.heap3d.tests.utilities;
+package tests.unit.utilities;
 
 import com.imperial.heap3d.utilities.RelayCommand;
 import org.easymock.EasyMockSupport;
