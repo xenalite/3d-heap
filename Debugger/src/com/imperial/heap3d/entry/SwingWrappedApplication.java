@@ -4,12 +4,12 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.factories.ControllerFactory;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.VirtualMachineProvider;
+import com.imperial.heap3d.layout.HeapGraph;
 import com.imperial.heap3d.ui.controllers.ApplicationTabController;
 import com.imperial.heap3d.ui.controllers.BottomPanelController;
 import com.imperial.heap3d.ui.controllers.BreakpointsTabController;
 import com.imperial.heap3d.ui.viewmodels.ApplicationTabViewModel;
 import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
-import com.imperial.heap3d.utilities.TypeRegistry;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +24,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by oskar on 22/11/14.
@@ -104,9 +106,6 @@ public class SwingWrappedApplication {
         canvas.setSize(MIN_CANVAS_WIDTH, MIN_CANVAS_HEIGHT);
         canvas.setVisible(true);
 
-        HeapGraphFactory factory = new HeapGraphFactory(canvas);
-        _injector.as(Characteristics.CACHE).addComponent(factory);
-
         leftPane.setTopComponent(canvas);
         leftPane.setBottomComponent(fxBottomPanel);
         leftPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -120,5 +119,17 @@ public class SwingWrappedApplication {
         frame.setVisible(true);
 
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        HeapGraphFactory factory = new HeapGraphFactory(canvas);
+        _injector.as(Characteristics.CACHE).addComponent(factory);
+
+        HeapGraph hgraph = factory.create();
+        ExecutorService service = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "lwjgl");
+            t.setDaemon(true);
+            return t;
+        });
+        service.submit(hgraph);
+        service.shutdown();
     }
 }

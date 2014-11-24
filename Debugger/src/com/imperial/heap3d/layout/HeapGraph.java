@@ -9,7 +9,6 @@ import com.imperial.heap3d.snapshot.StackNode;
 
 import java.awt.*;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -22,11 +21,6 @@ public class HeapGraph extends RenderEngine {
 
 	public HeapGraph(Canvas canvas, Collection<StackNode> stackNodes) {
 		super(canvas);
-		this.stackNodes = stackNodes;
-	}
-	
-	public HeapGraph(Collection<StackNode> stackNodes) {
-		super("Heap Visualizer", 1280, 720, false);
 		this.stackNodes = stackNodes;
 	}
 

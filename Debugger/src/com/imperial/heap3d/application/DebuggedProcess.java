@@ -1,7 +1,6 @@
 package com.imperial.heap3d.application;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.entry.SwingWrappedApplication;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.HeapGraphFactory;
@@ -14,10 +13,11 @@ import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import static com.imperial.heap3d.application.ProcessState.*;
 import static com.imperial.heap3d.events.ProcessEventType.DEBUG_MSG;
@@ -93,7 +93,7 @@ public class DebuggedProcess {
     public boolean waitForEvents() {
         if(_instance != null && _state == RUNNING) {
             EventQueue vmQueue = _instance.eventQueue();
-            EventSet set = null;
+            EventSet set;
             try {
                 set = vmQueue.remove(0);
             } catch (InterruptedException e) { return true; }
@@ -109,9 +109,6 @@ public class DebuggedProcess {
                 else if(e instanceof ModificationWatchpointEvent) {
                     _state = PAUSED;
                     ModificationWatchpointEvent mwe = (ModificationWatchpointEvent) e;
-                    _eventBus.post(new ProcessEvent(DEBUG_MSG,
-                            String.format("Variable %s in %s modified! Old:%s, New:%s",
-                                    mwe.field(), mwe.location(), mwe.valueCurrent(), mwe.valueToBe())));
                     _threadRef = mwe.thread();
                     removeStepRequests();
                     analyseVariables(mwe);
@@ -149,26 +146,12 @@ public class DebuggedProcess {
             processLocalVariables(stackNodes, stackFrame);
         }
         catch(Exception ex) {
-            System.out.println(ex);
+            System.out.println(ex.getMessage());
         }
-        
-        if(renderThread != null){
-        	heapGraphRender.giveStackNodes(stackNodes);
-        } else {
-            heapGraphRender = _heapGraphFactory.create(stackNodes);
-            ExecutorService service = Executors.newSingleThreadExecutor(r -> {
-                Thread t = new Thread(r, "lwjgl");
-                renderThread = t;
-                t.setDaemon(true);
-                return t;
-            });
-            service.submit(heapGraphRender);
-            service.shutdown();
 
-        }
+        _heapGraphFactory.create().giveStackNodes(stackNodes);
     }
-    
-    
+
     private void processLocalVariables(Collection<StackNode> stackNodes, StackFrame stackFrame) throws AbsentInformationException {
 
         ObjectReference thisObject = stackFrame.thisObject();

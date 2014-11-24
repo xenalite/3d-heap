@@ -1,24 +1,22 @@
 package com.imperial.heap3d.factories;
 
 import com.imperial.heap3d.layout.HeapGraph;
-import com.imperial.heap3d.snapshot.StackNode;
 
 import java.awt.*;
-import java.util.Collection;
-import java.util.Set;
+import java.util.LinkedList;
 
 /**
  * Created by oskar on 23/11/14.
  */
 public class HeapGraphFactory {
 
-    private final Canvas _canvas;
+    private final HeapGraph _heapGraph;
 
     public HeapGraphFactory(Canvas canvas) {
-        _canvas = canvas;
+        _heapGraph = new HeapGraph(canvas, new LinkedList<>());
     }
 
-    public HeapGraph create(Collection<StackNode> stackNodes) {
-        return new HeapGraph(_canvas, stackNodes);
+    public HeapGraph create() {
+        return _heapGraph;
     }
 }
