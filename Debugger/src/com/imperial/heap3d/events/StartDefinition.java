@@ -19,7 +19,7 @@ public class StartDefinition {
 
     public Process buildProcess(int port) throws IOException {
         final String format = "-agentlib:jdwp=transport=dt_socket,address=%d,server=n,suspend=y";
-        String jvmArgument = String.format(format, port);
-        return new ProcessBuilder(javaPath, jvmArgument, "-cp", classpath, className).start();
+        String debugArgument = String.format(format, port);
+        return new ProcessBuilder(javaPath, debugArgument, "-cp", classpath, className).start();
     }
 }

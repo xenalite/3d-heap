@@ -3,6 +3,7 @@ package com.imperial.heap3d.ui.viewmodels;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.imperial.heap3d.application.ControlEventHandler;
+import com.imperial.heap3d.application.DebuggedProcess;
 import com.imperial.heap3d.events.ControlEventFactory;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
@@ -39,8 +40,8 @@ public class ApplicationTabViewModel {
     private StringProperty _classPath;
     private StringProperty _className;
     private StringProperty _screenShotPath;
-    private SimpleStringProperty _processConsole;
-    private SimpleStringProperty _debugeeInput;
+    private StringProperty _processConsole;
+    private StringProperty _debugeeInput;
     private StringProperty _arguments;
     private StringProperty _debuggerConsole;
 
@@ -58,9 +59,9 @@ public class ApplicationTabViewModel {
         _stepOverActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEP)));
         _stepIntoActionCommand = new RelayCommand(() -> System.out.println("Step into!"));
         _stepOutActionCommand = new RelayCommand(() -> System.out.println("Step out!"));
-        _screenShotCommand = new RelayCommand(this::screenShotAction);
+        _screenShotCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createScreenShotEvent(_screenShotPath.getValue())));
         _screenShotPath = new SimpleStringProperty(this, "", "ScreenShot/img");
-        _className = new SimpleStringProperty(this, "", "test_programs.linked_list.Program");
+        _className = new SimpleStringProperty(this, "", "test_programs.small_stack.Program");
         _classPath = new SimpleStringProperty(this, "", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
         _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + "/bin/java");
         _processConsole = new SimpleStringProperty("this", "", "");
@@ -71,24 +72,27 @@ public class ApplicationTabViewModel {
 
     @Subscribe
     public void handleProcessEvent(ProcessEvent pe) {
-        switch(pe.type) {
-            case STARTED: {
+        try {
+            switch (pe.type) {
+                case STARTED: {
 
-            }
-            break;
-            case STOPPED: {
-                Platform.runLater(this::setButtonsOnStop);
-            }
-            break;
-            case DEBUG_MSG: {
-                Platform.runLater(() -> _debuggerConsole.set(pe.message));
-            }
-            break;
-            case PROCESS_MSG: {
-                Platform.runLater(() -> _processConsole.set(_processConsole.get()
-                        + System.lineSeparator() + pe.message));
+                }
+                break;
+                case STOPPED: {
+                    Platform.runLater(this::setButtonsOnStop);
+                }
+                break;
+                case DEBUG_MSG: {
+                    Platform.runLater(() -> _debuggerConsole.set(pe.message));
+                }
+                break;
+                case PROCESS_MSG: {
+                    Platform.runLater(() -> _processConsole.set(_processConsole.get()
+                            + System.lineSeparator() + pe.message));
+                }
             }
         }
+        catch(IllegalStateException e) { System.out.println(e); }
     }
 
     private void setButtonsOnStop() {
@@ -117,9 +121,11 @@ public class ApplicationTabViewModel {
         _stepOutActionCommand.canExecute().set(true);
         _pauseActionCommand.canExecute().set(true);
         _resumeActionCommand.canExecute().set(true);
+        _screenShotCommand.canExecute().set(true);
 
         StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), _classPath.get());
-        ControlEventHandler handler = new ControlEventHandler(sd, _VMProvider, _eventBus, _heapGraphFactory);
+        DebuggedProcess dprocess = new DebuggedProcess(sd, _VMProvider, _eventBus, _heapGraphFactory);
+        ControlEventHandler handler = new ControlEventHandler(dprocess, _eventBus);
         _eventBus.post(ControlEventFactory.createEventOfType(START));
 
         ExecutorService service = Executors.newSingleThreadScheduledExecutor(r -> {
@@ -137,9 +143,7 @@ public class ApplicationTabViewModel {
         });
         service.shutdown();
     }
-    private void screenShotAction(){
-        _eventBus.post(ControlEventFactory.createScreenShotEvent(_screenShotPath.getValue()));
-    }
+
     //region Properties
     public StringProperty getArgumentsProperty() {
         return _arguments;

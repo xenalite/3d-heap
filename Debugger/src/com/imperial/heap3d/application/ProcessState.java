@@ -7,5 +7,6 @@ public enum ProcessState {
 
     RUNNING,
     PAUSED,
+    PAUSED_AT_LOCATION,
     STOPPED
 }

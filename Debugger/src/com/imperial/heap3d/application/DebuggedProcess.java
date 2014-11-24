@@ -14,7 +14,7 @@ import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -35,18 +35,17 @@ public class DebuggedProcess {
     private EventBus _eventBus;
 
     private ThreadReference _threadRef;
-    private Snapshot _snapshot;
 
     private Thread renderThread = null;
     private HeapGraph heapGraphRender = null;
     
     public DebuggedProcess(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
+        _state = STOPPED;
         _definition = definition;
         _heapGraphFactory = heapGraphFactory;
         _provider = provider;
         _eventBus = eventBus;
         _eventBus.register(this);
-        _snapshot = new Snapshot();
     }
 
     public void dispose() {
@@ -143,23 +142,20 @@ public class DebuggedProcess {
     }
 
     private void analyseVariables(LocatableEvent event) {
-        _snapshot.clear();
+        Collection<StackNode> stackNodes = new LinkedList<>();
 
         try {
             StackFrame stackFrame = event.thread().frame(0);
-            processLocalVariables(stackFrame);
-
-            // TODO: Write toString() for Snapshot and pass it in here.
-            //_eventBus.post(new ProcessEvent(DEBUG_MSG, sb.toString()));
+            processLocalVariables(stackNodes, stackFrame);
         }
         catch(Exception ex) {
             System.out.println(ex);
         }
         
         if(renderThread != null){
-        	heapGraphRender.giveStackNodes(_snapshot.getStackNodes());
+        	heapGraphRender.giveStackNodes(stackNodes);
         } else {
-            heapGraphRender = _heapGraphFactory.create(_snapshot.getStackNodes());
+            heapGraphRender = _heapGraphFactory.create(stackNodes);
             ExecutorService service = Executors.newSingleThreadExecutor(r -> {
                 Thread t = new Thread(r, "lwjgl");
                 renderThread = t;
@@ -172,13 +168,13 @@ public class DebuggedProcess {
     }
     
     
-    private void processLocalVariables(StackFrame stackFrame) throws AbsentInformationException {
+    private void processLocalVariables(Collection<StackNode> stackNodes, StackFrame stackFrame) throws AbsentInformationException {
 
         ObjectReference thisObject = stackFrame.thisObject();
 
         if (thisObject != null) {
             String name = "this";
-            _snapshot.addStackNode(new StackNode(name, drillDown(name, thisObject)));
+            stackNodes.add(new StackNode(name, drillDown(name, thisObject)));
         }
 
         for (Entry<LocalVariable, Value> entry : stackFrame.getValues(stackFrame.visibleVariables()).entrySet()) {
@@ -186,9 +182,9 @@ public class DebuggedProcess {
             Value value = entry.getValue();
 
             if (value instanceof PrimitiveValue) {
-                _snapshot.addStackNode(new StackNode(name, processValue(value)));
+                stackNodes.add(new StackNode(name, processValue(value)));
             } else {
-                _snapshot.addStackNode(new StackNode(name, drillDown(name, value)));
+                stackNodes.add(new StackNode(name, drillDown(name, value)));
             }
         }
     }

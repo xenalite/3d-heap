@@ -22,8 +22,8 @@ public class ControlEventHandler {
     private ConcurrentLinkedDeque<ControlEvent> _controlEventQueue;
     private Semaphore _semaphore;
 
-    public ControlEventHandler(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
-        _dprocess = new DebuggedProcess(definition, provider, eventBus, heapGraphFactory);
+    public ControlEventHandler(DebuggedProcess dprocess, EventBus eventBus) {
+        _dprocess = dprocess;
         _controlEventQueue = new ConcurrentLinkedDeque<>();
         _semaphore = new Semaphore(0, true);
         _eventBus = eventBus;

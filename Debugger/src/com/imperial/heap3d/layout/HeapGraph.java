@@ -10,21 +10,22 @@ import com.imperial.heap3d.snapshot.StackNode;
 import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class HeapGraph extends RenderEngine {
 
-	private Set<HeapGraphLevel> levels = new HashSet<HeapGraphLevel>();
+	private Collection<HeapGraphLevel> levels = new LinkedList<>();
 	private int currentLevel = 0;
 	private boolean newStack = false;
-	private Set<StackNode> stackNodes;
+	private Collection<StackNode> stackNodes;
 
-	public HeapGraph(Canvas canvas, Set<StackNode> stackNodes) {
+	public HeapGraph(Canvas canvas, Collection<StackNode> stackNodes) {
 		super(canvas);
 		this.stackNodes = stackNodes;
 	}
 	
-	public HeapGraph(Set<StackNode> stackNodes) {
+	public HeapGraph(Collection<StackNode> stackNodes) {
 		super("Heap Visualizer", 1280, 720, false);
 		this.stackNodes = stackNodes;
 	}
@@ -32,8 +33,7 @@ public class HeapGraph extends RenderEngine {
 	@Override
 	protected void beforeLoop() {
 		super.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
-		for(StackNode stackNode : stackNodes)
-			addLevel(stackNode);
+		stackNodes.forEach(this::addLevel);
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class HeapGraph extends RenderEngine {
 		super.breakOutOfLoop();
 	}
 	
-	public void giveStackNodes(Set<StackNode> stackNodes){
+	public void giveStackNodes(Collection<StackNode> stackNodes){
 		super.clearShapesFrom3DSpace();
 		currentLevel = 0;
 		levels.clear();

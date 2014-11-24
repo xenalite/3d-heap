@@ -4,6 +4,7 @@ import com.imperial.heap3d.layout.HeapGraph;
 import com.imperial.heap3d.snapshot.StackNode;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -17,7 +18,7 @@ public class HeapGraphFactory {
         _canvas = canvas;
     }
 
-    public HeapGraph create(Set<StackNode> stackNodes) {
+    public HeapGraph create(Collection<StackNode> stackNodes) {
         return new HeapGraph(_canvas, stackNodes);
     }
 }
