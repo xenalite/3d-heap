@@ -6,8 +6,8 @@ import com.imperial.heap3d.application.ControlEventHandler;
 import com.imperial.heap3d.events.ControlEventFactory;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
-import com.imperial.heap3d.utilities.ICommand;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
+import com.imperial.heap3d.utilities.ICommand;
 import com.imperial.heap3d.utilities.RelayCommand;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,8 +22,6 @@ import static com.imperial.heap3d.events.EventType.*;
  * Created by oskar on 29/10/14.
  */
 public class ApplicationTabViewModel {
-
-
     private EventBus _eventBus;
     private IVirtualMachineProvider _VMProvider;
 
@@ -68,10 +66,7 @@ public class ApplicationTabViewModel {
     }
 
     @Subscribe
-
-
     public void handleProcessEvent(ProcessEvent pe) {
-        try {
         switch(pe.type) {
             case STARTED: {
 
@@ -89,9 +84,6 @@ public class ApplicationTabViewModel {
                 Platform.runLater(() -> _processConsole.set(_processConsole.get()
                         + System.lineSeparator() + pe.message));
             }
-        }
-        }catch (Exception e){
-            //e.printStackTrace();
         }
     }
 
@@ -121,13 +113,16 @@ public class ApplicationTabViewModel {
         _pauseActionCommand.canExecute().set(true);
         _resumeActionCommand.canExecute().set(true);
 
-        String jvmFormat = "-agentlib:jdwp=transport=dt_socket,address=%d,server=n,suspend=y";
-
-        StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), jvmFormat, _classPath.get());
+        StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), _classPath.get());
         ControlEventHandler handler = new ControlEventHandler(sd, _VMProvider, _eventBus);
         _eventBus.post(ControlEventFactory.createEventOfType(START));
 
-        ExecutorService service = Executors.newSingleThreadExecutor();
+        ExecutorService service = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            return t;
+        });
+
         service.submit(() -> {
             try {
                 handler.run();

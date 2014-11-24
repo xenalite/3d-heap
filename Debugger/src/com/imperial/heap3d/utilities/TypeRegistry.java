@@ -1,6 +1,7 @@
 package com.imperial.heap3d.utilities;
 
 import com.google.common.eventbus.EventBus;
+import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.VirtualMachineProvider;
 import com.imperial.heap3d.ui.controllers.ApplicationTabController;
 import com.imperial.heap3d.ui.controllers.BottomPanelController;
@@ -25,6 +26,7 @@ public class TypeRegistry {
 
         _injector.as(Characteristics.CACHE).addComponent(VirtualMachineProvider.class);
         _injector.as(Characteristics.CACHE).addComponent(EventBus.class);
+        _injector.as(Characteristics.CACHE).addComponent(HeapGraphFactory.class);
 
         _injector.addComponent(ApplicationTabController.class);
         _injector.addComponent(BreakpointsTabController.class);

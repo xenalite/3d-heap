@@ -6,11 +6,11 @@
 <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="850.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="com.imperial.heap3d.ui.controllers.BottomPanelController">
    <children>
-      <Button fx:id="startButton" mnemonicParsing="false" onAction="#startButtonPressed" prefHeight="25.0" prefWidth="90.0" text="Start" />
+      <Button fx:id="startButton" mnemonicParsing="false" onAction="#startButtonPressed" prefWidth="90.0" text="Start" />
       <Button fx:id="stopButton" mnemonicParsing="false" onAction="#stopButtonPressed" prefWidth="90.0" text="Stop" />
       <Button fx:id="pauseButton" mnemonicParsing="false" onAction="#pauseButtonPressed" prefWidth="90.0" text="Pause" />
       <Button fx:id="resumeButton" mnemonicParsing="false" onAction="#resumeButtonPressed" prefWidth="90.0" text="Resume" />
-      <Button fx:id="stepOverButton" mnemonicParsing="false" onAction="#stepOverButtonPressed" prefHeight="25.0" prefWidth="90.0" text="Step over" />
+      <Button fx:id="stepOverButton" mnemonicParsing="false" onAction="#stepOverButtonPressed" prefWidth="90.0" text="Step over" />
       <Button fx:id="stepIntoButton" mnemonicParsing="false" onAction="#stepIntoButtonPressed" prefWidth="90.0" text="Step into" />
       <Button fx:id="stepOutButton" mnemonicParsing="false" onAction="#stepOutButtonPressed" prefWidth="90.0" text="Step out" />
    </children>

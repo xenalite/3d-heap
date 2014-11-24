@@ -96,5 +96,7 @@ public class SwingWrappedApplication {
         frame.setSize(MIN_FRAME_WIDTH, MIN_FRAME_HEIGHT);
         frame.setTitle(WINDOW_TITLE);
         frame.setVisible(true);
+
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 }

@@ -7,22 +7,19 @@ import java.io.IOException;
  */
 public class StartDefinition {
 
-    public final String javaPath;
-    public final String className;
-    public final String jvmArgumentFormat;
-    public final String classpath;
+    private final String javaPath;
+    private final String className;
+    private final String classpath;
 
-    public StartDefinition(String javaPath, String className, String jvmArgumentFormat, String classpath) {
+    public StartDefinition(String javaPath, String className, String classpath) {
         this.javaPath = javaPath;
         this.className = className;
-        this.jvmArgumentFormat = jvmArgumentFormat;
         this.classpath = classpath;
     }
 
     public Process buildProcess(int port) throws IOException {
-        String jvmArgument = String.format(jvmArgumentFormat, port);
-        ProcessBuilder pb = new ProcessBuilder(javaPath, jvmArgument, "-cp", classpath, className);
-        Process p = pb.start();
-        return p;
+        final String format = "-agentlib:jdwp=transport=dt_socket,address=%d,server=n,suspend=y";
+        String jvmArgument = String.format(format, port);
+        return new ProcessBuilder(javaPath, jvmArgument, "-cp", classpath, className).start();
     }
 }
