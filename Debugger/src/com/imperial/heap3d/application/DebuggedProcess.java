@@ -16,6 +16,7 @@ import com.sun.jdi.request.StepRequest;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import static com.imperial.heap3d.application.ProcessState.*;
 import static com.imperial.heap3d.events.ProcessEventType.DEBUG_MSG;
@@ -156,9 +157,17 @@ public class DebuggedProcess {
         	heapGraphRender.giveStackNodes(_snapshot.getStackNodes());
         } else {
         	heapGraphRender = new HeapGraph(SwingWrappedApplication.CANVAS, _snapshot.getStackNodes());
-            ExecutorService service = Executors.newSingleThreadExecutor();
-            service.submit(heapGraphRender);
-            service.shutdown();
+            renderThread = new Thread(heapGraphRender);
+            renderThread.start();
+//            ExecutorService service = Executors.newSingleThreadExecutor(new ThreadFactory() {
+//                @Override
+//                public Thread newThread(Runnable r) {
+//                    renderThread = new Thread(r);
+//                    return renderThread;
+//                }
+//            });
+//            service.submit(heapGraphRender);
+//            service.shutdown();
         }
     }
     

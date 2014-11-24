@@ -42,6 +42,11 @@ public class HeapGraph extends RenderEngine {
 			beforeLoop();
 			newStack = false;
 		}
+		if(takeScreenShot){
+			this.captureScreen(path, name);
+			takeScreenShot = false;
+			System.out.println("TAKING SCREEN SHOT");
+		}
 	}
 
 	@Override
@@ -124,7 +129,12 @@ public class HeapGraph extends RenderEngine {
 		this.stackNodes = stackNodes;
 		newStack = true;
 	}
+	private boolean takeScreenShot;
+	private String path;
+	private String name;
 	public void screenShot(String path, String name ){
-		this.captureScreen(path, name);
+		takeScreenShot = true;
+		this.path = path;
+		this.name = name;
 	}
 }
