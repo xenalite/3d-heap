@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.entry.SwingWrappedApplication;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
+import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
 import com.imperial.heap3d.layout.HeapGraph;
 import com.imperial.heap3d.snapshot.*;
@@ -24,6 +25,7 @@ import static java.util.Map.Entry;
 
 public class DebuggedProcess {
 
+    private HeapGraphFactory _heapGraphFactory;
     private StartDefinition _definition;
     private IVirtualMachineProvider _provider;
     private VirtualMachine _instance;
@@ -38,8 +40,9 @@ public class DebuggedProcess {
     private Thread renderThread = null;
     private HeapGraph heapGraphRender = null;
     
-    public DebuggedProcess(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus) {
+    public DebuggedProcess(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
         _definition = definition;
+        _heapGraphFactory = heapGraphFactory;
         _provider = provider;
         _eventBus = eventBus;
         _eventBus.register(this);
@@ -156,18 +159,16 @@ public class DebuggedProcess {
         if(renderThread != null){
         	heapGraphRender.giveStackNodes(_snapshot.getStackNodes());
         } else {
-        	heapGraphRender = new HeapGraph(SwingWrappedApplication.CANVAS, _snapshot.getStackNodes());
-            renderThread = new Thread(heapGraphRender);
-            renderThread.start();
-//            ExecutorService service = Executors.newSingleThreadExecutor(new ThreadFactory() {
-//                @Override
-//                public Thread newThread(Runnable r) {
-//                    renderThread = new Thread(r);
-//                    return renderThread;
-//                }
-//            });
-//            service.submit(heapGraphRender);
-//            service.shutdown();
+            heapGraphRender = _heapGraphFactory.create(_snapshot.getStackNodes());
+            ExecutorService service = Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "lwjgl");
+                renderThread = t;
+                t.setDaemon(true);
+                return t;
+            });
+            service.submit(heapGraphRender);
+            service.shutdown();
+
         }
     }
     

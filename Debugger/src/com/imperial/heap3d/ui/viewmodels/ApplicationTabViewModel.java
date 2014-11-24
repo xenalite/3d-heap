@@ -6,8 +6,9 @@ import com.imperial.heap3d.application.ControlEventHandler;
 import com.imperial.heap3d.events.ControlEventFactory;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
-import com.imperial.heap3d.utilities.ICommand;
+import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
+import com.imperial.heap3d.utilities.ICommand;
 import com.imperial.heap3d.utilities.RelayCommand;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,10 +23,9 @@ import static com.imperial.heap3d.events.EventType.*;
  * Created by oskar on 29/10/14.
  */
 public class ApplicationTabViewModel {
-
-
     private EventBus _eventBus;
     private IVirtualMachineProvider _VMProvider;
+    private HeapGraphFactory _heapGraphFactory;
 
     private ICommand _resumeActionCommand;
     private ICommand _pauseActionCommand;
@@ -44,11 +44,11 @@ public class ApplicationTabViewModel {
     private StringProperty _arguments;
     private StringProperty _debuggerConsole;
 
-
-    public ApplicationTabViewModel(EventBus eventBus, IVirtualMachineProvider VMProvider) {
+    public ApplicationTabViewModel(EventBus eventBus, IVirtualMachineProvider VMProvider, HeapGraphFactory heapGraphFactory) {
         _VMProvider = VMProvider;
         _eventBus = eventBus;
         _eventBus.register(this);
+        _heapGraphFactory = heapGraphFactory;
 
         _startActionCommand = new RelayCommand(this::startAction);
         _startActionCommand.canExecute().set(true);
@@ -70,10 +70,7 @@ public class ApplicationTabViewModel {
     }
 
     @Subscribe
-
-
     public void handleProcessEvent(ProcessEvent pe) {
-        try {
         switch(pe.type) {
             case STARTED: {
 
@@ -91,9 +88,6 @@ public class ApplicationTabViewModel {
                 Platform.runLater(() -> _processConsole.set(_processConsole.get()
                         + System.lineSeparator() + pe.message));
             }
-        }
-        }catch (Exception e){
-            //e.printStackTrace();
         }
     }
 
@@ -123,14 +117,17 @@ public class ApplicationTabViewModel {
         _stepOutActionCommand.canExecute().set(true);
         _pauseActionCommand.canExecute().set(true);
         _resumeActionCommand.canExecute().set(true);
-        _screenShotCommand.canExecute().set(true);
-        String jvmFormat = "-agentlib:jdwp=transport=dt_socket,address=%d,server=n,suspend=y";
 
-        StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), jvmFormat, _classPath.get());
-        ControlEventHandler handler = new ControlEventHandler(sd, _VMProvider, _eventBus);
+        StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), _classPath.get());
+        ControlEventHandler handler = new ControlEventHandler(sd, _VMProvider, _eventBus, _heapGraphFactory);
         _eventBus.post(ControlEventFactory.createEventOfType(START));
 
-        ExecutorService service = Executors.newSingleThreadExecutor();
+        ExecutorService service = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            return t;
+        });
+
         service.submit(() -> {
             try {
                 handler.run();

@@ -6,6 +6,7 @@ import com.imperial.heap3d.events.ControlEvent;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.ProcessEventType;
 import com.imperial.heap3d.events.StartDefinition;
+import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -21,8 +22,8 @@ public class ControlEventHandler {
     private ConcurrentLinkedDeque<ControlEvent> _controlEventQueue;
     private Semaphore _semaphore;
 
-    public ControlEventHandler(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus) {
-        _dprocess = new DebuggedProcess(definition, provider, eventBus);
+    public ControlEventHandler(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
+        _dprocess = new DebuggedProcess(definition, provider, eventBus, heapGraphFactory);
         _controlEventQueue = new ConcurrentLinkedDeque<>();
         _semaphore = new Semaphore(0, true);
         _eventBus = eventBus;

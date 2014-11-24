@@ -1,6 +1,7 @@
 package com.imperial.heap3d.utilities;
 
 import com.google.common.eventbus.EventBus;
+import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.VirtualMachineProvider;
 import com.imperial.heap3d.ui.controllers.ApplicationTabController;
 import com.imperial.heap3d.ui.controllers.BottomPanelController;
@@ -18,23 +19,7 @@ import org.picocontainer.behaviors.OptInCaching;
  */
 public class TypeRegistry {
 
-    private final MutablePicoContainer _injector;
-
     public TypeRegistry() {
-        _injector = new DefaultPicoContainer(new OptInCaching());
 
-        _injector.as(Characteristics.CACHE).addComponent(VirtualMachineProvider.class);
-        _injector.as(Characteristics.CACHE).addComponent(EventBus.class);
-
-        _injector.addComponent(ApplicationTabController.class);
-        _injector.addComponent(BreakpointsTabController.class);
-        _injector.addComponent(BottomPanelController.class);
-
-        _injector.as(Characteristics.CACHE).addComponent(ApplicationTabViewModel.class);
-        _injector.addComponent(BreakpointsTabViewModel.class);
-    }
-
-    public PicoContainer getInjector() {
-        return _injector;
     }
 }
