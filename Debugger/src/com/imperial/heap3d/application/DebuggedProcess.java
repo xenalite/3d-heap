@@ -5,20 +5,17 @@ import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
-import com.imperial.heap3d.layout.HeapGraph;
 import com.imperial.heap3d.snapshot.*;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import static com.imperial.heap3d.application.ProcessState.*;
 import static com.imperial.heap3d.events.ProcessEventType.DEBUG_MSG;
 import static java.util.Map.Entry;
@@ -35,9 +32,6 @@ public class DebuggedProcess {
     private EventBus _eventBus;
 
     private ThreadReference _threadRef;
-
-    private Thread renderThread = null;
-    private HeapGraph heapGraphRender = null;
     
     public DebuggedProcess(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
         _state = STOPPED;
@@ -292,9 +286,8 @@ public class DebuggedProcess {
     }
 
     public void screenShot(String path){
-        if(heapGraphRender!= null){
-            java.io.File f = new java.io.File(path);
-            heapGraphRender.screenShot(f.getParent(), f.getName());
-        }
+    	java.io.File f = new java.io.File(path);
+    	_heapGraphFactory.create().screenShot(f.getParent(), f.getName());
+
     }
 }

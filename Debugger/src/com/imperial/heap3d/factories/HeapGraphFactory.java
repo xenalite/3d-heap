@@ -15,6 +15,10 @@ public class HeapGraphFactory {
     public HeapGraphFactory(Canvas canvas) {
         _heapGraph = new HeapGraph(canvas, new LinkedList<>());
     }
+    
+    public HeapGraphFactory() {
+        _heapGraph = new HeapGraph(new LinkedList<>());
+    }
 
     public HeapGraph create() {
         return _heapGraph;

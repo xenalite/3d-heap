@@ -1,35 +1,24 @@
 package com.imperial.heap3d.tester;
+
+import javafx.embed.swing.JFXPanel;
+
 import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.VirtualMachineProvider;
 import com.imperial.heap3d.ui.viewmodels.ApplicationTabViewModel;
 import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
 
-import javax.swing.*;
-import java.awt.*;
-
-/**
- * Created by Robert on 23/11/14.
- */
 
 public class DebuggerController {
-
-    private JFrame frame;
 
     private ApplicationTabViewModel _applicationViewModel;
     private BreakpointsTabViewModel _breakpointsVM;
 
     public DebuggerController() {
-//        frame = new JFrame();
-//        JPanel panel = new JPanel();
-        Canvas canvas = new Canvas();
-//        panel.add(canvas);
-//        frame.add(panel);
-//        frame.setSize(1200, 720);
-//        frame.setVisible(true);
-//        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        HeapGraphFactory heapGraphFactory = new HeapGraphFactory(canvas);
+    	new JFXPanel();
+        HeapGraphFactory heapGraphFactory = new HeapGraphFactory();
+        Thread t = new Thread(heapGraphFactory.create(), "lwjgl");
+        t.start();
         EventBus e = new EventBus();
         setBreakpointsVM(new BreakpointsTabViewModel(e));
         setApplicationVM(new ApplicationTabViewModel(e, new VirtualMachineProvider(), heapGraphFactory));
@@ -40,8 +29,6 @@ public class DebuggerController {
     public void setBreakpointsVM(BreakpointsTabViewModel breakpointsVM) {
         this._breakpointsVM = breakpointsVM;
     }
-
-
 
     public void setJavaPath(String javaPath) {
         _applicationViewModel.getJavaPathProperty().setValue(javaPath);
