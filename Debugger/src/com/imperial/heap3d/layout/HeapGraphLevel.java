@@ -38,7 +38,7 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 		return add;
 	}
 
-	public void buildNode(Node n, HeapGraph r) {
+	public boolean buildNode(Node n, HeapGraph r) {
 		if (addVertex(n)) {
 			float x = getX(n);
 			float y = getY(n);
@@ -61,6 +61,10 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 				n.buildGeometry(x, y, z, getScale(n), new Colour((float)Math.random(), (float)Math.random(), (float)Math.random()));
 			}
 			r.addShapeTo3DSpace(n.getGeometry());
+			return true;
+		} else
+		{
+			return false;
 		}
 	}
 

@@ -89,11 +89,11 @@ public class HeapGraph extends RenderEngine {
 		int edgeCount = 0;
 		
 		// From stack to the first object on the heap
-		levelGraph.addEdge( new HeapEdge(edgeCount++), stackNode, (Node) stackNode.getValue()); //TODO needs to be directed edge
+		levelGraph.addEdge( new HeapEdge(edgeCount++), stackNode, (Node) stackNode.getValue());
 		
 		for (IDNode n : nodesOnThisLayer) {
 			for(IDNode child : n.getChildren())
-				levelGraph.addEdge(new HeapEdge(edgeCount++), n, child); //TODO needs to be directed edge
+				levelGraph.addEdge(new HeapEdge(edgeCount++), n, child);
 			
 		}
 	
@@ -114,12 +114,40 @@ public class HeapGraph extends RenderEngine {
 	protected void updateCurrentLevel(StackNode stackNode)
 	{
 		HeapGraphLevel levelGraph = levels.get(currentLevel);
+		boolean stackNodeHasChanged = false;
 		//stacknode has been updated
-		if(! levelGraph.getRoot().equals(stackNode))
+//		if(! levelGraph.getRoot().equals(stackNode))
+//		{
+//			stackNodeHasChanged = true;
+//		}
+
+
+		boolean nodesHaveChanged = false;
+		Set<IDNode> nodesOnThisLayer = stackNode.walkHeap();
+		for (IDNode n : nodesOnThisLayer)
 		{
+			//will return true if a new node is added
+			nodesHaveChanged |= levelGraph.buildNode(n, this);
+		}
+
+
+
+		if(nodesHaveChanged || stackNodeHasChanged )
+		{
+			System.out.println("Sonmething changed: updating the layout");
+			levelGraph.layout.layout(stackNode);
+			stackNode.updatePosition();
+			for (IDNode n : nodesOnThisLayer) {
+				n.updatePosition();
+			}
+			//TODO check edges
+//			makeEdges(levelGraph, stackNode);
+//			for (IDNode n : nodesOnThisLayer) {
+//				makeEdges(levelGraph, n);
+//			}
 
 		}
-		//otherwise do nothing
+
 
 		currentLevel++;
 	}
@@ -155,14 +183,7 @@ public class HeapGraph extends RenderEngine {
 		newStack = true;
 	}
 
-	protected void removeLevelFrom3DSpace(HeapGraphLevel levelGraph)
-	{
-		if(levelGraph == null)
-			return;
 
-
-	}
-	
 	private boolean takeScreenShot;
 	private String path;
 	private String name;
