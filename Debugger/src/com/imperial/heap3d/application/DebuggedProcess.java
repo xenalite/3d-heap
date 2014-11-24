@@ -164,6 +164,7 @@ public class DebuggedProcess {
             });
             service.submit(heapGraphRender);
             service.shutdown();
+
         }
     }
     
