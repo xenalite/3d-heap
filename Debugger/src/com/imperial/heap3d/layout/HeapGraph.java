@@ -54,7 +54,7 @@ public class HeapGraph extends RenderEngine {
 
 		//TODO I want to change this to 'addRoot' to be more clear
 		levelGraph.buildNode(stackNode, this);
-		
+
 		if(!stackNode.hasReference()){
 			levelGraph.layout.layout(stackNode);
 			stackNode.updatePosition();
@@ -77,9 +77,6 @@ public class HeapGraph extends RenderEngine {
 		}
 
 		makeEdges(levelGraph, stackNode);
-		for (Node n : nodesOnThisLayer) {
-			makeEdges(levelGraph, n);
-		}
 		currentLevel++;
 	}
 
@@ -98,12 +95,14 @@ public class HeapGraph extends RenderEngine {
 	
 	private void makeEdges(HeapGraphLevel levelGraph, Node n) {
 		Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
-		for(HeapEdge edge : outEdges){
-
+		for(HeapEdge edge : outEdges) {
 			Node child = levelGraph.layout.getGraph().getOpposite(n,edge);
 			if(child.getGeometry() != null) {
 				edge.connect(n,child, new Colour(1, 1, 1), this);
 			}
+		}
+		for(Node child : n.getReferences()) {
+			makeEdges(levelGraph, child);
 		}
 	}
 

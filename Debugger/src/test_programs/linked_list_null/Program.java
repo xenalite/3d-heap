@@ -5,15 +5,8 @@ package test_programs.linked_list_null;
  */
 @SuppressWarnings("ALL")
 public class Program {
-
     public static void main(String[] args) {
-        int[] is = null;
-        int[] js = {1, 2, 3};
-        int[] ks = new int[0];
-        int[] ls = new int[3];
-        String s = new String("hello");
-        Object[] os = new Object[4];
-        os[0] = new Object();
-        os[3] = new Object();
+        int[] is = {1,2};
+        int[][] js = {is, is};
     }
 }

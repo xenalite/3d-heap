@@ -49,7 +49,7 @@ public class BreakpointsTabViewModel {
         _watchpoints = new SimpleObjectProperty<>(this, "", FXCollections.observableList(new ArrayList<>()));
         _cachedElements = new Vector<>();
 
-        _breakpointClass.set("test_programs.linked_list.Program");
+        _breakpointClass.set("test_programs.linked_list_null.Program");
         _breakpointMethod.set("main");
         addBreakpointAction();
     }

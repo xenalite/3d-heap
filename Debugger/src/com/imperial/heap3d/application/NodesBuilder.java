@@ -78,6 +78,7 @@ public class NodesBuilder {
         if (value == null || value instanceof PrimitiveValue) {
             return new ArrayElemNode(index, value);
         }
+        // TODO -- discuss if it should just be drillDown without wrapping in AEN
         return new ArrayElemNode(index, drillDown(name + "[" + index + "]", value));
     }
 

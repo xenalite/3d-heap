@@ -1,5 +1,7 @@
 package com.imperial.heap3d.snapshot;
 
+import com.graphics.shapes.Colour;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -15,12 +17,14 @@ public class ArrayElemNode extends Node {
         super(String.format("[%d]", index));
         this.value = value;
         hasReference = false;
+        this.colour = Colour.RED;
     }
 
     public ArrayElemNode(int index, Node value) {
         super(String.format("[%d]", index));
         this.value = value;
         hasReference = true;
+        this.colour = Colour.RED;
     }
 
     public Object getValue(){
