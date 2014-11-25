@@ -10,6 +10,7 @@ import com.imperial.heap3d.snapshot.StackNode;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class HeapGraph extends RenderEngine {
 
@@ -34,10 +35,19 @@ public class HeapGraph extends RenderEngine {
 		System.out.println("Start Before Loop");
 			for(StackNode stackNode : stackNodes)
 			{
+				System.out.println("Stack Node: " + stackNode.getName());
 				if(currentLevel < levels.size())
 				{
 					System.out.println("Update "+currentLevel);
-					updateCurrentLevel(stackNode);
+					try
+					{
+
+						updateCurrentLevel(stackNode);
+					} catch	(Exception e)
+					{
+						System.out.println("Caught Exception in updateCurrentLevel"+e.getMessage());
+						currentLevel++;
+					}
 				} else
 				{
 					System.out.println("Add at "+currentLevel);
@@ -121,14 +131,20 @@ public class HeapGraph extends RenderEngine {
 //		{
 //			stackNodeHasChanged = true;
 //		}
-		if(!stackNode.doesRefNode()){
-			currentLevel++;
-			return;
-		}
 
 
 		boolean nodesHaveChanged = false;
 		Set<IDNode> nodesOnThisLayer = stackNode.walkHeap();
+
+		for (Node n : levelGraph.getVertices())
+		{
+			if(!(n instanceof StackNode) && !nodesOnThisLayer.contains(n))
+			{
+				removeShapeFrom3DSpace(n.getGeometry());
+				levelGraph.removeVertex(n);
+			}
+		}
+
 		for (IDNode n : nodesOnThisLayer)
 		{
 			//will return true if a new node is added
@@ -138,7 +154,8 @@ public class HeapGraph extends RenderEngine {
 		boolean edgesHaveChanged = false;
 		int edgeCount = 0;
 		// From stack to the first object on the heap
-		edgesHaveChanged |= levelGraph.addEdge( new HeapEdge(edgeCount++), stackNode, (Node) stackNode.getValue());
+		if(stackNode.doesRefNode())
+			edgesHaveChanged |= levelGraph.addEdge( new HeapEdge(edgeCount++), stackNode, (Node) stackNode.getValue());
 
 		for (IDNode n : nodesOnThisLayer) {
 			for(IDNode child : n.getChildren())
