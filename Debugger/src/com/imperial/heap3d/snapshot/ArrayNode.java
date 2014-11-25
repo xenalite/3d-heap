@@ -1,41 +1,34 @@
 package com.imperial.heap3d.snapshot;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.graphics.shapes.Colour;
 
-public class ArrayNode extends IDNode {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
-    private List<Object> elements;
+public class ArrayNode extends IdNode {
+
+    private List<Node> _elements;
 
     public ArrayNode(String name, long id) {
         super(name, id);
-        this.elements = new ArrayList<>();
+        this._elements = new ArrayList<>();
         this.colour = Colour.YELLOW;
     }
 
-    public Object getElementAt(int index) {
-        return elements.get(index);
+    public void addElement(Node element) { _elements.add(element); }
+
+    @Override
+    public Collection<Object> getPrimitives() {
+        // TODO -- technically not the length of the array
+        Collection<Object> primitives = new LinkedList<>();
+        primitives.add(_elements.size());
+        return primitives;
     }
 
-    public List<Object> getElements() {
-        return elements;
-    }
-
-    public void addPrimitive(Object value) {
-        elements.add(value);
-    }
-
-    public void addArray(ArrayNode arrayNode) {
-        elements.add(arrayNode);
-    }
-
-    public void addString(StringNode stringNode) {
-        elements.add(stringNode);
-    }
-
-    public void addReference(HeapNode heapNode) {
-        elements.add(heapNode);
+    @Override
+    public Collection<Node> getReferences() {
+        return _elements;
     }
 }

@@ -27,6 +27,9 @@ public class BreakpointManager {
     }
 
     public void notifyClassLoaded(ReferenceType referenceType) {
+        if(_instance == null)
+            throw new IllegalStateException("notify class loaded");
+
         String name = referenceType.name();
         if(_cachedBreakpoints.containsKey(name)) {
             Vector<String> watchpoints = _cachedBreakpoints.get(name).getValue();
@@ -47,11 +50,16 @@ public class BreakpointManager {
     }
 
     public void addWatchpoint(String className, String argument) {
-        List<ReferenceType> classes = _instance.classesByName(className);
-        if(!classes.isEmpty()) {
-            createWatchpointRequest(classes.get(0), argument);
+        boolean needToCache = _instance != null;
+        if(!needToCache) {
+            List<ReferenceType> classes = _instance.classesByName(className);
+            if (!classes.isEmpty()) {
+                createWatchpointRequest(classes.get(0), argument);
+            }
+            else needToCache = true;
         }
-        else {
+
+        if(needToCache) {
             Vector<String> entries;
             if (_cachedBreakpoints.containsKey(className)) {
                 entries = _cachedBreakpoints.get(className).getValue();
