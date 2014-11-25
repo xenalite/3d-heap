@@ -1,14 +1,15 @@
 <project name="debugger" basedir="." default="main">
 
-	<property name="src.dir" value="src" />
+	<property name="src.dir" value="src/com" />
 	<property name="build.dir" value="build" />
-	<property name="build.test.dir" value="${build.dir}/tests" />
 	<property name="classes.dir" value="${build.dir}/classes" />
 	<property name="jar.dir" value="${build.dir}/jar" />
 	<property name="main-class" value="com.imperial.heap3d.entry.SwingWrappedApplication" />
 	<property name="lib.dir" value="lib" />
-	<property name="test.dir" value="test" />
+	<property name="src.unittests.dir" value="tests/unit" />
+	<property name="src.systemtests.dir" value="tests/system" />
 	<property name="reports.dir" value="reports" />
+	<property name="systemreports.dir" value="systemreports" />
 
 	<path id="junit.class.path">
 		<fileset dir="${lib.dir}" includes="jar/*" />
@@ -29,13 +30,19 @@
 		<javac target="1.8" source="1.8" includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
 	</target>
 
-	<target name="compileTest" depends="compile">
-		<mkdir dir="${build.test.dir}" />
-		<javac target="1.8" source="1.8" includeantruntime="false" srcdir="${test.dir}" destdir="${build.test.dir}">
+	
+	<target name="compileUnitTest" depends="compile">
+		<javac target="1.8" source="1.8" includeantruntime="false" srcdir="src/${src.unittests.dir}" destdir="${classes.dir}">
 			<classpath refid="junit.class.path" />
 		</javac>
 	</target>
-
+	
+	<target name="compileSystemTest" depends="compile">
+		<javac target="1.8" source="1.8" includeantruntime="false" srcdir="src/${src.systemtests.dir}" destdir="${classes.dir}">
+			<classpath refid="junit.class.path" />
+		</javac>
+	</target>
+	
 	<target name="jar" depends="compile">
 		<mkdir dir="${jar.dir}" />
 		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
@@ -47,6 +54,7 @@
 
 	<target name="run" depends="jar">
 		<java fork="true" classname="${main-class}">
+			<!-- Different platforms -->
 			<jvmarg value="-Djava.library.path=lib/native/lwjgl/linux" />
 			<classpath>
 				<path refid="classpath" />
@@ -55,7 +63,7 @@
 		</java>
 	</target>
 
-	<target name="test" depends="compileTest">
+	<target name="unittest" depends="compileUnitTest">
 		<mkdir dir="${reports.dir}" />
 		
 		<junit printsummary="yes" fork="true" haltonfailure="no" failureproperty="test.failed">
@@ -63,15 +71,15 @@
 			<!-- to screen -->
 			<classpath refid="junit.class.path" />
 			<classpath>
-				<pathelement location="${build.test.dir}" />
+				<pathelement location="${classes.dir}" />
 			</classpath>
 
 			<formatter type="plain" />
 			<formatter type="xml" />
 
 			<batchtest todir="${reports.dir}">
-				<fileset dir="${test.dir}">
-					<include name="**/*.java" />
+				<fileset dir="src">
+					<include name="${src.unittests.dir}/**/*.java" />
 				</fileset>
 			</batchtest>
 		</junit>
@@ -84,6 +92,36 @@
 		<fail message="Test failure detected, check test results." if="test.failed" />
 	</target>
 
+	<target name="systemtest" depends="compileSystemTest">
+		<mkdir dir="${systemreports.dir}" />
+		
+		<junit printsummary="yes" fork="true" haltonfailure="no" failureproperty="test.failed">
+			<formatter type="plain" usefile="false" />
+			<!-- to screen -->
+			<classpath refid="junit.class.path" />
+			<jvmarg value="-Djava.library.path=lib/native/lwjgl/linux" />
+			<classpath>
+				<pathelement location="${classes.dir}" />
+			</classpath>
+
+			<formatter type="plain" />
+			<formatter type="xml" />
+
+			<batchtest todir="${systemreports.dir}">
+				<fileset dir="src">
+					<include name="${src.systemtests.dir}/snapshotTest/ScreenshotSystemTest.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+		<junitreport todir="${systemreports.dir}">
+			<fileset dir="${systemreports.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report todir="${systemreports.dir}" />
+		</junitreport>
+		<fail message="Test failure detected, check test results." if="test.failed" />
+	</target>
+	
 	<target name="clean-build" depends="clean,jar" />
 
 	<target name="main" depends="clean,run" />

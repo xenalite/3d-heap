@@ -3,10 +3,7 @@ package com.imperial.heap3d.application;
 import com.imperial.heap3d.snapshot.*;
 import com.sun.jdi.*;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by oskar on 24/11/14.
@@ -14,12 +11,15 @@ import java.util.Map;
 public class NodesBuilder {
 
     private final StackFrame _stackFrame;
+    private Map<Long, Node> _uniqueNodes;
 
     public NodesBuilder(StackFrame stackFrame) {
         _stackFrame = stackFrame;
+        _uniqueNodes = new HashMap<>();
     }
 
     public Collection<StackNode> build() {
+        _uniqueNodes.clear();
         Collection<StackNode> stackNodes = new LinkedList<>();
         ObjectReference thisObject = _stackFrame.thisObject();
 
@@ -50,28 +50,36 @@ public class NodesBuilder {
     private Node drillDown(String name, Value value) {
         ObjectReference reference = (ObjectReference) value;
         long id = reference.uniqueID();
+        if(_uniqueNodes.containsKey(id))
+            return _uniqueNodes.get(id);
+        System.out.println(String.format("name: %s, id:%s", name, id));
 
+        Node node;
         if (reference instanceof ArrayReference) {
             ArrayReference arrayReference = (ArrayReference) reference;
             ArrayNode arrayNode = new ArrayNode(name, id);
+            _uniqueNodes.put(id, arrayNode);
             int index = 0;
             for (Value arrayValue : arrayReference.getValues()) {
                 arrayNode.addElement(createArrayElemNode(name, arrayValue, index));
                 ++index;
             }
-            return arrayNode;
+            node = arrayNode;
         } else if (reference instanceof StringReference) {
             StringReference stringReference = (StringReference) reference;
-            return new StringNode(name, id, stringReference.toString());
+            node = new StringNode(name, id, stringReference.toString());
+            _uniqueNodes.put(id, node);
         } else {
             ObjectNode objectNode = new ObjectNode(name, id);
+            _uniqueNodes.put(id, objectNode);
             for (Map.Entry<Field, Value> entry : reference.getValues(reference.referenceType().allFields()).entrySet()) {
                 String fieldName = entry.getKey().name();
                 Value fieldValue = entry.getValue();
                 addValueToObjectNode(objectNode, fieldName, fieldValue);
             }
-            return objectNode;
+            node = objectNode;
         }
+        return node;
     }
 
     private Node createArrayElemNode(String name, Value value, int index) {

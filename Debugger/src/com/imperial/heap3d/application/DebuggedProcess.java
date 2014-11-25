@@ -13,12 +13,10 @@ import com.sun.jdi.event.*;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import static com.imperial.heap3d.application.ProcessState.*;
 
 public class DebuggedProcess {
@@ -31,7 +29,6 @@ public class DebuggedProcess {
     private ProcessState _state;
     private BreakpointManager _manager;
     private EventBus _eventBus;
-
     private ThreadReference _threadReference;
 
     public DebuggedProcess(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
@@ -161,5 +158,12 @@ public class DebuggedProcess {
 
     public void addWatchpoint(String className, String argument) {
         _manager.addWatchpoint(className, argument);
+    }
+
+    // TODO -- I am crying blood.
+    public void screenShot(String path){
+    	java.io.File f = new java.io.File(path);
+    	_heapGraphFactory.create().screenShot(f.getParent(), f.getName());
+
     }
 }
