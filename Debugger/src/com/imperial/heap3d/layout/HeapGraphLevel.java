@@ -4,6 +4,7 @@ import com.graphics.shapes.Colour;
 import com.heap3d.layout.FRLayout;
 import com.heap3d.layout.GraphImpl;
 import com.heap3d.layout.Layout;
+import com.heap3d.layout.SpringLayout;
 import com.imperial.heap3d.snapshot.HeapNode;
 import com.imperial.heap3d.snapshot.IDNode;
 import com.imperial.heap3d.snapshot.Node;
@@ -23,7 +24,7 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 
 	public HeapGraphLevel(int id) {
 		this.id = id;
-		this.layout = new FRLayout<Node, HeapEdge>(this);
+		this.layout = new SpringLayout<>(this);
 	}
 
 	@Override
@@ -43,23 +44,13 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 			float x = getX(n);
 			float y = getY(n);
 			float z = getZ(n);
-			float spacing = 5;
-			if (!isRoot(n)) {
-				if (x < 0) {
-					x -= spacing;
-				} else {
-					x += spacing;
-				}
 
-				if (y < 0) {
-					y -= spacing;
-				} else {
-					y += spacing;
-				}
+			if (!isRoot(n)) {
 				n.buildGeometry(x, y, z, getScale(n));
 			}else{
 				n.buildGeometry(x, y, z, getScale(n), new Colour((float)Math.random(), (float)Math.random(), (float)Math.random()));
 			}
+			System.out.println("Building Node: "+n.toString());
 			r.addShapeTo3DSpace(n.getGeometry());
 			return true;
 		} else
@@ -68,17 +59,35 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 		}
 	}
 
+	protected float spacing = 10;
 	public float getX(Node n) {
-		return (float) layout.transform(n).getX() / 10;
-	}
-
-	public float getY(Node n) {
-		return (float) layout.transform(n).getY() / 10;
+		float x = (float)layout.transform(n).getX() / 10;
+		if (!isRoot(n)) {
+			if (x < 0) {
+				x -= spacing;
+			} else {
+				x += spacing;
+			}
+		}
+			return x;
 	}
 
 	public float getZ(Node n) {
-		return isRoot(n) ? levelOffset * id
-				: ((float) Math.random() * levelOffset) + id * levelOffset;
+		float y = (float) layout.transform(n).getY() / 10;
+		if (!isRoot(n)) {
+			if (y < 0) {
+				y -= spacing;
+			} else {
+				y += spacing;
+			}
+		}
+		return y;
+	}
+
+	public float getY(Node n) {
+		return levelOffset * id;
+//				isRoot(n) ? levelOffset * id
+//				: ((float) Math.random() * levelOffset) + id * levelOffset;
 	}
 
 	public float getScale(Node n) {
