@@ -63,11 +63,11 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 		return (float) layout.transform(n).getX() / 10;
 	}
 
-	public float getY(Node n) {
+	public float getZ(Node n) {
 		return (float) layout.transform(n).getY() / 10;
 	}
 
-	public float getZ(Node n) {
+	public float getY(Node n) {
 		return isRoot(n) ? levelOffset * id
 				: ((float) Math.random() * levelOffset) + id * levelOffset;
 	}

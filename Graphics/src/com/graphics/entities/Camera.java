@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Camera {
 
-	private Vector3f position = new Vector3f(0, 0, 0);
+	private Vector3f position = new Vector3f(0, 0, 120);
 	private float pitch, yaw, roll;
 	
 	private static final float SPEED = 0.2f;
@@ -16,7 +16,6 @@ public class Camera {
 	private static int MOUSE_RIGHT = 1;
 	
 	public Camera() {
-		Mouse.setGrabbed(true);
 	}
 	
 	public void move(){

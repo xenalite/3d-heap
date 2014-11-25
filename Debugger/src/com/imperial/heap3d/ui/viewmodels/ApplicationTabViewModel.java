@@ -59,9 +59,9 @@ public class ApplicationTabViewModel {
         _stepOverActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEP)));
         _stepIntoActionCommand = new RelayCommand(() -> System.out.println("Step into!"));
         _stepOutActionCommand = new RelayCommand(() -> System.out.println("Step out!"));
-        _screenShotCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createScreenShotEvent(_screenShotPath.getValue())));
         _screenShotPath = new SimpleStringProperty(this, "", "ScreenShot/img");
-        _className = new SimpleStringProperty(this, "", "test_programs.small_stack.Program");
+        _screenShotCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createScreenShotEvent(_screenShotPath.getValue())));
+        _className = new SimpleStringProperty(this, "", "tests.system.testprograms.small_stack.Program");
         _classPath = new SimpleStringProperty(this, "", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
         _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + "/bin/java");
         _processConsole = new SimpleStringProperty("this", "", "");
