@@ -5,8 +5,6 @@ import com.heap3d.layout.FRLayout;
 import com.heap3d.layout.GraphImpl;
 import com.heap3d.layout.Layout;
 import com.heap3d.layout.SpringLayout;
-import com.imperial.heap3d.snapshot.HeapNode;
-import com.imperial.heap3d.snapshot.IDNode;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
 

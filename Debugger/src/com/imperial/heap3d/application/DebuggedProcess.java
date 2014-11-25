@@ -1,24 +1,23 @@
 package com.imperial.heap3d.application;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
-import com.imperial.heap3d.snapshot.*;
-import com.sun.jdi.*;
+import com.imperial.heap3d.snapshot.StackNode;
+import com.sun.jdi.ReferenceType;
+import com.sun.jdi.StackFrame;
+import com.sun.jdi.ThreadReference;
+import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import static com.imperial.heap3d.application.ProcessState.*;
-import static com.imperial.heap3d.events.ProcessEventType.DEBUG_MSG;
-import static java.util.Map.Entry;
 
 public class DebuggedProcess {
 
@@ -30,9 +29,8 @@ public class DebuggedProcess {
     private ProcessState _state;
     private BreakpointManager _manager;
     private EventBus _eventBus;
+    private ThreadReference _threadReference;
 
-    private ThreadReference _threadRef;
-    
     public DebuggedProcess(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
         _state = STOPPED;
         _definition = definition;
@@ -79,54 +77,48 @@ public class DebuggedProcess {
     public void resume() {
         if (_instance != null && _state == PAUSED) {
             _state = RUNNING;
-            _threadRef = null;
+            _threadReference = null;
             _instance.resume();
         }
     }
 
     public boolean waitForEvents() {
-        if(_instance != null && _state == RUNNING) {
+        if (_instance != null && _state == RUNNING) {
             EventQueue vmQueue = _instance.eventQueue();
             EventSet set;
             try {
                 set = vmQueue.remove(0);
-            } catch (InterruptedException e) { return true; }
-            for(Event e : set) {
+            } catch (InterruptedException e) {
+                return true;
+            }
+            for (Event e : set) {
                 System.out.println(e);
-                if(e instanceof VMDeathEvent) {
+                if (e instanceof VMDeathEvent) {
                     return false;
-                }
-                else if(e instanceof ClassPrepareEvent) {
+                } else if (e instanceof ClassPrepareEvent) {
                     ReferenceType classReference = ((ClassPrepareEvent) e).referenceType();
                     _manager.notifyClassLoaded(classReference);
-                }
-                else if(e instanceof ModificationWatchpointEvent) {
+                } else if (e instanceof ModificationWatchpointEvent) {
                     _state = PAUSED;
                     ModificationWatchpointEvent mwe = (ModificationWatchpointEvent) e;
-                    _threadRef = mwe.thread();
+                    _threadReference = mwe.thread();
                     removeStepRequests();
                     analyseVariables(mwe);
-                }
-                else if(e instanceof BreakpointEvent) {
+                } else if (e instanceof BreakpointEvent) {
                     _state = PAUSED;
                     BreakpointEvent be = (BreakpointEvent) e;
-                    _eventBus.post(new ProcessEvent(DEBUG_MSG,
-                            String.format("Breakpoint hit @%s", be.location())));
-                    _threadRef = be.thread();
+                    _threadReference = be.thread();
                     removeStepRequests();
                     analyseVariables(be);
-                }
-                else if(e instanceof StepEvent) {
+                } else if (e instanceof StepEvent) {
                     StepEvent se = (StepEvent) e;
-                    _threadRef = se.thread();
+                    _threadReference = se.thread();
                     _state = PAUSED;
-                    _eventBus.post(new ProcessEvent(DEBUG_MSG,
-                            String.format("Step into @%s", se.location())));
                     e.request().disable();
                     analyseVariables((LocatableEvent) e);
                 }
             }
-            if(_state == RUNNING)
+            if (_state == RUNNING)
                 set.resume();
         }
         return true;
@@ -134,142 +126,25 @@ public class DebuggedProcess {
 
     private void analyseVariables(LocatableEvent event) {
         Collection<StackNode> stackNodes = new LinkedList<>();
-
         try {
             StackFrame stackFrame = event.thread().frame(0);
-            processLocalVariables(stackNodes, stackFrame);
+            stackNodes = new NodesBuilder(stackFrame).build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        catch(Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-
         _heapGraphFactory.create().giveStackNodes(stackNodes);
-    }
-
-    private void processLocalVariables(Collection<StackNode> stackNodes, StackFrame stackFrame) throws AbsentInformationException {
-
-        ObjectReference thisObject = stackFrame.thisObject();
-
-        if (thisObject != null) {
-            String name = "this";
-            stackNodes.add(new StackNode(name, drillDown(name, thisObject)));
-        }
-
-        for (Entry<LocalVariable, Value> entry : stackFrame.getValues(stackFrame.visibleVariables()).entrySet()) {
-            String name = entry.getKey().name();
-            Value value = entry.getValue();
-
-            if (value instanceof PrimitiveValue) {
-                stackNodes.add(new StackNode(name, processValue(value)));
-            } else {
-                stackNodes.add(new StackNode(name, drillDown(name, value)));
-            }
-        }
-    }
-
-    private static Node drillDown(String name, Value value) {
-        ObjectReference reference = (ObjectReference) value;
-        long id = reference.uniqueID();
-
-        Node node;
-        if (reference instanceof ArrayReference) {
-            ArrayReference arrayReference = (ArrayReference) reference;
-            node = new ArrayNode(name, id);
-            List<Value> arrayValues = arrayReference.getValues();
-            for (int index = 0; index < arrayValues.size(); ++index) {
-                Value arrayValue = arrayValues.get(index);
-                addArrayNodeValue((ArrayNode) node, index, arrayValue);
-            }
-        } else if (reference instanceof StringReference) {
-            StringReference stringReference = (StringReference) reference;
-            node = new StringNode(name, id, stringReference.toString());
-        } else {
-            node = new HeapNode(name, id);
-            for (Entry<Field, Value> entry : reference.getValues(reference.referenceType().allFields()).entrySet()) {
-                String fieldName = entry.getKey().name();
-                Value fieldValue = entry.getValue();
-                addHeapNodeValue((HeapNode) node, fieldName, fieldValue);
-            }
-        }
-
-        return node;
-    }
-
-    private static void addArrayNodeValue(ArrayNode node, int index, Value value) {
-        if (value instanceof PrimitiveValue) {
-            node.addPrimitive(processValue(value));
-        } else if (value instanceof ArrayReference) {
-            node.addArray((ArrayNode) drillDown(arrayIndexToString(node.getName(), index), value));
-        } else if (value instanceof StringReference) {
-            node.addString((StringNode) drillDown(arrayIndexToString(node.getName(), index), value));
-        } else {
-            node.addReference((HeapNode) drillDown(arrayIndexToString(node.getName(), index), value));
-        }
-    }
-
-    private static String arrayIndexToString(String name, int index) {
-        return name + "[" + String.valueOf(index) + "]";
-    }
-
-    private static void addHeapNodeValue(HeapNode node, String name, Value value) {
-        if (value instanceof PrimitiveValue) {
-            node.addPrimitive(name, processValue(value));
-        } else if (value instanceof ArrayReference) {
-            node.addArray((ArrayNode) drillDown(name, value));
-        } else if (value instanceof StringReference) {
-            node.addString((StringNode) drillDown(name, value));
-        } else {
-            node.addReference((HeapNode) drillDown(name, value));
-        }
-    }
-
-    private static Object processValue(Value value) {
-        PrimitiveValue primitive = (PrimitiveValue) value;
-        if (primitive instanceof BooleanValue) {
-            return ((BooleanValue) primitive).value();
-        }
-
-        if (primitive instanceof ByteValue) {
-            return ((ByteValue) primitive).value();
-        }
-
-        if (primitive instanceof CharValue) {
-            return ((CharValue) primitive).value();
-        }
-
-        if (primitive instanceof DoubleValue) {
-            return ((DoubleValue) primitive).value();
-        }
-
-        if (primitive instanceof FloatValue) {
-            return ((FloatValue) primitive).value();
-        }
-
-        if (primitive instanceof IntegerValue) {
-            return ((IntegerValue) primitive).value();
-        }
-
-        if (primitive instanceof LongValue) {
-            return ((LongValue) primitive).value();
-        }
-
-        if (primitive instanceof ShortValue) {
-            return ((ShortValue) primitive).value();
-        }
-
-        return null;
     }
 
     private void removeStepRequests() {
         _instance.eventRequestManager().stepRequests().stream()
-                .filter(sr -> _threadRef.equals(sr.thread()))
+                .filter(sr -> _threadReference.equals(sr.thread()))
                 .forEach(EventRequest::disable);
     }
 
     public void createStepRequest() {
-        if(_threadRef != null && _state == PAUSED) {
+        if (_threadReference != null && _state == PAUSED) {
             EventRequestManager erm = _instance.eventRequestManager();
-            StepRequest sr = erm.createStepRequest(_threadRef, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
+            StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
             sr.addCountFilter(1);
             sr.enable();
             resume();
@@ -285,6 +160,7 @@ public class DebuggedProcess {
         _manager.addWatchpoint(className, argument);
     }
 
+    // TODO -- I am crying blood.
     public void screenShot(String path){
     	java.io.File f = new java.io.File(path);
     	_heapGraphFactory.create().screenShot(f.getParent(), f.getName());

@@ -1,40 +1,47 @@
 package com.imperial.heap3d.snapshot;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class StackNode extends Node {
 
     private Object value;
+    private boolean hasReference;
 
     public StackNode(String name, Object value) {
         super(name);
         this.value = value;
+        hasReference = false;
+    }
+
+    public StackNode(String name, Node value) {
+        super(name);
+        this.value = value;
+        hasReference = true;
     }
     
     public Object getValue(){
     	return value;
     }
     
-    public boolean doesRefNode(){
-    	return value instanceof Node;
+    public boolean hasReference(){
+    	return hasReference;
     }
     
-    /**
-     * Walk the heap from the stack node
-     * @return The entire heap from the stack elem, or empty if it is a primitive
-     */
-    public Set<IDNode> walkHeap(){
-    	
-    	if(value instanceof HeapNode)
-    		return ((HeapNode)value).walkHeap();
-    	
-    	Set<IDNode> nodes = new HashSet<IDNode>();
-    	
-    	if(value instanceof IDNode)
-    		nodes.add((IDNode) value);
-    	
-    	return nodes;
+    @Override
+    public Collection<Object> getPrimitives() {
+        Collection<Object> primitives = new LinkedList<>();
+        if(!hasReference)
+            primitives.add(value);
+        return primitives;
     }
 
+    @Override
+    public Collection<Node> getReferences() {
+        Collection<Node> nodes = new LinkedList<>();
+        if(hasReference) {
+            nodes.add((Node) value);
+        }
+        return nodes;
+    }
 }

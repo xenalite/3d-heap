@@ -1,20 +1,13 @@
 package com.graphics;
 
 import java.awt.Canvas;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
-
 import com.graphics.entities.Camera;
 import com.graphics.entities.Light;
 import com.graphics.raycasting.RayCastUtil;
@@ -37,6 +30,7 @@ public abstract class RenderEngine implements Runnable{
 	private boolean resizable;
 	private final Canvas canvas;
 	private float r, g, b, a;
+	private Camera camera;
 	
 	public RenderEngine(String title, int width, int height, boolean resizable){
 		this.title = title;
@@ -70,7 +64,7 @@ public abstract class RenderEngine implements Runnable{
 		renderer.setBackB(b);
 		renderer.setBackA(a);
 		
-		Camera camera = new Camera();
+		camera = new Camera();
 		
 		lastFps = getTime();
 		
@@ -174,5 +168,18 @@ public abstract class RenderEngine implements Runnable{
 	
 	protected void captureScreen(String pathFromWorkspace, String filenameWithoutExtention){
 		screenshot.capture(pathFromWorkspace, filenameWithoutExtention);
+	}
+	
+	protected void setCameraPosition(float x, float y, float z){
+		if(camera == null)
+			return;
+		camera.setPosition(new Vector3f(x, y, z));
+	}
+	
+	protected void moveCameraPosition(float dx, float dy, float dz){
+		if(camera == null)
+			return;
+		Vector3f oldPos = camera.getPosition();
+		camera.setPosition(new Vector3f(oldPos.x+dx, oldPos.y+dy, oldPos.z+dz));
 	}
 }
