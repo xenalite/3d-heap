@@ -1,6 +1,7 @@
 package tests.system.snapshotTest;
 
 import javafx.embed.swing.JFXPanel;
+
 import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.VirtualMachineProvider;
@@ -11,15 +12,28 @@ public class DebuggerController {
 
     private ApplicationTabViewModel _applicationViewModel;
     private BreakpointsTabViewModel _breakpointsVM;
-
+    private HeapGraphFactory _heapGraphFactory;
+    private Thread _renderThread;
+    
     public DebuggerController() {
     	new JFXPanel();
-        HeapGraphFactory heapGraphFactory = new HeapGraphFactory();
-        Thread t = new Thread(heapGraphFactory.create(), "lwjgl");
-        t.start();
+        _heapGraphFactory = new HeapGraphFactory();
+        _renderThread = new Thread(_heapGraphFactory.create(), "lwjgl");
+        _renderThread.start();
         EventBus e = new EventBus();
         setBreakpointsVM(new BreakpointsTabViewModel(e));
-        setApplicationVM(new ApplicationTabViewModel(e, new VirtualMachineProvider(), heapGraphFactory));
+        setApplicationVM(new ApplicationTabViewModel(e, new VirtualMachineProvider(), _heapGraphFactory));
+    }
+    
+    public void cleanup(){
+    	_heapGraphFactory.create().finish();
+    	try {
+			_renderThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+    	_renderThread = null;
+    	_heapGraphFactory = null;
     }
 
     public void setApplicationVM(ApplicationTabViewModel windowVM) { this._applicationViewModel = windowVM; }

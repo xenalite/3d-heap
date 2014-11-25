@@ -99,7 +99,7 @@
 			<formatter type="plain" usefile="false" />
 			<!-- to screen -->
 			<classpath refid="junit.class.path" />
-			<jvmarg value="-Djava.library.path=lib/native/lwjgl/windows" />
+			<jvmarg value="-Djava.library.path=lib/native/lwjgl/linux" />
 			<classpath>
 				<pathelement location="${classes.dir}" />
 			</classpath>
@@ -109,7 +109,7 @@
 
 			<batchtest todir="${systemreports.dir}">
 				<fileset dir="src">
-					<include name="${src.systemtests.dir}/snapshotTest/Tests.java" />
+					<include name="${src.systemtests.dir}/snapshotTest/ScreenshotSystemTest.java" />
 				</fileset>
 			</batchtest>
 		</junit>

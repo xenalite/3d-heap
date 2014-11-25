@@ -11,6 +11,8 @@ HeapVisualizer/bin/*
 */reports/*
 */bin/*
 build
+*/screenshots/*
+*/systemreports/*
 
 # Eclipse files
 .classpath
