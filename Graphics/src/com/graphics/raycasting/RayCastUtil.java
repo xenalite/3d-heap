@@ -1,51 +1,68 @@
 package com.graphics.raycasting;
 
+import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.graphics.entities.Entity;
 import com.graphics.shapes.Shape;
 
 public class RayCastUtil {
-
-	public static Vector3f triag1 = new Vector3f();
-	public static Vector3f triag2 = new Vector3f();
-	public static Vector3f triag3 = new Vector3f();
-	public static Vector3f normal = new Vector3f();
+	
 	public static final float ACCURACY = 0.00001f;
 
+	static StringBuilder b = new StringBuilder();
+	
 	public static Vector3f rayTest(Vector3f rayOrigin, Vector3f rayDirection,
-			Shape shape) {
+			Shape shape, boolean v) {
 		
 		Entity e = shape.getEntity();
 		float[] vertexes = shape.getVertices();
 		float[] normals = shape.getNormals();
-		Vector3f pos = e.getPosition();
+		int[] indicies = shape.getIndices();
+		Vector3f pos = new Vector3f(0, 0, 0);
+		//pos = e.getPosition();//.normalise(pos);
 		Vector3f result = null;
 		float resultDist = Float.MAX_VALUE;
-
-		for (int i = 0; i < vertexes.length;) {
+		
+		for (int i = 0; i < indicies.length;) {
 			// fix we need to adjust the triangle coords by the model position
-			Vector3f normal = new Vector3f(normals[i + 0], normals[i + 1],
-					normals[i + 2]);
-			Vector3f point1 = new Vector3f(vertexes[i] + pos.x, vertexes[i + 1]
-					+ pos.y, vertexes[i + 2] + pos.z);
-			Vector3f point2 = new Vector3f(vertexes[i + 3] + pos.x,
-					vertexes[i + 4] + pos.y, vertexes[i + 5] + pos.z);
-			Vector3f point3 = new Vector3f(vertexes[i + 6] + pos.x,
-					vertexes[i + 7] + pos.y, vertexes[i + 8] + pos.z);
+			int indNorm1 = indicies[i]*3;
+			Vector3f normal = new Vector3f(normals[indNorm1], normals[indNorm1 + 1],
+					normals[indNorm1 + 2]);
+			
+			int indPoint1 = indicies[i] * 3;
+			Vector3f point1 = new Vector3f(vertexes[indPoint1] + pos.x, vertexes[indPoint1+1]
+					+ pos.y, vertexes[indPoint1+2] + pos.z);
+			
+			int indPoint2 = indicies[i+1] * 3;
+			Vector3f point2 = new Vector3f(vertexes[indPoint2] + pos.x,
+					vertexes[indPoint2+1] + pos.y, vertexes[indPoint2+2] + pos.z);
+			
+			int indPoint3 = indicies[i+2] * 3;
+			Vector3f point3 = new Vector3f(vertexes[indPoint3] + pos.x,
+					vertexes[indPoint3+1] + pos.y, vertexes[indPoint3+2] + pos.z);
+			
+			
 			Vector3f tempResult = rayTest(rayOrigin, rayDirection, normal,
 					point1, point2, point3);
+			
 			if (tempResult != null) {
-			//	float xd = tempResult.x-rayOrigin.x;
-			//	float yd = tempResult.y-rayOrigin.y;
-			//	float zd = tempResult.z-rayOrigin.z;
-			//	float d = (float)Math.sqrt(xd*xd + yd*yd + zd*zd);
-			//	if (d < resultDist) {
-			//		resultDist = d;
+				float xd = tempResult.x-rayOrigin.x;
+				float yd = tempResult.y-rayOrigin.y;
+				float zd = tempResult.z-rayOrigin.z;
+				float d = (float)Math.sqrt(xd*xd + yd*yd + zd*zd);
+				b.append("distnace:::: "+ d);
+				if (d < resultDist) {
+					resultDist = d;
 					result = tempResult;
-			//	}
+				}
 			}
-			i += 9;
+			
+			i += 3;
+		}
+		if(v){
+			System.out.println(b.toString());
+			b = new StringBuilder();
 		}
 		return result;
 	}
@@ -53,14 +70,10 @@ public class RayCastUtil {
 	public static Vector3f rayTest(Vector3f rayOrigin, Vector3f rayDirection,
 			Vector3f planeNormal, Vector3f trianglePoint1,
 			Vector3f trianglePoint2, Vector3f trianglePoint3) {
-		System.out.println("RayStart = " + rayOrigin);
-		System.out.println("RayDir = " + rayDirection);
-		System.out.println("IntPoint");
-
-		triag1 = trianglePoint1;
-		triag2 = trianglePoint2;
-		triag3 = trianglePoint3;
-		normal = planeNormal;
+		b.append("\n-------------\n");
+		b.append("RayStart = " + rayOrigin+"\n");
+		b.append("RayDir = " + rayDirection+"\n");
+		b.append("IntPoint"+"\n");
 
 		// nx, ny, nz : normal vector of the plane
 		// x0, y0, z0 = a point on the plane
@@ -81,23 +94,33 @@ public class RayCastUtil {
 		// a= xd * nx + yd * ny + zd * nz;
 		float dot = rayDirection.x * planeNormal.x + rayDirection.y
 				* planeNormal.y + rayDirection.z * planeNormal.z;
-		System.out.println("DOT = " + dot);
+		b.append("DOT = " + dot+"\n");
 		float t = 0;
 		// if dot = 0 then the ray is pararel and will never intersect the
 		// plane. T should = 0 in this case.
 		// if dot < 0 then the ray intersects but it does so in the opposite
 		// direction of the cast. so basically this should be treated as a miss.
 		// leave t equal to 0
-		if (dot == 0) {
+		if (dot <= 0) {
 			return null; // this line is parrel and will never touch
 		}
+		b.append("pointOnPlane: "+pointOnPLane+"\n");
 		// (p1.x * nx + p1.y * ny + p1.z * nz - nx * xs - ny * ys - nz * zs)
+		
 		float coordRatio = pointOnPLane.x * planeNormal.x + pointOnPLane.y
 				* planeNormal.y + pointOnPLane.z * planeNormal.z
 				- planeNormal.x * rayOrigin.x - planeNormal.y * rayOrigin.y
 				- planeNormal.z * rayOrigin.z;
-		t = coordRatio / dot;
-		System.out.println("T = " + t);
+			/*	
+		float coordRatio = planeNormal.x * rayOrigin.x + planeNormal.y
+				* rayOrigin.y + planeNormal.z * rayOrigin.z;
+		
+		float coordRatio = (planeNormal.x * rayOrigin.x + planeNormal.y * rayOrigin.y
+				+ planeNormal.z * rayOrigin.z) - (pointOnPLane.x * planeNormal.x + pointOnPLane.y
+						* planeNormal.y + pointOnPLane.z * planeNormal.z);
+		*/
+		t = (coordRatio / dot);
+		b.append("T = " + t+"\n");
 		if (t < 0) { // if t<0 then they intersect but the direction of
 						// intersection is opposite the cast direction.
 			return null;
@@ -111,34 +134,34 @@ public class RayCastUtil {
 		float intZ = rayOrigin.z + t * rayDirection.z;
 
 		Vector3f intPoint = new Vector3f(intX, intY, intZ);
-		System.out.println("IntPoint = " + intPoint);
+		b.append("IntPoint = " + intPoint+"\n");
 
 		float fullArea = calculateTriangleArea(trianglePoint1, trianglePoint2,
 				trianglePoint3);
-		System.out.println("Full Area = " + fullArea);
+		b.append("Full Area = " + fullArea+"\n");
 
 		float subTriangle1 = calculateTriangleArea(trianglePoint1,
 				trianglePoint2, intPoint);
-		System.out.println("Area1 = " + subTriangle1);
+		b.append("Area1 = " + subTriangle1+"\n");
 
 		float subTriangle2 = calculateTriangleArea(trianglePoint2,
 				trianglePoint3, intPoint);
-		System.out.println("Area2 = " + subTriangle2);
+		b.append("Area2 = " + subTriangle2+"\n");
 
 		float subTriangle3 = calculateTriangleArea(trianglePoint1,
 				trianglePoint3, intPoint);
-		System.out.println("Area3 = " + subTriangle3);
+		b.append("Area3 = " + subTriangle3+"\n");
 
 		float totalSubAreas = subTriangle1 + subTriangle2 + subTriangle3;
-		System.out.println("Area Total = " + totalSubAreas);
+		b.append("Area Total = " + totalSubAreas+"\n");
 
 		// have an accuracy approach is import cause rounding errors will happen
 		// when doing Math.sqr. !
 		if (Math.abs(fullArea - totalSubAreas) < ACCURACY) {
-			System.out.println("HIT");
+			b.append("HIT"+"\n");
 			return intPoint;
 		} else {
-			System.out.println("MISS");
+			b.append("MISS"+"\n");
 			return null;
 		}
 
