@@ -34,9 +34,9 @@ public class NodesBuilder {
             return stackNodes;
         }
 
-        for (Map.Entry<LocalVariable, Value> entry : _stackFrame.getValues(localVariables).entrySet()) {
-            String name = entry.getKey().name();
-            Value value = entry.getValue();
+        for (LocalVariable localVariable : localVariables) {
+            String name = localVariable.name();
+            Value value = _stackFrame.getValue(localVariable);
 
             if (value == null || value instanceof PrimitiveValue) {
                 stackNodes.add(new StackNode(name, value));
@@ -50,9 +50,9 @@ public class NodesBuilder {
     private Node drillDown(String name, Value value) {
         ObjectReference reference = (ObjectReference) value;
         long id = reference.uniqueID();
+        System.out.println(String.format("name: %s, id:%s", name, id));
         if(_uniqueNodes.containsKey(id))
             return _uniqueNodes.get(id);
-        System.out.println(String.format("name: %s, id:%s", name, id));
 
         Node node;
         if (reference instanceof ArrayReference) {
@@ -64,7 +64,7 @@ public class NodesBuilder {
                 arrayNode.addElement(createArrayElemNode(name, arrayValue, index));
                 ++index;
             }
-            node = arrayNode;
+            return arrayNode;
         } else if (reference instanceof StringReference) {
             StringReference stringReference = (StringReference) reference;
             node = new StringNode(name, id, stringReference.toString());
@@ -77,7 +77,7 @@ public class NodesBuilder {
                 Value fieldValue = entry.getValue();
                 addValueToObjectNode(objectNode, fieldName, fieldValue);
             }
-            node = objectNode;
+            return objectNode;
         }
         return node;
     }

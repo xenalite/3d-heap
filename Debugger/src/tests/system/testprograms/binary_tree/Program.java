@@ -5,6 +5,7 @@ import tests.system.testprograms.utilities.TreeNode;;
 /**
  * Created by oskar on 21/11/14.
  */
+@SuppressWarnings("ALL")
 public class Program {
 
     public static void main(String[] args) {

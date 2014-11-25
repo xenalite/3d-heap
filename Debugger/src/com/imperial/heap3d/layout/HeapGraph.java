@@ -30,7 +30,10 @@ public class HeapGraph extends RenderEngine {
 	@Override
 	protected void beforeLoop() {
 		super.setBackgroundColour(0.1f, 0.1f, 0.1f, 0.1f);
-		stackNodes.forEach(this::addLevel);
+		for(StackNode s : stackNodes) {
+			System.out.println(s.getName());
+			addLevel(s);
+		}
 	}
 
 	@Override

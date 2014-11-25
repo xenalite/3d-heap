@@ -92,6 +92,13 @@ public class SwingWrappedApplication {
     }
 
     private void initFrame() {
+        Canvas canvas = new Canvas();
+        canvas.setSize(MIN_CANVAS_WIDTH, MIN_CANVAS_HEIGHT);
+        canvas.setVisible(true);
+
+        HeapGraphFactory factory = new HeapGraphFactory(canvas);
+        _injector.as(Characteristics.CACHE).addComponent(factory);
+
         JFrame frame = new JFrame();
         JSplitPane pane = new JSplitPane();
         JSplitPane leftPane = new JSplitPane();
@@ -101,10 +108,6 @@ public class SwingWrappedApplication {
 
         JFXPanel fxBottomPanel = new JFXPanel();
         Platform.runLater(() -> fxBottomPanel.setScene(initFXBottomPanel()));
-
-        Canvas canvas = new Canvas();
-        canvas.setSize(MIN_CANVAS_WIDTH, MIN_CANVAS_HEIGHT);
-        canvas.setVisible(true);
 
         leftPane.setTopComponent(canvas);
         leftPane.setBottomComponent(fxBottomPanel);
@@ -119,9 +122,6 @@ public class SwingWrappedApplication {
         frame.setVisible(true);
 
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-        HeapGraphFactory factory = new HeapGraphFactory(canvas);
-        _injector.as(Characteristics.CACHE).addComponent(factory);
 
         HeapGraph hgraph = factory.create();
         ExecutorService service = Executors.newSingleThreadExecutor(r -> {
