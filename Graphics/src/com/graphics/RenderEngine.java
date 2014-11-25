@@ -3,17 +3,25 @@ package com.graphics;
 import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
+
 import com.graphics.entities.Camera;
 import com.graphics.entities.Light;
+import com.graphics.raycasting.Ray;
 import com.graphics.raycasting.RayCastUtil;
-import com.graphics.raycasting.UnprojectUtil;
 import com.graphics.rendering.MasterRenderer;
+import com.graphics.rendering.Renderer;
+import com.graphics.shapes.Colour;
+import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
+import com.graphics.utils.Maths;
 
 public abstract class RenderEngine implements Runnable{
 
@@ -58,12 +66,6 @@ public abstract class RenderEngine implements Runnable{
 			DisplayManager.createDisplay(canvas);
 		
 		renderer = new MasterRenderer();
-		
-		renderer.setBackR(r);
-		renderer.setBackG(g);
-		renderer.setBackB(b);
-		renderer.setBackA(a);
-		
 		camera = new Camera();
 		
 		lastFps = getTime();
@@ -71,6 +73,11 @@ public abstract class RenderEngine implements Runnable{
 		beforeLoop();
 		
 		while(!Display.isCloseRequested() && !breakFromLoop){
+			
+			renderer.setBackR(r);
+			renderer.setBackG(g);
+			renderer.setBackB(b);
+			renderer.setBackA(a);
 			
 			if(Keyboard.isKeyDown(Keyboard.KEY_P))
 				screenshot.capture();
@@ -86,30 +93,38 @@ public abstract class RenderEngine implements Runnable{
 			renderer.render(sun, camera);
 			DisplayManager.updateDisplay();
 			updateFPS();
-
+			
 			// ##################################
 			// Ray Picking - Needs fixing
 			if(!Mouse.isButtonDown(1))
 				down = false;
-
+			Ray r = new Ray();
+			r.createRay(camera);
 			if(Mouse.isButtonDown(1) && !down){
 				down = true;
-				Vector3f near = UnprojectUtil.unproject(Mouse.getX(), Mouse.getY(), 0);
-				Vector3f far = UnprojectUtil.unproject(Mouse.getX(), Mouse.getY(), 1);
+				
+				
+			//	Ray r = new Ray();
+			//	r.createRay(camera);
 				//---
-				for(Shape e : shapes){
+		//		for(Shape e : shapes){
 
-					Vector3f vec = RayCastUtil.rayTest(near, far, e);
+				System.out.println(r.origin + ", "+ r.direction);
+					Vector3f vec = RayCastUtil.rayTest(r.origin, r.direction, shapes.get(0), true);
 					System.out.println(vec);
-				}
+					System.out.println("\n======================\n");
+					
+		//		}
 				
 			}
 			// ##################################
+			//System.out.println(r.direction);
 		}
 		
 		afterLoop();
 		cleanUp();
 	}
+	
 	boolean down;
 	protected abstract void beforeLoop();
 	protected abstract void inLoop();
