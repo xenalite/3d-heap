@@ -5,9 +5,6 @@ import com.google.common.eventbus.Subscribe;
 import com.imperial.heap3d.events.ControlEvent;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.ProcessEventType;
-import com.imperial.heap3d.events.StartDefinition;
-import com.imperial.heap3d.factories.HeapGraphFactory;
-import com.imperial.heap3d.factories.IVirtualMachineProvider;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Semaphore;
@@ -80,7 +77,7 @@ public class ControlEventHandler {
             break;
             case SCREENSHOT: {
                 System.out.println("taking screen shot");
-                _dprocess.screenShot(e.argument);
+//                _dprocess.screenShot(e.argument);
             }
             break;
             case STOP: {

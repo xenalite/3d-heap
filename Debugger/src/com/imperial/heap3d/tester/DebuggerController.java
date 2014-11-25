@@ -41,8 +41,6 @@ public class DebuggerController {
         this._breakpointsVM = breakpointsVM;
     }
 
-
-
     public void setJavaPath(String javaPath) {
         _applicationViewModel.getJavaPathProperty().setValue(javaPath);
     }
