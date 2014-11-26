@@ -5,7 +5,10 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import com.graphics.RenderEngine;
 import com.graphics.entities.Entity;
+import com.graphics.shapes.Colour;
+import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
 import com.graphics.utils.Maths;
 
@@ -15,21 +18,23 @@ public class RayCastUtil {
 
 	static StringBuilder b = new StringBuilder();
 	
-	private static Vector3f transform4fTo3f(Entity e, int p, float[] vertexes, Vector3f pos) {
+	static Colour[] cols = {Colour.AQUA, Colour.BLUE, Colour.GREEN, Colour.ORANGE, Colour.YELLOW};
+	static int cc = 0;
+	private static Vector3f transform4fTo3f(Entity e, int p, float[] vertexes, Vector3f pos, int zeroOrOne) {
 		Vector4f point_4 = new Vector4f(vertexes[p]   + pos.x,
 										 vertexes[p+1] + pos.y, 
 										 vertexes[p+2] + pos.z, 
-										 1);
+										 zeroOrOne);
 		
-		point_4 = Matrix4f.transform(Maths.createTransformationMatrix(e.getPosition(), 0, 0, 0, 1), point_4, point_4);
+		point_4 = Matrix4f.transform(Maths.createTransformationMatrix(e.getPosition(), 0, 0, 0, e.getScale()), point_4, point_4);
 		Vector3f point = new Vector3f(point_4.x, point_4.y, point_4.z);
 		
 		return point;
 	}
 	
-	public static Vector3f rayTest(Vector3f rayOrigin, Vector3f rayDirection,
+	public static Vector3f rayTest(RenderEngine re, Vector3f rayOrigin, Vector3f rayDirection,
 			Shape shape, boolean v) {
-		
+		cc = 0;
 		Entity e = shape.getEntity();
 		float[] vertexes = shape.getVertices();
 		float[] normals = shape.getNormals();
@@ -42,17 +47,19 @@ public class RayCastUtil {
 		for (int i = 0; i < indicies.length;) {
 			// fix we need to adjust the triangle coords by the model position
 			int indNorm1 = indicies[i]*3;
-			Vector3f normal = new Vector3f(normals[indNorm1], normals[indNorm1 + 1],
+			Vector3f normal2 = new Vector3f(normals[indNorm1], normals[indNorm1 + 1],
 					normals[indNorm1 + 2]);
 			
+			Vector3f normal = transform4fTo3f(e, indNorm1, normals, pos, 0);
+			
 			int indPoint1 = indicies[i] * 3;
-			Vector3f point1 = transform4fTo3f(e, indPoint1, vertexes, pos);
+			Vector3f point1 = transform4fTo3f(e, indPoint1, vertexes, pos, 1);
 			
 			int indPoint2 = indicies[i+1] * 3;		
-			Vector3f point2 = transform4fTo3f(e, indPoint2, vertexes, pos);
+			Vector3f point2 = transform4fTo3f(e, indPoint2, vertexes, pos, 1);
 			
 			int indPoint3 = indicies[i+2] * 3;			
-			Vector3f point3 = transform4fTo3f(e, indPoint3, vertexes, pos);		
+			Vector3f point3 = transform4fTo3f(e, indPoint3, vertexes, pos, 1);		
 			
 			/*
 			point1 = new Vector3f(point1.x + vertexes[indPoint1], 
@@ -67,7 +74,7 @@ public class RayCastUtil {
 					  			  point3.y + vertexes[indPoint3 + 1], 
 					  			  point3.z + vertexes[indPoint3 + 2]);
 			*/
-			Vector3f tempResult = rayTest(rayOrigin, rayDirection, normal, point1, point2, point3);
+			Vector3f tempResult = rayTest(re, rayOrigin, rayDirection, normal, point1, point2, point3);
 			
 			if (tempResult != null) {
 				float xd = tempResult.x-rayOrigin.x;
@@ -90,13 +97,17 @@ public class RayCastUtil {
 		return result;
 	}
 
-	public static Vector3f rayTest(Vector3f rayOrigin, Vector3f rayDirection,
+	public static Vector3f rayTest(RenderEngine re, Vector3f rayOrigin, Vector3f rayDirection,
 			Vector3f planeNormal, Vector3f trianglePoint1,
 			Vector3f trianglePoint2, Vector3f trianglePoint3) {
 		b.append("\n-------------\n");
 		b.append("RayStart = " + rayOrigin+"\n");
 		b.append("RayDir = " + rayDirection+"\n");
-
+		b.append("Plane normal = " + planeNormal+"\n");
+		b.append("points1 = " + trianglePoint1+"\n");
+		b.append("points2 = " + trianglePoint2+"\n");
+		b.append("points3 = " + trianglePoint3+"\n");
+		
 		// nx, ny, nz : normal vector of the plane
 		// x0, y0, z0 = a point on the plane
 
@@ -123,7 +134,7 @@ public class RayCastUtil {
 		// if dot < 0 then the ray intersects but it does so in the opposite
 		// direction of the cast. so basically this should be treated as a miss.
 		// leave t equal to 0
-		if (dot == 0) {
+		if (dot <= 0) {
 			
 			return null; // this line is parrel and will never touch
 		}
@@ -159,6 +170,10 @@ public class RayCastUtil {
 		Vector3f intPoint = new Vector3f(intX, intY, intZ);
 		b.append("IntPoint = " + intPoint+"\n");
 
+		Colour c = cols[cc%cols.length];
+		Line l = new Line(rayOrigin, intPoint, c);
+		re.addShapeTo3DSpace(l);
+		cc++;
 		float fullArea = calculateTriangleArea(trianglePoint1, trianglePoint2,
 				trianglePoint3);
 		b.append("Full Area = " + fullArea+"\n");

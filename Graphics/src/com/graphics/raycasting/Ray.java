@@ -18,11 +18,10 @@ public class Ray {
 	//This is correct... I think...
 	public void createRay(Camera camera){
 		float x = (2.0f * Mouse.getX()) / Display.getWidth() - 1.0f;
-		float y = 1.0f - (2.0f * Mouse.getY()) / Display.getHeight();
+		float y = (2.0f * Mouse.getY()) / Display.getHeight() -1.0f;
 		float z = 1.0f;
 		
 		origin = camera.getPosition();
-		
 		
 		Vector3f ray_nds = new Vector3f(x, y, z);
 		Vector4f ray_clip = new Vector4f(ray_nds.x, ray_nds.y, -1.0f, 1.0f);

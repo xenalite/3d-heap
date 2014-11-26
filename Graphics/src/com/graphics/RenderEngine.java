@@ -5,6 +5,8 @@ import com.graphics.entities.Light;
 import com.graphics.raycasting.Ray;
 import com.graphics.raycasting.RayCastUtil;
 import com.graphics.rendering.MasterRenderer;
+import com.graphics.shapes.Colour;
+import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -96,9 +98,13 @@ public abstract class RenderEngine implements Runnable {
 
 				System.out.println(r.origin + ", "+ r.direction);
 
-				Vector3f vec = RayCastUtil.rayTest(r.origin, r.direction, shapes.get(0), true);
+				Vector3f vec = RayCastUtil.rayTest(this, r.origin, r.direction, shapes.get(0), true);
 				System.out.println(vec);
 				System.out.println("\n======================\n");
+				if (vec != null){
+					Line l = new Line(r.origin, vec, Colour.YELLOW);
+					this.addShapeTo3DSpace(l);
+				}
 			}
 		}
 
@@ -122,7 +128,7 @@ public abstract class RenderEngine implements Runnable {
 		breakFromLoop = true;
 	}
 
-	protected void addShapeTo3DSpace(Shape e) {
+	public void addShapeTo3DSpace(Shape e) {
 		shapes.add(e);
 	}
 
