@@ -3,6 +3,7 @@ package com.imperial.heap3d.entry;
 import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.factories.ControllerFactory;
 import com.imperial.heap3d.factories.HeapGraphFactory;
+import com.imperial.heap3d.factories.ThreadBuilder;
 import com.imperial.heap3d.factories.VirtualMachineProvider;
 import com.imperial.heap3d.layout.HeapGraph;
 import com.imperial.heap3d.ui.controllers.ApplicationTabController;
@@ -25,7 +26,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by oskar on 22/11/14.
@@ -121,14 +121,10 @@ public class SwingWrappedApplication {
         frame.setTitle(WINDOW_TITLE);
         frame.setVisible(true);
 
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         HeapGraph hgraph = factory.create();
-        ExecutorService service = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r, "lwjgl");
-            t.setDaemon(true);
-            return t;
-        });
+        ExecutorService service = ThreadBuilder.createService("lwjgl");
         service.submit(hgraph);
         service.shutdown();
     }

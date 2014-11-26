@@ -4,6 +4,8 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
+import com.imperial.heap3d.factories.NodesBuilder;
+import com.imperial.heap3d.factories.ThreadBuilder;
 import com.imperial.heap3d.snapshot.StackNode;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
@@ -13,10 +15,11 @@ import com.sun.jdi.event.*;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 import static com.imperial.heap3d.application.ProcessState.*;
 
 public class DebuggedProcess {
@@ -47,7 +50,7 @@ public class DebuggedProcess {
 
     public void start() {
         runProcessAndEstablishConnection();
-        ExecutorService service = Executors.newSingleThreadExecutor();
+        ExecutorService service = ThreadBuilder.createService("stream-listener");
         service.submit(new StreamListener(_eventBus, _process.getInputStream(), _process.getErrorStream()));
         service.shutdown();
     }
@@ -164,6 +167,5 @@ public class DebuggedProcess {
     public void screenShot(String path){
     	java.io.File f = new java.io.File(path);
     	_heapGraphFactory.create().screenShot(f.getParent(), f.getName());
-
     }
 }

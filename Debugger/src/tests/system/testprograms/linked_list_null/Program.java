@@ -5,19 +5,18 @@ package tests.system.testprograms.linked_list_null;
  */
 public class Program {
 
-    private Object o1;
-    private Object o2;
-
     public static void main(String[] args) {
-        Program p1 = new Program();
-        Program p2 = p1;
-        Program p3 = new Program();
-        Program p4 = new Program();
-        Object x1 = new Object();
-        Object x2 = new Object();
-        p1.o1 = x1;
-        p1.o2 = x1;
-        p3.o1 = x1;
-        p4.o1 = x2;
+        int a = 0;
+        int b = 0;
+        int c = 0;
+
+        int i = method(10);
+        System.out.println(i);
+    }
+
+    public static int method(int i) {
+        if(i == 0)
+            return 1;
+        return i * method(i - 1);
     }
 }
