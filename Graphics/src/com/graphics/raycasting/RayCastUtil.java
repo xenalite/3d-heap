@@ -1,16 +1,31 @@
 package com.graphics.raycasting;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import com.graphics.entities.Entity;
 import com.graphics.shapes.Shape;
+import com.graphics.utils.Maths;
 
 public class RayCastUtil {
 	
 	public static final float ACCURACY = 0.00001f;
 
 	static StringBuilder b = new StringBuilder();
+	
+	private static Vector3f transform4fTo3f(Entity e, int p, float[] vertexes, Vector3f pos) {
+		Vector4f point_4 = new Vector4f(vertexes[p]   + pos.x,
+										 vertexes[p+1] + pos.y, 
+										 vertexes[p+2] + pos.z, 
+										 1);
+		
+		point_4 = Matrix4f.transform(Maths.createTransformationMatrix(e.getPosition(), 0, 0, 0, 1), point_4, point_4);
+		Vector3f point = new Vector3f(point_4.x, point_4.y, point_4.z);
+		
+		return point;
+	}
 	
 	public static Vector3f rayTest(Vector3f rayOrigin, Vector3f rayDirection,
 			Shape shape, boolean v) {
@@ -31,20 +46,28 @@ public class RayCastUtil {
 					normals[indNorm1 + 2]);
 			
 			int indPoint1 = indicies[i] * 3;
-			Vector3f point1 = new Vector3f(vertexes[indPoint1] + pos.x, vertexes[indPoint1+1]
-					+ pos.y, vertexes[indPoint1+2] + pos.z);
+			Vector3f point1 = transform4fTo3f(e, indPoint1, vertexes, pos);
 			
-			int indPoint2 = indicies[i+1] * 3;
-			Vector3f point2 = new Vector3f(vertexes[indPoint2] + pos.x,
-					vertexes[indPoint2+1] + pos.y, vertexes[indPoint2+2] + pos.z);
+			int indPoint2 = indicies[i+1] * 3;		
+			Vector3f point2 = transform4fTo3f(e, indPoint2, vertexes, pos);
 			
-			int indPoint3 = indicies[i+2] * 3;
-			Vector3f point3 = new Vector3f(vertexes[indPoint3] + pos.x,
-					vertexes[indPoint3+1] + pos.y, vertexes[indPoint3+2] + pos.z);
+			int indPoint3 = indicies[i+2] * 3;			
+			Vector3f point3 = transform4fTo3f(e, indPoint3, vertexes, pos);		
 			
+			/*
+			point1 = new Vector3f(point1.x + vertexes[indPoint1], 
+								  point1.y + vertexes[indPoint1 + 1], 
+								  point1.z + vertexes[indPoint1 + 2]);
 			
-			Vector3f tempResult = rayTest(rayOrigin, rayDirection, normal,
-					point1, point2, point3);
+			point2 = new Vector3f(point2.x + vertexes[indPoint2], 
+					  			  point2.y + vertexes[indPoint2 + 1], 
+					  			  point2.z + vertexes[indPoint2 + 2]);
+			
+			point3 = new Vector3f(point3.x + vertexes[indPoint3], 
+					  			  point3.y + vertexes[indPoint3 + 1], 
+					  			  point3.z + vertexes[indPoint3 + 2]);
+			*/
+			Vector3f tempResult = rayTest(rayOrigin, rayDirection, normal, point1, point2, point3);
 			
 			if (tempResult != null) {
 				float xd = tempResult.x-rayOrigin.x;
@@ -73,7 +96,6 @@ public class RayCastUtil {
 		b.append("\n-------------\n");
 		b.append("RayStart = " + rayOrigin+"\n");
 		b.append("RayDir = " + rayDirection+"\n");
-		b.append("IntPoint"+"\n");
 
 		// nx, ny, nz : normal vector of the plane
 		// x0, y0, z0 = a point on the plane
@@ -101,7 +123,8 @@ public class RayCastUtil {
 		// if dot < 0 then the ray intersects but it does so in the opposite
 		// direction of the cast. so basically this should be treated as a miss.
 		// leave t equal to 0
-		if (dot <= 0) {
+		if (dot == 0) {
+			
 			return null; // this line is parrel and will never touch
 		}
 		b.append("pointOnPlane: "+pointOnPLane+"\n");

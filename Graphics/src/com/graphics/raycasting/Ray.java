@@ -30,7 +30,7 @@ public class Ray {
 		Vector4f ray_eye = new Vector4f();
 		Matrix4f proj_invert = new Matrix4f();
 		ray_eye = Matrix4f.transform(Matrix4f.invert(proj, proj_invert), ray_clip, ray_eye);
-		ray_eye = new Vector4f(ray_eye.x, ray_eye.y, -1.0f, 1.0f);
+		ray_eye = new Vector4f(ray_eye.x, ray_eye.y, -1.0f, 0.0f);
 		
 		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
 		Vector4f ray_wor_tmp = new Vector4f();

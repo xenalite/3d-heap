@@ -94,31 +94,20 @@ public abstract class RenderEngine implements Runnable{
 			DisplayManager.updateDisplay();
 			updateFPS();
 			
-			// ##################################
-			// Ray Picking - Needs fixing
 			if(!Mouse.isButtonDown(1))
 				down = false;
 			Ray r = new Ray();
 			r.createRay(camera);
+
 			if(Mouse.isButtonDown(1) && !down){
 				down = true;
-				
-				
-			//	Ray r = new Ray();
-			//	r.createRay(camera);
-				//---
-		//		for(Shape e : shapes){
 
 				System.out.println(r.origin + ", "+ r.direction);
-					Vector3f vec = RayCastUtil.rayTest(r.origin, r.direction, shapes.get(0), true);
-					System.out.println(vec);
-					System.out.println("\n======================\n");
-					
-		//		}
-				
+				Vector3f vec = RayCastUtil.rayTest(r.origin, r.direction, shapes.get(0), true);
+				System.out.println(vec);
+				System.out.println("\n======================\n");
+
 			}
-			// ##################################
-			//System.out.println(r.direction);
 		}
 		
 		afterLoop();
