@@ -28,20 +28,10 @@ public class SimpleTest extends RenderEngine {
     @Override
     protected void beforeLoop() {
         Colour col1 = new Colour(1, 0, 0);
-        Colour col2 = new Colour(0, 1, 0);
-        Colour col3 = new Colour(0, 0, 1);
 
-        Cube c1 = new Cube(10, 20, -40, 10, 20, 30, 10, col1);
-        Cube c2 = new Cube(50, 80, 0, 10, 20, 30, 10, col2);
-        Cube c3 = new Cube(30, 50, -20, 50, 0, 80, 10, col3);
+        Cube c1 = new Cube(0, 0, 110, 0, 0, 0, 1, col1);
 
         addShapeTo3DSpace(c1);
-        addShapeTo3DSpace(c2);
-        addShapeTo3DSpace(c3);
-
-        Line l = new Line(c1, c2, Colour.BLUE);
-
-        addShapeTo3DSpace(l);
     }
 
     @Override
