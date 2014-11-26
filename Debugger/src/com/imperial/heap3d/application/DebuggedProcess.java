@@ -10,6 +10,7 @@ import com.sun.jdi.StackFrame;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.*;
+import com.sun.jdi.request.DuplicateRequestException;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
@@ -141,17 +142,51 @@ public class DebuggedProcess {
                 .forEach(EventRequest::disable);
     }
 
-    public void createStepRequest() {
-        if (_threadReference != null && _state == PAUSED) {
-            EventRequestManager erm = _instance.eventRequestManager();
-            StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
-            sr.addCountFilter(1);
-            sr.enable();
-            resume();
-            _state = RUNNING;
+    public void createStepOverRequest() {
+        try {
+            if (_threadReference != null && _state == PAUSED) {
+                EventRequestManager erm = _instance.eventRequestManager();
+                StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
+                sr.addCountFilter(1);
+                sr.enable();
+                resume();
+                _state = RUNNING;
+            }
+        }
+        catch(DuplicateRequestException e){
+            e.printStackTrace();
         }
     }
-
+    public void createStepIntoRequest() {
+        try {
+            if (_threadReference != null && _state == PAUSED) {
+                EventRequestManager erm = _instance.eventRequestManager();
+                StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_MIN, StepRequest.STEP_INTO);
+                sr.addCountFilter(1);
+                sr.enable();
+                resume();
+                _state = RUNNING;
+            }
+        }
+        catch(DuplicateRequestException e){
+            e.printStackTrace();
+        }
+    }
+    public void createStepOutRequest() {
+        try {
+            if (_threadReference != null && _state == PAUSED) {
+                EventRequestManager erm = _instance.eventRequestManager();
+                StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OUT);
+                sr.addCountFilter(1);
+                sr.enable();
+                resume();
+                _state = RUNNING;
+            }
+        }
+        catch(DuplicateRequestException e){
+            e.printStackTrace();
+        }
+    }
     public void addBreakpoint(String className, String argument) {
         _manager.addBreakpoint(className, argument);
     }
