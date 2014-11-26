@@ -1,8 +1,12 @@
 package com.imperial.heap3d.layout;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.graphics.RenderEngine;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
+import com.imperial.heap3d.events.ControlEvent;
+import com.imperial.heap3d.events.EventType;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
 
@@ -16,15 +20,29 @@ public class HeapGraph extends RenderEngine {
 	private int currentLevel = 0;
 	private boolean newStack = false;
 	private Collection<StackNode> stackNodes;
+	private EventBus _eventBus;
 
-	public HeapGraph(Canvas canvas, Collection<StackNode> stackNodes) {
+	public HeapGraph(Canvas canvas, Collection<StackNode> stackNodes, EventBus eventBus) {
 		super(canvas);
 		this.stackNodes = stackNodes;
+		_eventBus = eventBus;
+		_eventBus.register(this);
 	}
 	
 	public HeapGraph(Collection<StackNode> stackNodes) {
 		super("Heap Visualizer", 1280, 720, false);
 		this.stackNodes = stackNodes;
+	}
+
+	@Subscribe
+	public void handleStartEvent(ControlEvent e) {
+		if(e.type == EventType.START) {
+			currentLevel = 0;
+			newStack = false;
+			stackNodes.clear();
+			levels.clear();
+			super.clearShapesFrom3DSpace();
+		}
 	}
 
 	@Override

@@ -96,7 +96,7 @@ public class SwingWrappedApplication {
         canvas.setSize(MIN_CANVAS_WIDTH, MIN_CANVAS_HEIGHT);
         canvas.setVisible(true);
 
-        HeapGraphFactory factory = new HeapGraphFactory(canvas);
+        HeapGraphFactory factory = new HeapGraphFactory(canvas, _injector.getComponent(EventBus.class));
         _injector.as(Characteristics.CACHE).addComponent(factory);
 
         JFrame frame = new JFrame();
