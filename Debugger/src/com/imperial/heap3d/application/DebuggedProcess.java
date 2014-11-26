@@ -4,19 +4,23 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
+import com.imperial.heap3d.factories.NodesBuilder;
+import com.imperial.heap3d.factories.ThreadBuilder;
 import com.imperial.heap3d.snapshot.StackNode;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.*;
+import com.sun.jdi.request.DuplicateRequestException;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 import static com.imperial.heap3d.application.ProcessState.*;
 
 public class DebuggedProcess {
@@ -47,7 +51,7 @@ public class DebuggedProcess {
 
     public void start() {
         runProcessAndEstablishConnection();
-        ExecutorService service = Executors.newSingleThreadExecutor();
+        ExecutorService service = ThreadBuilder.createService("stream-listener");
         service.submit(new StreamListener(_eventBus, _process.getInputStream(), _process.getErrorStream()));
         service.shutdown();
     }
@@ -141,17 +145,51 @@ public class DebuggedProcess {
                 .forEach(EventRequest::disable);
     }
 
-    public void createStepRequest() {
-        if (_threadReference != null && _state == PAUSED) {
-            EventRequestManager erm = _instance.eventRequestManager();
-            StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
-            sr.addCountFilter(1);
-            sr.enable();
-            resume();
-            _state = RUNNING;
+    public void createStepOverRequest() {
+        try {
+            if (_threadReference != null && _state == PAUSED) {
+                EventRequestManager erm = _instance.eventRequestManager();
+                StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
+                sr.addCountFilter(1);
+                sr.enable();
+                resume();
+                _state = RUNNING;
+            }
+        }
+        catch(DuplicateRequestException e){
+            e.printStackTrace();
         }
     }
-
+    public void createStepIntoRequest() {
+        try {
+            if (_threadReference != null && _state == PAUSED) {
+                EventRequestManager erm = _instance.eventRequestManager();
+                StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_MIN, StepRequest.STEP_INTO);
+                sr.addCountFilter(1);
+                sr.enable();
+                resume();
+                _state = RUNNING;
+            }
+        }
+        catch(DuplicateRequestException e){
+            e.printStackTrace();
+        }
+    }
+    public void createStepOutRequest() {
+        try {
+            if (_threadReference != null && _state == PAUSED) {
+                EventRequestManager erm = _instance.eventRequestManager();
+                StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OUT);
+                sr.addCountFilter(1);
+                sr.enable();
+                resume();
+                _state = RUNNING;
+            }
+        }
+        catch(DuplicateRequestException e){
+            e.printStackTrace();
+        }
+    }
     public void addBreakpoint(String className, String argument) {
         _manager.addBreakpoint(className, argument);
     }
@@ -164,6 +202,5 @@ public class DebuggedProcess {
     public void screenShot(String path){
     	java.io.File f = new java.io.File(path);
     	_heapGraphFactory.create().screenShot(f.getParent(), f.getName());
-
     }
 }

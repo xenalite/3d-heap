@@ -12,5 +12,7 @@ public enum EventType {
     BREAKPOINT,
     WATCHPOINT,
     SCREENSHOT,
-    STEP
+    STEPOVER,
+    STEPINTO,
+    STEPOUT
 }

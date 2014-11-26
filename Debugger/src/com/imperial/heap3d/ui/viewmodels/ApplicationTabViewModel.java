@@ -9,6 +9,7 @@ import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
+import com.imperial.heap3d.factories.ThreadBuilder;
 import com.imperial.heap3d.utilities.ICommand;
 import com.imperial.heap3d.utilities.RelayCommand;
 import javafx.application.Platform;
@@ -16,7 +17,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.imperial.heap3d.events.EventType.*;
 
@@ -56,12 +56,13 @@ public class ApplicationTabViewModel {
         _stopActionCommand = new RelayCommand(this::stopAction);
         _pauseActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(PAUSE)));
         _resumeActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(RESUME)));
-        _stepOverActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEP)));
-        _stepIntoActionCommand = new RelayCommand(() -> System.out.println("Step into!"));
-        _stepOutActionCommand = new RelayCommand(() -> System.out.println("Step out!"));
+        _stepOverActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPOVER)));
+        _stepIntoActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPINTO)));
+        _stepOutActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPOUT)));
         _screenShotPath = new SimpleStringProperty(this, "", "ScreenShot/img");
         _className = new SimpleStringProperty(this, "", "test_programs.linked_list_null.Program");
         _screenShotCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createScreenShotEvent(_screenShotPath.getValue())));
+        _screenShotPath = new SimpleStringProperty(this, "", "ScreenShot/img");
         _className = new SimpleStringProperty(this, "", "tests.system.testprograms.linked_list_null.Program");
         _classPath = new SimpleStringProperty(this, "", System.getProperty("user.home") + "/workspace/3d-heap/Debugger/out/production/Debugger/");
         _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + "/bin/java");
@@ -129,12 +130,7 @@ public class ApplicationTabViewModel {
         ControlEventHandler handler = new ControlEventHandler(dprocess, _eventBus);
         _eventBus.post(ControlEventFactory.createEventOfType(START));
 
-        ExecutorService service = Executors.newSingleThreadScheduledExecutor(r -> {
-            Thread t = new Thread(r);
-            t.setDaemon(true);
-            return t;
-        });
-
+        ExecutorService service = ThreadBuilder.createService("Control-event-handler");
         service.submit(() -> {
             try {
                 handler.run();

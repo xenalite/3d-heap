@@ -1,15 +1,16 @@
 package com.graphics.rendering;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.lwjgl.opengl.GL11;
 import com.graphics.entities.Camera;
 import com.graphics.entities.Entity;
 import com.graphics.entities.Light;
 import com.graphics.models.RawModel;
 import com.graphics.shaders.StaticShader;
+import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MasterRenderer {
 
@@ -34,18 +35,7 @@ public class MasterRenderer {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		
 		GL11.glClearColor(backR, backG, backB, backA);
 	}
-	
-	/*
-	public void render(Camera camera){
-		renderer.prepare();
-		shader.start();
-		//shader.loadLight(sun);
-		shader.loadViewMatrix(camera);
-		renderer.render(entities);
-		shader.stop();
-		entities.clear();
-	}*/
-	
+
 	public void processEntity(Entity entity){
 		RawModel entityModel = entity.getModel();
 		List<Entity> batch = entities.get(entityModel);
@@ -78,8 +68,8 @@ public class MasterRenderer {
 		this.backA = backA;
 	}
 
-	public void setLightVars(float damper, float refelectivity) {
-		renderer.setLightVars(damper, refelectivity);
+	public void setLightVars(float damper, float reflectivity) {
+		renderer.setLightVars(damper, reflectivity);
 	}
 	
 }

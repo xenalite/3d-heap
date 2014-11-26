@@ -1,4 +1,4 @@
-package com.imperial.heap3d.application;
+package com.imperial.heap3d.factories;
 
 import com.imperial.heap3d.snapshot.*;
 import com.sun.jdi.*;
@@ -38,6 +38,11 @@ public class NodesBuilder {
             String name = localVariable.name();
             Value value = _stackFrame.getValue(localVariable);
 
+            System.err.println(String.format("Stackframe hash:%d", _stackFrame.hashCode()));
+//            System.err.println(String.format("Location:%s, variable:%s, lv_hash:%d, sf_hash:%d, combined_hash:%d",
+//                    _stackFrame.location().method().name(), name,
+//                    localVariable.hashCode(), _stackFrame.hashCode(), localVariable.hashCode()^_stackFrame.hashCode()));
+
             if (value == null || value instanceof PrimitiveValue) {
                 stackNodes.add(new StackNode(name, value));
             } else {
@@ -50,7 +55,6 @@ public class NodesBuilder {
     private Node drillDown(String name, Value value) {
         ObjectReference reference = (ObjectReference) value;
         long id = reference.uniqueID();
-        System.out.println(String.format("name: %s, id:%s", name, id));
         if(_uniqueNodes.containsKey(id))
             return _uniqueNodes.get(id);
 
@@ -72,9 +76,9 @@ public class NodesBuilder {
         } else {
             ObjectNode objectNode = new ObjectNode(name, id);
             _uniqueNodes.put(id, objectNode);
-            for (Map.Entry<Field, Value> entry : reference.getValues(reference.referenceType().allFields()).entrySet()) {
-                String fieldName = entry.getKey().name();
-                Value fieldValue = entry.getValue();
+            for (Field field : reference.referenceType().fields()) {
+                String fieldName = field.name();
+                Value fieldValue = reference.getValue(field);
                 addValueToObjectNode(objectNode, fieldName, fieldValue);
             }
             return objectNode;
