@@ -56,9 +56,11 @@ public class ApplicationTabViewModel {
         _stopActionCommand = new RelayCommand(this::stopAction);
         _pauseActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(PAUSE)));
         _resumeActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(RESUME)));
-        _stepOverActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEP)));
-        _stepIntoActionCommand = new RelayCommand(() -> System.out.println("Step into!"));
-        _stepOutActionCommand = new RelayCommand(() -> System.out.println("Step out!"));
+        _stepOverActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPOVER)));
+        _stepIntoActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPINTO)));
+        _stepOutActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPOUT)));
+        _screenShotPath = new SimpleStringProperty(this, "", "ScreenShot/img");
+        _className = new SimpleStringProperty(this, "", "test_programs.linked_list_null.Program");
         _screenShotCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createScreenShotEvent(_screenShotPath.getValue())));
         _screenShotPath = new SimpleStringProperty(this, "", "ScreenShot/img");
         _className = new SimpleStringProperty(this, "", "tests.system.testprograms.linked_list_null.Program");

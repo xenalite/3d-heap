@@ -62,8 +62,16 @@ public class ControlEventHandler {
                 _dprocess.resume();
             }
             break;
-            case STEP: {
-                _dprocess.createStepRequest();
+            case STEPOVER: {
+                _dprocess.createStepOverRequest();
+            }
+            break;
+            case STEPINTO: {
+                _dprocess.createStepIntoRequest();
+            }
+            break;
+            case STEPOUT: {
+                _dprocess.createStepOutRequest();
             }
             break;
             case BREAKPOINT: {
