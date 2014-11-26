@@ -15,7 +15,6 @@ public class Ray {
 	public Vector3f direction;
 	public Vector3f origin;
 	
-	//This is correct... I think...
 	public void createRay(Camera camera){
 		float x = (2.0f * Mouse.getX()) / Display.getWidth() - 1.0f;
 		float y = (2.0f * Mouse.getY()) / Display.getHeight() -1.0f;

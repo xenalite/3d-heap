@@ -5,16 +5,13 @@ import com.graphics.entities.Light;
 import com.graphics.raycasting.Ray;
 import com.graphics.raycasting.RayCastUtil;
 import com.graphics.rendering.MasterRenderer;
-import com.graphics.shapes.Colour;
-import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
-
-import java.awt.*;
+import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +31,9 @@ public abstract class RenderEngine implements Runnable {
 	private final Canvas canvas;
 	private float r, g, b, a;
 	private Camera camera;
+
+	private boolean mouseDown;
+	private Shape selectedShape;
 
 	public RenderEngine(String title, int width, int height, boolean resizable) {
 		this.title = title;
@@ -88,22 +88,24 @@ public abstract class RenderEngine implements Runnable {
 			DisplayManager.updateDisplay();
 			updateFPS();
 
+			// TODO move to own class
 			if(!Mouse.isButtonDown(1))
-				down = false;
-			Ray r = new Ray();
-			r.createRay(camera);
+				mouseDown = false;
 
-			if(Mouse.isButtonDown(1) && !down){
-				down = true;
-
-				System.out.println(r.origin + ", "+ r.direction);
-
-				Vector3f vec = RayCastUtil.rayTest(this, r.origin, r.direction, shapes.get(0), true);
-				System.out.println(vec);
-				System.out.println("\n======================\n");
-				if (vec != null){
-					Line l = new Line(r.origin, vec, Colour.YELLOW);
-					this.addShapeTo3DSpace(l);
+			if(Mouse.isButtonDown(1) && !mouseDown){
+				mouseDown = true;
+				selectedShape = null;
+				
+				//Make a new ray beam
+				Ray r = new Ray();
+				r.createRay(camera);
+				
+				for(Shape s : shapes){
+					Vector3f vec = RayCastUtil.rayTest(r.origin, r.direction, s);
+					if (vec != null){
+						System.out.println("Ray cast complete: Found shape :)");
+						selectedShape = s;
+					}
 				}
 			}
 		}
@@ -111,8 +113,6 @@ public abstract class RenderEngine implements Runnable {
 		afterLoop();
 		cleanUp();
 	}
-
-	boolean down;
 
 	protected abstract void beforeLoop();
 
@@ -124,6 +124,10 @@ public abstract class RenderEngine implements Runnable {
 		return fps;
 	}
 
+	protected Shape getSelectedShape(){
+		return selectedShape;
+	}
+	
 	protected void breakOutOfLoop() {
 		breakFromLoop = true;
 	}
