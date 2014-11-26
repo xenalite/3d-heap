@@ -14,4 +14,9 @@ public class HeapEdge {
         line = new Line((Cube)from.getGeometry(), (Cube)to.getGeometry(), color);
         graph.addShapeTo3DSpace(line);
     }
+
+    public Line getLine()
+    {
+        return line;
+    }
 }

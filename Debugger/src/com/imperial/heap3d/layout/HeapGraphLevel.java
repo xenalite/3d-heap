@@ -4,6 +4,7 @@ import com.graphics.shapes.Colour;
 import com.heap3d.layout.FRLayout;
 import com.heap3d.layout.GraphImpl;
 import com.heap3d.layout.Layout;
+import com.heap3d.layout.SpringLayout;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
 
@@ -12,11 +13,16 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 	int id;
 	Layout<Node, HeapEdge> layout;
 	public static float levelOffset = 10f;
+
+	public StackNode getRoot() {
+		return root;
+	}
+
 	protected StackNode root;
 
 	public HeapGraphLevel(int id) {
 		this.id = id;
-		this.layout = new FRLayout<Node, HeapEdge>(this);
+		this.layout = new SpringLayout<>(this);
 	}
 
 	@Override
@@ -31,43 +37,55 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 		return add;
 	}
 
-	public void buildNode(Node n, HeapGraph r) {
+	public boolean buildNode(Node n, HeapGraph r) {
 		if (addVertex(n)) {
 			float x = getX(n);
 			float y = getY(n);
 			float z = getZ(n);
-			float spacing = 5;
-			if (!isRoot(n)) {
-				if (x < 0) {
-					x -= spacing;
-				} else {
-					x += spacing;
-				}
 
-				if (y < 0) {
-					y -= spacing;
-				} else {
-					y += spacing;
-				}
+			if (!isRoot(n)) {
 				n.buildGeometry(x, y, z, getScale(n));
 			}else{
 				n.buildGeometry(x, y, z, getScale(n), new Colour((float)Math.random(), (float)Math.random(), (float)Math.random()));
 			}
+			System.out.println("Building Node: "+n.toString());
 			r.addShapeTo3DSpace(n.getGeometry());
+			return true;
+		} else
+		{
+			return false;
 		}
 	}
 
+	protected float spacing = 10;
 	public float getX(Node n) {
-		return (float) layout.transform(n).getX() / 10;
+		float x = (float)layout.transform(n).getX() / 10;
+		if (!isRoot(n)) {
+			if (x < 0) {
+				x -= spacing;
+			} else {
+				x += spacing;
+			}
+		}
+			return x;
 	}
 
 	public float getZ(Node n) {
-		return (float) layout.transform(n).getY() / 10;
+		float y = (float) layout.transform(n).getY() / 10;
+		if (!isRoot(n)) {
+			if (y < 0) {
+				y -= spacing;
+			} else {
+				y += spacing;
+			}
+		}
+		return y;
 	}
 
 	public float getY(Node n) {
-		return isRoot(n) ? levelOffset * id
-				: ((float) Math.random() * levelOffset) + id * levelOffset;
+		return levelOffset * id;
+//				isRoot(n) ? levelOffset * id
+//				: ((float) Math.random() * levelOffset) + id * levelOffset;
 	}
 
 	public float getScale(Node n) {

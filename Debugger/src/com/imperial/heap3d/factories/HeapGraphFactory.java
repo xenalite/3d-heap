@@ -1,5 +1,6 @@
 package com.imperial.heap3d.factories;
 
+import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.layout.HeapGraph;
 
 import java.awt.*;
@@ -12,8 +13,8 @@ public class HeapGraphFactory {
 
     private final HeapGraph _heapGraph;
 
-    public HeapGraphFactory(Canvas canvas) {
-        _heapGraph = new HeapGraph(canvas, new LinkedList<>());
+    public HeapGraphFactory(Canvas canvas, EventBus eventBus) {
+        _heapGraph = new HeapGraph(canvas, new LinkedList<>(), eventBus);
     }
     
     public HeapGraphFactory() {
