@@ -27,12 +27,19 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 
 	@Override
 	public boolean addVertex(Node vertex) {
-		boolean add = super.addVertex(vertex);
 		if (vertex instanceof StackNode) {
+			if(root != null)
+			{
+				System.out.println("Re-adding root!");
+			}
 			root = (StackNode) vertex;
 		}
 
-		vertex.setLevel(this);
+		boolean add = super.addVertex(vertex);
+		if(add)
+		{
+			vertex.setLevel(this);
+		}
 
 		return add;
 	}
