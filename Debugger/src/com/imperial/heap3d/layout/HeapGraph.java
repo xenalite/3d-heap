@@ -50,49 +50,35 @@ public class HeapGraph extends RenderEngine {
 	protected void beforeLoop() {
 		super.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
 		System.out.println("Start Before Loop ---------------------------------------------");
-        NodesComparator comparator = new NodesComparator();
-
+		clearShapesFrom3DSpace();
+		currentLevel = 0;
+		levels.clear();
 			for(StackNode stackNode : stackNodes)
 			{
 				System.out.println("Stack Node: " + stackNode.getName());
                 //We are looking at an old portion of the stack
 				if(currentLevel < levels.size())
 				{
-                    //Get the node at the current level
-                    HeapGraphLevel levelGraph = levels.get(currentLevel);
-                    StackNode oldStackNode = levelGraph.getRoot();
-
-                    if(oldStackNode.equals(stackNode)) {
-                        //Same stacknode
-                        if(!comparator.compare(oldStackNode, stackNode))
-                        {
-                            //Something in the layout has changed
-                            System.out.println("Update " + currentLevel);
-                            try {
-                                updateCurrentLevel(stackNode);
-                            } catch (Exception e) {
-                                System.out.println("Caught Exception in updateCurrentLevel" + e.getMessage());
-                                //something went wrong, update current level so that the program keeps working
-                                //TODO remove this eventually
-                                currentLevel++;
-                            }
-                        }  else
-                        {
-                            //no changes to the layout, simply increment the current level
-                            System.out.println("No changes "+currentLevel);
-                            currentLevel++;
-                        }
-
-                    }  else
-                    {
-                        System.out.println("Nodes not equal, so adding a new level"+currentLevel);
-                        addLevel(stackNode);
-                    }
+					try {
+						updateCurrentLevel(stackNode);
+					} catch (Exception e) {
+						System.err.println("Caught Exception in updateCurrentLevel " + e);
+						//something went wrong, update current level so that the program keeps working
+						//TODO remove this eventually
+						currentLevel++;
+					}
 				} else
 				{
                     //New node!
 					System.out.println(String.format("Adding new stackNode %s at %s", stackNode.getName(), currentLevel));
-					addLevel(stackNode);
+					try {
+						addLevel(stackNode);
+					} catch (Exception e) {
+						System.err.println("Caught Exception in addLevel " + e);
+						//something went wrong, update current level so that the program keeps working
+						//TODO remove this eventually
+						currentLevel++;
+					}
 				}
 
 			}
@@ -113,14 +99,14 @@ public class HeapGraph extends RenderEngine {
 
 	@Override
 	protected void afterLoop() {
-
+		stackNodes.size();
 	}
 
 	protected void addLevel(StackNode stackNode) {
 		
 		//make a new levelGraph and add it to the list of levels
 		HeapGraphLevel levelGraph = new HeapGraphLevel(currentLevel);
-		levels.add(levelGraph);
+		levels.add(levelGraph.id, levelGraph);
 
 		//If the stacknode only has primitive values
 		if(!stackNode.hasReference()){
@@ -134,23 +120,15 @@ public class HeapGraph extends RenderEngine {
 		}
 		else {//The stacknode has references
 
-			//Get the references and build all the nodes(including the root), adding them to the layout world and 3D space
+			//Build all the nodes(including the root), adding them to the layout world and 3D space
 			//Add edges between the nodes
-			Collection<Node> nodesOnThisLayer = stackNode.getReferences();
 			buildNodes(stackNode, levelGraph);
 			addEdges(stackNode, levelGraph);
-
-			// Add the edge from stack to the first object on the heap
-			levelGraph.addEdge(new HeapEdge(), stackNode, (Node) stackNode.getValue());
 
 			//Layout the nodes on this level with the stackNode as the root
 			levelGraph.layout.layout(stackNode);
 			//update the 3D positions of all the nodes
-			//TODO this could be replaces with a single foreach over the layout's vertices provided the nodes have all been correctly added to the graph?
-			stackNode.updatePosition();
-			for (Node n : nodesOnThisLayer) {
-				n.updatePosition();
-			}
+			updatePositions(stackNode);
 
 			//Build the edges in 3D space
 			//We want to do this after the nodes are created and positioned since the lines are expensive
@@ -162,91 +140,31 @@ public class HeapGraph extends RenderEngine {
 
 	protected void updateCurrentLevel(StackNode stackNode)
 	{
+		NodesComparator comparator = new NodesComparator();
+
+		//Get the node at the current level
 		HeapGraphLevel levelGraph = levels.get(currentLevel);
+		StackNode oldStackNode = levelGraph.getRoot();
 
-		//If the stacknode only has primitive values
-		if(!stackNode.hasReference()){
-			//Update the position in the Layout World Space
-			levelGraph.layout.layout(stackNode);
-			//Update the root position in the 3D world space
-			stackNode.updatePosition();
-			currentLevel++;
-            System.out.println("Primitive!!!!");
-            return;
-		}
-
-		boolean nodesHaveChanged = false;
-		Collection<Node> nodesOnThisLayer = stackNode.getReferences();
-
-		//Delete the cubes that no longer exist
-		for (Node n : levelGraph.getVertices())
-		{
-			if(!(n instanceof StackNode) && !nodesOnThisLayer.contains(n))
+		if(oldStackNode.equals(stackNode)) {
+			//Same stacknode
+			if(comparator.compare(oldStackNode, stackNode))
 			{
-				//TODO check that there are no references to it from another level?
-				if(levelGraph.getInEdges(n).size() == 0)
-				{
-					for (HeapEdge edge : levelGraph.getOutEdges(n))
-					{
-						removeShapeFrom3DSpace(edge.getLine());
-					}
-					removeShapeFrom3DSpace(n.getGeometry());
-					levelGraph.removeVertex(n);
-				}
-			}
-		}
-
-		//Try to build new nodes
-		for (Node n : nodesOnThisLayer)
-		{
-			assert !(n instanceof StackNode);
-			//will return true if a new node is added
-			nodesHaveChanged |= levelGraph.buildNode(n, this);
-		}
-
-		boolean edgesHaveChanged = false;
-		// From stack to the first object on the heap
-		if(stackNode.hasReference()) {
-			//TODO should probably check if the type of the stacknode changed?
-			//TODO Stacknode's need to have better equality!
-			//edgesHaveChanged |= levelGraph.addEdge(new HeapEdge(), stackNode, (Node) stackNode.getValue());
-		}
-
-		for (Node n : nodesOnThisLayer) {
-			for(Node child : n.getReferences())
-				if(levelGraph.addEdge(new HeapEdge(), n, child))
-				{
-					//new edge added
-					edgesHaveChanged = true;
-				} else
-				{
-					//old edge
-
-				}
-
-		}
-
-
-
-		if(edgesHaveChanged|| nodesHaveChanged )
-		{
-			System.out.println("Something changed: updating the layout");
-			levelGraph.layout.layout(stackNode);
-			stackNode.updatePosition();
-			for (Node n : nodesOnThisLayer) {
-				//TODO probably should do this using graph.getVertices
-				n.updatePosition();
-			}
-			//TODO check edges
-			buildEdges(levelGraph, stackNode);
-			for (Node n : nodesOnThisLayer) {
-				buildEdges(levelGraph, n);
+				//no changes to the layout, simply increment the current level
+				System.out.println("No changes "+currentLevel);
+				currentLevel++;
+				return;
 			}
 
 		}
+			System.out.println("Nodes not equal, so adding a new level " + currentLevel);
+			//TODO delete old stackNode
+			removeLevel(levelGraph);
 
 
-		currentLevel++;
+			addLevel(stackNode);
+
+
 	}
 
 	private void addEdges(Node n, HeapGraphLevel level) {
@@ -279,6 +197,31 @@ public class HeapGraph extends RenderEngine {
 		for(Node child : n.getReferences()) {
 			buildEdges(levelGraph, child);
 		}
+	}
+
+	private void updatePositions(Node n) {
+
+		n.updatePosition();
+		java.util.List<Node> references = n.getReferences();
+		for(Node child : references)
+			updatePositions(child);
+	}
+
+	private void removeLevel(HeapGraphLevel levelGraph)
+	{
+		for (Node n : levelGraph.getVertices() )
+		{
+			//TODO check that there are no references to it from another level?
+			if(levelGraph.getInEdges(n).size() >= 0)
+			{
+				for (HeapEdge edge : levelGraph.getOutEdges(n))
+				{
+					removeShapeFrom3DSpace(edge.getLine());
+				}
+				removeShapeFrom3DSpace(n.getGeometry());
+			}
+		}
+		this.levels.remove(levelGraph.id);
 	}
 
 	@Override

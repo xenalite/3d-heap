@@ -37,11 +37,11 @@ public abstract class Node {
 
     //region Geometry
     public void buildGeometry(float x, float y, float z, float scale, Colour c) {
-        this.geometry = new Cube(x, y, z, 0, 0, 0, scale, c);
+        this.geometry = new Cube(0, 0, 0, 0, 0, 0, scale, c);
     }
 
     public void buildGeometry(float x, float y, float z, float scale) {
-        this.geometry = new Cube(x, y, z, 0, 0, 0, scale, colour);
+        this.geometry = new Cube(0, 0, 0, 0, 0, 0, scale, colour);
     }
 
     public Shape getGeometry() {
@@ -50,7 +50,17 @@ public abstract class Node {
 
     public void updatePosition() {
         if (geometry != null)
-            geometry.setPosition(level.getX(this), level.getY(this), level.getZ(this));
+        {
+            float x = level.getX(this);
+            float y = level.getY(this);
+            float z = level.getZ(this);
+            System.out.println(String.format("Updating to: %f %f %f", x,y,z));
+            geometry.setPosition(x, y, z);
+        }
+        else
+        {
+            System.out.println("Can't update non existant geometry");
+        }
     }
     //endregion
 

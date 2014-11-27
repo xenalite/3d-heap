@@ -22,7 +22,8 @@ public class LayoutTest {
     {
         return Arrays.asList(
                 new Object[]{FRLayout.class},
-                new Object[]{SpringLayout.class}
+                new Object[]{SpringLayout.class},
+                new Object[]{KKLayout.class}
 //                ,
 //                new Object[]{ISOLayout.class},
 //                new Object[]{CircularLayout.class}
@@ -45,6 +46,9 @@ public class LayoutTest {
             }else if(layoutClass == CircularLayout.class)
             {
                 return new CircularLayout<V, E>(graph);
+            }else if(layoutClass == KKLayout.class)
+            {
+                return new KKLayout<V, E>(graph);
             } else
             {
                 return null;

@@ -1,12 +1,11 @@
 package com.imperial.heap3d.layout;
 
 import com.graphics.shapes.Colour;
-import com.heap3d.layout.FRLayout;
-import com.heap3d.layout.GraphImpl;
-import com.heap3d.layout.Layout;
-import com.heap3d.layout.SpringLayout;
+import com.heap3d.layout.*;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
+
+import java.awt.*;
 
 public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 
@@ -22,7 +21,8 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 
 	public HeapGraphLevel(int id) {
 		this.id = id;
-		this.layout = new SpringLayout<>(this);
+		this.layout = new FRLayout<>(this,0.9f, 0.01f);
+		layout.setSize(new Dimension(200,200));
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 
 	protected float spacing = 10;
 	public float getX(Node n) {
-		float x = (float)layout.transform(n).getX() / 10;
+		float x = (float)layout.transform(n).getX() ;
 		if (!isRoot(n)) {
 			if (x < 0) {
 				x -= spacing;
@@ -78,7 +78,7 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 	}
 
 	public float getZ(Node n) {
-		float y = (float) layout.transform(n).getY() / 10;
+		float y = (float) layout.transform(n).getY() ;
 		if (!isRoot(n)) {
 			if (y < 0) {
 				y -= spacing;

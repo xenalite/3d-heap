@@ -16,6 +16,15 @@ public class FRLayout<V,E> extends JungLayout<V,E> {
         setSize(new Dimension(1000,1000));
     }
 
+    public FRLayout(Graph<V,E> graph, float attraction, float repulsion)
+    {
+        sl = new edu.uci.ics.jung.algorithms.layout.FRLayout(graph);
+        sl.setAttractionMultiplier(attraction);
+        sl.setRepulsionMultiplier(repulsion);
+        this.layout = sl;
+        setSize(new Dimension(1000, 1000));
+    }
+
 //    @Override
 //    protected void initializeLayout(DirectedGraph g, Dimension size) {
 //        sl = new edu.uci.ics.jung.algorithms.layout.FRLayout(g);
