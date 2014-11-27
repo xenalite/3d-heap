@@ -19,7 +19,6 @@ public class NodesBuilder {
     }
 
     public Collection<StackNode> build() {
-        _uniqueNodes.clear();
         Collection<StackNode> stackNodes = new LinkedList<>();
         ObjectReference thisObject = _stackFrame.thisObject();
 
@@ -44,6 +43,7 @@ public class NodesBuilder {
                 stackNodes.add(new StackNode(name, drillDown(name, value)));
             }
         }
+        _uniqueNodes.clear();
         return stackNodes;
     }
 
