@@ -30,6 +30,9 @@ public abstract class Node {
     public void setLevel(HeapGraphLevel level) {
         this.level = level;
     }
+    public HeapGraphLevel getLevel() {
+        return this.level;
+    }
 
     public abstract List<Object> getPrimitives();
 
@@ -54,12 +57,12 @@ public abstract class Node {
             float x = level.getX(this);
             float y = level.getY(this);
             float z = level.getZ(this);
-            System.out.println(String.format("Updating to: %f %f %f", x,y,z));
+            //System.out.println(String.format("Updating to: %f %f %f", x,y,z));
             geometry.setPosition(x, y, z);
         }
         else
         {
-            System.out.println("Can't update non existant geometry");
+            System.err.println("Can't update non existant geometry");
         }
     }
     //endregion

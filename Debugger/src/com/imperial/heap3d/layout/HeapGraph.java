@@ -5,11 +5,13 @@ import com.google.common.eventbus.Subscribe;
 import com.graphics.RenderEngine;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
+import com.heap3d.layout.GraphImpl;
 import com.imperial.heap3d.events.ControlEvent;
 import com.imperial.heap3d.events.EventType;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
 import com.imperial.heap3d.utilities.NodesComparator;
+
 
 import java.awt.*;
 import java.util.*;
@@ -22,6 +24,7 @@ public class HeapGraph extends RenderEngine {
 	private Collection<StackNode> stackNodes;
 	private EventBus _eventBus;
 	protected Set<Node> allHeapNodes = new HashSet<>();
+	protected GraphImpl<Node, HeapEdge> interLevelGraph = new GraphImpl<>();
 
 	public HeapGraph(Canvas canvas, Collection<StackNode> stackNodes, EventBus eventBus) {
 		super(canvas);
@@ -53,6 +56,8 @@ public class HeapGraph extends RenderEngine {
 		clearShapesFrom3DSpace();
 		currentLevel = 0;
 		levels.clear();
+		allHeapNodes.clear();
+		interLevelGraph = new GraphImpl<>();
 			for(StackNode stackNode : stackNodes)
 			{
 				System.out.println("Stack Node: " + stackNode.getName());
@@ -122,17 +127,47 @@ public class HeapGraph extends RenderEngine {
 
 			//Build all the nodes(including the root), adding them to the layout world and 3D space
 			//Add edges between the nodes
-			buildNodes(stackNode, levelGraph);
-			addEdges(stackNode, levelGraph);
+			buildGraph(stackNode, levelGraph);
 
 			//Layout the nodes on this level with the stackNode as the root
 			levelGraph.layout.layout(stackNode);
 			//update the 3D positions of all the nodes
-			updatePositions(stackNode);
+			for(Node n : levelGraph.getVertices())
+			{
+				n.updatePosition();
+				//Check there are no inter level connections to deal with
+				Collection<HeapEdge> edges = interLevelGraph.getIncidentEdges(n);
+				if(edges != null) {
+					for (HeapEdge edge : edges) {
+						edge.connect(new Colour(1, 1, 1), this);
+					}
+				}
+			}
 
 			//Build the edges in 3D space
 			//We want to do this after the nodes are created and positioned since the lines are expensive
-			buildEdges(levelGraph, stackNode);
+			for (Node n : levelGraph.getVertices())
+			{
+				Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
+				for(HeapEdge edge : outEdges) {
+					Node child = levelGraph.layout.getGraph().getOpposite(n,edge);
+					if(child.getGeometry() != null) {
+						edge.connect(n,child, new Colour(1, 1, 1), this);
+					} else
+					{
+						System.err.println("Can't add null edge");
+					}
+				}
+				//TODO add interlevel edges
+				Collection<HeapEdge> edges = interLevelGraph.getIncidentEdges(n);
+				if(edges != null) {
+					for (HeapEdge edge : edges) {
+						edge.connect(new Colour(1, 1, 1), this);
+					}
+				}
+			}
+
+
 			currentLevel++;
 		}
 	}
@@ -157,69 +192,69 @@ public class HeapGraph extends RenderEngine {
 			}
 
 		}
-			System.out.println("Nodes not equal, so adding a new level " + currentLevel);
-			//TODO delete old stackNode
+
+		System.out.println("Nodes not equal, so adding a new level " + currentLevel);
+
+			//TODO deal with reconnecting?
 			removeLevel(levelGraph);
 
-
 			addLevel(stackNode);
-
-
 	}
 
-	private void addEdges(Node n, HeapGraphLevel level) {
-		for(Node child : n.getReferences()) {
-			level.addEdge(new HeapEdge(), n, child);
-			addEdges(child, level);
+	/**
+	 * Adds all the *NEW* nodes reachable from root to level
+	 * Adds edges between nodes in level
+	 */
+	private void buildGraph(StackNode root, HeapGraphLevel level)
+	{
+		buildNodes(root, level);
+
+		for (Node node : level.getVertices())
+		{
+			for(Node child : node.getReferences()) {
+				assert allHeapNodes.contains(child);
+				if(child.getLevel() == node.getLevel()) {
+					level.addEdge(new HeapEdge(), node, child);
+				}
+			}
 		}
 	}
 
 	private void buildNodes(Node n, HeapGraphLevel level) {
-		//TODO add nodes to a set of allNodes so we can connect between levels
-		if(n instanceof Node && !allHeapNodes.contains(n))
+		if(!allHeapNodes.contains(n))
 		{
-			allHeapNodes.add((Node)n);
-		}
-		level.buildNode(n, this);
-        java.util.List<Node> references = n.getReferences();
-        for(Node child : references)
-			buildNodes(child, level);
-	}
-	
-	private void buildEdges(HeapGraphLevel levelGraph, Node n) {
-		Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
-		for(HeapEdge edge : outEdges) {
-			Node child = levelGraph.layout.getGraph().getOpposite(n,edge);
-			if(child.getGeometry() != null) {
-				edge.connect(n,child, new Colour(1, 1, 1), this);
+			allHeapNodes.add(n);
+			level.buildNode(n, this);
+			java.util.List<Node> references = n.getReferences();
+			for(Node child : references)
+			{
+				if(allHeapNodes.contains(child))
+				{
+					//Adds nodes and edge to graph
+					System.out.println(String.format("Interlevel: %s to %s", n,child));
+					interLevelGraph.addEdge(new HeapEdge(n,child), n,child);
+				} else
+				{
+					buildNodes(child, level);
+				}
 			}
+		} else
+		{
+			//The node already exits in all nodes
+			System.out.println("Already have node: " + n);
 		}
-		for(Node child : n.getReferences()) {
-			buildEdges(levelGraph, child);
-		}
-	}
 
-	private void updatePositions(Node n) {
-
-		n.updatePosition();
-		java.util.List<Node> references = n.getReferences();
-		for(Node child : references)
-			updatePositions(child);
 	}
 
 	private void removeLevel(HeapGraphLevel levelGraph)
 	{
 		for (Node n : levelGraph.getVertices() )
 		{
-			//TODO check that there are no references to it from another level?
-			if(levelGraph.getInEdges(n).size() >= 0)
+			for (HeapEdge edge : levelGraph.getOutEdges(n))
 			{
-				for (HeapEdge edge : levelGraph.getOutEdges(n))
-				{
-					removeShapeFrom3DSpace(edge.getLine());
-				}
-				removeShapeFrom3DSpace(n.getGeometry());
+				removeShapeFrom3DSpace(edge.getLine());
 			}
+			removeShapeFrom3DSpace(n.getGeometry());
 		}
 		this.levels.remove(levelGraph.id);
 	}
