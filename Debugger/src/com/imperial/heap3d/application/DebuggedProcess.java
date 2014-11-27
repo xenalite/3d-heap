@@ -146,54 +146,47 @@ public class DebuggedProcess {
     }
 
     public void createStepOverRequest() {
-        try {
-            if (_threadReference != null && _state == PAUSED) {
-                EventRequestManager erm = _instance.eventRequestManager();
-                StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
-                sr.addCountFilter(1);
-                sr.enable();
-                resume();
-                _state = RUNNING;
-            }
-        }
-        catch(DuplicateRequestException e){
-            e.printStackTrace();
+
+        if (_threadReference != null && _state == PAUSED) {
+            removeStepRequests();
+            EventRequestManager erm = _instance.eventRequestManager();
+            StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
+            sr.addCountFilter(1);
+            sr.enable();
+            resume();
+            _state = RUNNING;
         }
     }
     public void createStepIntoRequest() {
-        try {
-            if (_threadReference != null && _state == PAUSED) {
-                EventRequestManager erm = _instance.eventRequestManager();
-                StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_MIN, StepRequest.STEP_INTO);
-                sr.addCountFilter(1);
-                sr.enable();
-                resume();
-                _state = RUNNING;
-            }
-        }
-        catch(DuplicateRequestException e){
-            e.printStackTrace();
+        if (_threadReference != null && _state == PAUSED) {
+            removeStepRequests();
+            EventRequestManager erm = _instance.eventRequestManager();
+            StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_MIN, StepRequest.STEP_INTO);
+            sr.addCountFilter(1);
+            sr.enable();
+            resume();
+            _state = RUNNING;
+
         }
     }
     public void createStepOutRequest() {
-        try {
-            if (_threadReference != null && _state == PAUSED) {
-                EventRequestManager erm = _instance.eventRequestManager();
-                StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OUT);
-                sr.addCountFilter(1);
-                sr.enable();
-                resume();
-                _state = RUNNING;
-            }
-        }
-        catch(DuplicateRequestException e){
-            e.printStackTrace();
+
+        if (_threadReference != null && _state == PAUSED) {
+            removeStepRequests();
+            EventRequestManager erm = _instance.eventRequestManager();
+            StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OUT);
+            sr.addCountFilter(1);
+            sr.enable();
+            resume();
+            _state = RUNNING;
         }
     }
     public void addBreakpoint(String className, String argument) {
         _manager.addBreakpoint(className, argument);
     }
-
+    public void removeBreakpoint(String className, String argument) {
+        _manager.removeBreakpoint(className, argument);
+    }
     public void addWatchpoint(String className, String argument) {
         _manager.addWatchpoint(className, argument);
     }

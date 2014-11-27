@@ -106,6 +106,7 @@ public class BreakpointsTabViewModel {
             _cachedElements.add(createEvent(type, className, point));
             send();
         }
+
     }
 
     private void send() {
@@ -140,24 +141,28 @@ public class BreakpointsTabViewModel {
     public void removeBreakpointAction(String selectedItem) {
         String[] values = selectedItem.split(DELIM);
         _breakpoints.getValue().remove(selectedItem);
-        for (ControlEvent ce : _cachedElements)
+        for (ControlEvent ce : _cachedElements) {
             if (Objects.equals(ce.className, values[0]) && Objects.equals(ce.argument, values[1]) &&
                     ce.type == BREAKPOINT) {
 
                 _cachedElements.remove(ce);
                 return;
             }
+        }
+        _eventBus.post(ControlEventFactory.createRemoveBreakpointEvent(values[0],values[1]));
     }
 
     public void removeWatchpointAction(String selectedItem) {
         String[] values = selectedItem.split(DELIM);
         _watchpoints.getValue().remove(selectedItem);
-        for(ControlEvent ce : _cachedElements)
-            if(Objects.equals(ce.className, values[0]) && Objects.equals(ce.argument, values[1]) &&
+        for(ControlEvent ce : _cachedElements) {
+            if (Objects.equals(ce.className, values[0]) && Objects.equals(ce.argument, values[1]) &&
                     ce.type == WATCHPOINT) {
 
                 _cachedElements.remove(ce);
                 return;
             }
+        }
+        _eventBus.post(ControlEventFactory.createRemoveWatchpointEvent(values[0], values[1]));
     }
 }

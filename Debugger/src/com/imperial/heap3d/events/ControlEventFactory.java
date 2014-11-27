@@ -14,8 +14,13 @@ public class ControlEventFactory {
     public static ControlEvent createBreakpointEvent(String className, String methodName) {
         return new ControlEvent(EventType.BREAKPOINT, className, methodName);
     }
-
+    public static ControlEvent createRemoveBreakpointEvent(String className, String methodName) {
+        return new ControlEvent(EventType.RMBREAKPOINT, className, methodName);
+    }
     public static ControlEvent createWatchpointEvent(String className, String fieldName) {
         return new ControlEvent(EventType.WATCHPOINT, className, fieldName);
+    }
+    public static ControlEvent createRemoveWatchpointEvent(String className, String methodName) {
+        return new ControlEvent(EventType.RMWATCHPOINT, className, methodName);
     }
 }
