@@ -1,7 +1,7 @@
 package com.imperial.heap3d.snapshot;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class StackNode extends Node {
 
@@ -9,13 +9,13 @@ public class StackNode extends Node {
     private boolean hasReference;
 
     public StackNode(String name, Object value) {
-        super(name);
+        super(name, value == null ? 0 : value.hashCode());
         this.value = value;
         hasReference = false;
     }
 
     public StackNode(String name, Node value) {
-        super(name);
+        super(name, value.getId());
         this.value = value;
         hasReference = true;
     }
@@ -29,16 +29,16 @@ public class StackNode extends Node {
     }
     
     @Override
-    public Collection<Object> getPrimitives() {
-        Collection<Object> primitives = new LinkedList<>();
+    public List<Object> getPrimitives() {
+        List<Object> primitives = new LinkedList<>();
         if(!hasReference)
             primitives.add(value);
         return primitives;
     }
 
     @Override
-    public Collection<Node> getReferences() {
-        Collection<Node> nodes = new LinkedList<>();
+    public List<Node> getReferences() {
+        List<Node> nodes = new LinkedList<>();
         if(hasReference) {
             nodes.add((Node) value);
         }

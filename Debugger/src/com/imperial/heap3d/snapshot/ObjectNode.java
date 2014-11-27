@@ -4,7 +4,7 @@ import com.graphics.shapes.Colour;
 
 import java.util.*;
 
-public class ObjectNode extends IdNode {
+public class ObjectNode extends Node {
 
     private List<Node> _references;
     private Map<String, Object> _primitives;
@@ -16,21 +16,22 @@ public class ObjectNode extends IdNode {
         this.colour = Colour.ORANGE;
     }
 
-    public void addPrimitive(String name, Object value){
+    public void addPrimitive(String name, Object value) {
         _primitives.put(name, value);
     }
 
-    public void addReference(Node heapNode){
-        _references.add(heapNode);
-    }
-    
-    @Override
-    public Collection<Object> getPrimitives() {
-        return _primitives.values();
+    public ObjectNode addReference(Node node) {
+        _references.add(node);
+        return this;
     }
 
     @Override
-    public Collection<Node> getReferences() {
+    public List<Object> getPrimitives() {
+        return new LinkedList<>();
+    }
+
+    @Override
+    public List<Node> getReferences() {
         return _references;
     }
 }

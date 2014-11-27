@@ -2,10 +2,10 @@ package com.imperial.heap3d.snapshot;
 
 import com.graphics.shapes.Colour;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
-public class StringNode extends IdNode {
+public class StringNode extends Node {
 
     private String str;
 
@@ -20,12 +20,12 @@ public class StringNode extends IdNode {
     }
 
     @Override
-    public Collection<Object> getPrimitives() {
+    public List<Object> getPrimitives() {
         return new LinkedList<>();
     }
 
     @Override
-    public Collection<Node> getReferences() {
+    public List<Node> getReferences() {
         return new LinkedList<>();
     }
 }

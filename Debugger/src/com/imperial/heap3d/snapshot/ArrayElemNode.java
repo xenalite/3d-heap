@@ -2,8 +2,8 @@ package com.imperial.heap3d.snapshot;
 
 import com.graphics.shapes.Colour;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by oskar on 24/11/14.
@@ -14,14 +14,14 @@ public class ArrayElemNode extends Node {
     private boolean hasReference;
 
     public ArrayElemNode(int index, Object value) {
-        super(String.format("[%d]", index));
+        super(String.format("[%d]", index), 0);
         this.value = value;
         hasReference = false;
         this.colour = Colour.RED;
     }
 
     public ArrayElemNode(int index, Node value) {
-        super(String.format("[%d]", index));
+        super(String.format("[%d]", index), 0);
         this.value = value;
         hasReference = true;
         this.colour = Colour.RED;
@@ -36,16 +36,16 @@ public class ArrayElemNode extends Node {
     }
 
     @Override
-    public Collection<Object> getPrimitives() {
-        Collection<Object> primitives = new LinkedList<>();
+    public List<Object> getPrimitives() {
+        List<Object> primitives = new LinkedList<>();
         if(!hasReference)
             primitives.add(value);
         return primitives;
     }
 
     @Override
-    public Collection<Node> getReferences() {
-        Collection<Node> nodes = new LinkedList<>();
+    public List<Node> getReferences() {
+        List<Node> nodes = new LinkedList<>();
         if(hasReference)
             nodes.add((Node) value);
         return nodes;

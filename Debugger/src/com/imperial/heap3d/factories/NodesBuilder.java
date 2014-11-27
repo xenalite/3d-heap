@@ -38,11 +38,6 @@ public class NodesBuilder {
             String name = localVariable.name();
             Value value = _stackFrame.getValue(localVariable);
 
-            System.err.println(String.format("Stackframe hash:%d", _stackFrame.hashCode()));
-//            System.err.println(String.format("Location:%s, variable:%s, lv_hash:%d, sf_hash:%d, combined_hash:%d",
-//                    _stackFrame.location().method().name(), name,
-//                    localVariable.hashCode(), _stackFrame.hashCode(), localVariable.hashCode()^_stackFrame.hashCode()));
-
             if (value == null || value instanceof PrimitiveValue) {
                 stackNodes.add(new StackNode(name, value));
             } else {
@@ -90,8 +85,7 @@ public class NodesBuilder {
         if (value == null || value instanceof PrimitiveValue) {
             return new ArrayElemNode(index, value);
         }
-        // TODO -- discuss if it should just be drillDown without wrapping in AEN
-        return new ArrayElemNode(index, drillDown(name + "[" + index + "]", value));
+        return drillDown(name + "[" + index + "]", value);
     }
 
     private void addValueToObjectNode(ObjectNode node, String name, Value value) {
