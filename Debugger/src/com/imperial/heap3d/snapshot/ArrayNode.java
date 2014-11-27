@@ -30,4 +30,10 @@ public class ArrayNode extends Node {
     public List<Node> getReferences() {
         return _elements;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || o instanceof ArrayNode && getId() == ((Node) o).getId();
+    }
+
 }

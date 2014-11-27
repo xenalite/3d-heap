@@ -28,4 +28,9 @@ public class StringNode extends Node {
     public List<Node> getReferences() {
         return new LinkedList<>();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || o instanceof StringNode && getId() == ((Node) o).getId();
+    }
 }

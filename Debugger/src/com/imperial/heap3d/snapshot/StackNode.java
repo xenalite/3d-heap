@@ -44,4 +44,11 @@ public class StackNode extends Node {
         }
         return nodes;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || o instanceof StackNode && getId() == ((StackNode) o).getId();
+    }
+
+
 }

@@ -34,4 +34,9 @@ public class ObjectNode extends Node {
     public List<Node> getReferences() {
         return _references;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || o instanceof ObjectNode && getId() == ((Node) o).getId();
+    }
 }
