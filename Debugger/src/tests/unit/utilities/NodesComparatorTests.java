@@ -86,6 +86,20 @@ public class NodesComparatorTests {
     }
 
     @Test
+    public void cyclicReferenceAtTheEndEquality_Equals() {
+        ObjectNode n1 = new ObjectNode("root", 1);
+        ObjectNode n2 = new ObjectNode("o1", 2);
+        ObjectNode n3 = new ObjectNode("o2", 3);
+        n1.addReference(n2);
+        n2.addReference(n3);
+        n3.addReference(n3);
+
+        boolean result = _sut.compare(n1, n1);
+
+        assertTrue(result);
+    }
+
+    @Test
     public void cyclicReferenceEquality_Complex_DoesNotEqual() {
         ObjectNode n1 = new ObjectNode("this", 1);
         ObjectNode n2 = new ObjectNode("field1", 1);
@@ -98,7 +112,6 @@ public class NodesComparatorTests {
         n1.addReference(n4);
         n4.addReference(n5);
         n4.addReference(n6);
-
 
         ObjectNode n1b = new ObjectNode("this", 1);
         ObjectNode n2b = new ObjectNode("field1", 1);
@@ -118,17 +131,73 @@ public class NodesComparatorTests {
     }
 
     @Test
-    public void cyclicReferenceAtTheEndEquality_Equals() {
-        ObjectNode n1 = new ObjectNode("root", 1);
-        ObjectNode n2 = new ObjectNode("o1", 2);
-        ObjectNode n3 = new ObjectNode("o2", 3);
+    public void cyclicReferenceEquality_Complex2_DoesNotEqual() {
+        ObjectNode n1 = new ObjectNode("n1", 1);
+        ObjectNode n2 = new ObjectNode("n2", 2);
+        ObjectNode n3 = new ObjectNode("n3", 3);
+        ObjectNode n4 = new ObjectNode("n4", 4);
+        ObjectNode n5 = new ObjectNode("n5", 5);
+        ObjectNode n6 = new ObjectNode("n6", 6);
         n1.addReference(n2);
         n2.addReference(n3);
-        n3.addReference(n3);
+        n2.addReference(n5);
+        n3.addReference(n4);
+        n3.addReference(n5);
+        n4.addReference(n2);
+        n4.addReference(n1);
+        n5.addReference(n6);
+        n6.addReference(n1);
 
-        boolean result = _sut.compare(n1, n1);
+        ObjectNode nb1 = new ObjectNode("nb1", 1);
+        ObjectNode nb2 = new ObjectNode("nb2", 2);
+        ObjectNode nb3 = new ObjectNode("nb3", 3);
+        ObjectNode nb4 = new ObjectNode("nb4", 4);
+        ObjectNode nb5 = new ObjectNode("nb5", 5);
+        ObjectNode nb6 = new ObjectNode("nb6", 66);
+        nb1.addReference(nb2);
+        nb2.addReference(nb3);
+        nb2.addReference(nb5);
+        nb3.addReference(nb4);
+        nb3.addReference(nb5);
+        nb4.addReference(nb2);
+        nb4.addReference(nb1);
+        nb5.addReference(nb6);
+        nb6.addReference(nb1);
 
-        assertTrue(result);
+        boolean result = _sut.compare(n1, nb1);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void cyclicReferenceEquality_Complex3_DoesNotEqual() {
+        ObjectNode n1 = new ObjectNode("n1", 1);
+        ObjectNode n2 = new ObjectNode("n2", 2);
+        ObjectNode n3 = new ObjectNode("n3", 3);
+        ObjectNode n4 = new ObjectNode("n4", 4);
+        ObjectNode n5 = new ObjectNode("n5", 5);
+        n1.addReference(n2);
+        n2.addReference(n3);
+        n2.addReference(n4);
+        n3.addReference(n4);
+        n4.addReference(n2);
+        n4.addReference(n5);
+
+        ObjectNode n1b = new ObjectNode("n1", 1);
+        ObjectNode n2b = new ObjectNode("n2", 2);
+        ObjectNode n3b = new ObjectNode("n3", 3);
+        ObjectNode n4b = new ObjectNode("n4", 4);
+        ObjectNode n5b = new ObjectNode("n5", 55);
+        n1b.addReference(n2b);
+        n2b.addReference(n3b);
+        n2b.addReference(n4b);
+        n3b.addReference(n4b);
+        n4b.addReference(n2b);
+        n4b.addReference(n5b);
+
+        boolean result = _sut.compare(n1, n1b);
+
+        assertFalse(result);
     }
 
     @Test
