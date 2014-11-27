@@ -78,7 +78,17 @@ public class ControlEventHandler {
                 _dprocess.addBreakpoint(e.className, e.argument);
             }
             break;
+            case RMBREAKPOINT: {
+                //TODO
+                _dprocess.removeBreakpoint(e.className, e.argument);
+            }
+            break;
             case WATCHPOINT: {
+                _dprocess.addWatchpoint(e.className, e.argument);
+            }
+            break;
+            case RMWATCHPOINT: {
+                //TODO
                 _dprocess.addWatchpoint(e.className, e.argument);
             }
             break;

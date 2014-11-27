@@ -4,10 +4,7 @@ import com.sun.jdi.Field;
 import com.sun.jdi.Location;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.VirtualMachine;
-import com.sun.jdi.request.BreakpointRequest;
-import com.sun.jdi.request.ClassPrepareRequest;
-import com.sun.jdi.request.EventRequestManager;
-import com.sun.jdi.request.ModificationWatchpointRequest;
+import com.sun.jdi.request.*;
 
 import java.util.*;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -19,11 +16,14 @@ import java.util.Map.Entry;
 public class BreakpointManager {
 
     private Map<String, Entry<Vector<String>, Vector<String>>> _cachedBreakpoints;
+    private Map<Location, BreakpointRequest> _cachedBreakpointRequests;
+    private Map<Field, WatchpointRequest> _cachedWatchPointRequests;
     private VirtualMachine _instance;
 
     public BreakpointManager(VirtualMachine instance) {
         _instance = instance;
         _cachedBreakpoints = new HashMap<>();
+        _cachedBreakpointRequests = new HashMap<>();
     }
 
     public void notifyClassLoaded(ReferenceType referenceType) {
@@ -50,7 +50,7 @@ public class BreakpointManager {
     }
 
     public void addWatchpoint(String className, String argument) {
-        boolean needToCache = _instance != null;
+        boolean needToCache = _instance == null;
         if(!needToCache) {
             List<ReferenceType> classes = _instance.classesByName(className);
             if (!classes.isEmpty()) {
@@ -73,11 +73,17 @@ public class BreakpointManager {
     }
 
     public void addBreakpoint(String className, String argument) {
-        List<ReferenceType> classes = _instance.classesByName(className);
-        if(!classes.isEmpty()) {
-            createBreakpointRequest(classes.get(0), argument);
+        boolean needToCache = _instance == null;
+        if(!needToCache) {
+            List<ReferenceType> classes = _instance.classesByName(className);
+            if (!classes.isEmpty()) {
+                createBreakpointRequest(classes.get(0), argument);
+            } else {
+                needToCache = true;
+            }
         }
-        else {
+
+        if(needToCache){
             Vector<String> entries;
             if (_cachedBreakpoints.containsKey(className)) {
                 entries = _cachedBreakpoints.get(className).getKey();
@@ -90,11 +96,45 @@ public class BreakpointManager {
         }
     }
 
+    public void removeBreakpoint(String className, String argument) {
+        //TODO handle cases when there is no instance
+        if(_instance != null) {
+            List<ReferenceType> classes = _instance.classesByName(className);
+            if (!classes.isEmpty()) {
+                Location l = classes.get(0).methodsByName(argument).get(0).location();
+                EventRequestManager erm = _instance.eventRequestManager();
+                BreakpointRequest br = _cachedBreakpointRequests.get(l);
+                if (br != null) {
+                    erm.deleteEventRequest(br);
+                    _cachedBreakpointRequests.remove(l);
+                }
+            }
+        }
+    }
+
+
+    public void removeWatchpoint(String className, String argument) {
+        //TODO handle cases when there is no instance
+        if(_instance != null) {
+            List<ReferenceType> classes = _instance.classesByName(className);
+            if (!classes.isEmpty()) {
+                Field f = classes.get(0).fieldByName(argument);
+                EventRequestManager erm = _instance.eventRequestManager();
+                WatchpointRequest br = _cachedWatchPointRequests.get(f);
+                if (br != null) {
+                    erm.deleteEventRequest(br);
+                    _cachedWatchPointRequests.remove(f);
+                }
+            }
+        }
+    }
+
     private void createBreakpointRequest(ReferenceType classReference, String breakpoint) {
         EventRequestManager erm = _instance.eventRequestManager();
         Location l = classReference.methodsByName(breakpoint).get(0).location();
         BreakpointRequest br = erm.createBreakpointRequest(l);
         br.enable();
+        _cachedBreakpointRequests.put(l,br);
     }
 
     private void createWatchpointRequest(ReferenceType classReference, String watchpoint) {
@@ -102,5 +142,6 @@ public class BreakpointManager {
         Field f = classReference.fieldByName(watchpoint);
         ModificationWatchpointRequest mwe = erm.createModificationWatchpointRequest(f);
         mwe.enable();
+        _cachedWatchPointRequests.put(f,mwe);
     }
 }
