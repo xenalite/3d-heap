@@ -100,8 +100,23 @@ public class HeapGraph extends RenderEngine {
 			this.captureScreen(path, name);
 			takeScreenShot = false;
 		}
+		
+		Shape selected = getSelectedShape();
+		
+		if(selected != null && selected != lastSelectedShape){
+			lastSelectedShape = selected;
+			for(Node node : allHeapNodes){
+				if(node.getGeometry() == selected){
+					String prims = "Node Selected! Primitives : "+node.getPrimitives();
+					System.out.println(prims);
+					break;
+				}
+			}
+		}
 	}
 
+	private Shape lastSelectedShape = null;
+	
 	@Override
 	protected void afterLoop() {
 		stackNodes.size();

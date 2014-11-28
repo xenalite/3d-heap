@@ -5,8 +5,10 @@ package tests.system.testprograms.utilities;
  */
 public class TreeNode {
 
+	private static int inc = 0;
     public TreeNode left;
     public TreeNode right;
+    public int value = inc++;
 
     public TreeNode() {}
 

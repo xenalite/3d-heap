@@ -34,7 +34,7 @@ public abstract class Node {
         return this.level;
     }
 
-    public abstract List<Object> getPrimitives();
+    public abstract Object getPrimitives();
 
     public abstract List<Node> getReferences();
 
