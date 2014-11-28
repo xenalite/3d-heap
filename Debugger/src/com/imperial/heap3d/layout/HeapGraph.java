@@ -8,6 +8,8 @@ import com.graphics.shapes.Shape;
 import com.heap3d.layout.GraphImpl;
 import com.imperial.heap3d.events.ControlEvent;
 import com.imperial.heap3d.events.EventType;
+import com.imperial.heap3d.events.ProcessEvent;
+import com.imperial.heap3d.events.ProcessEventType;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
 import com.imperial.heap3d.utilities.NodesComparator;
@@ -109,6 +111,11 @@ public class HeapGraph extends RenderEngine {
 				if(node.getGeometry() == selected){
 					String prims = "Node Selected! Primitives : "+node.getPrimitives();
 					System.out.println(prims);
+                    //TODO send control event
+
+                    String message = String.format("Selected Node: %s children: %s primitives: %s", node.getName(), node.getReferences(), node.getPrimitives());
+                    _eventBus.post(new ProcessEvent(ProcessEventType.SELECT, message));
+
 					break;
 				}
 			}

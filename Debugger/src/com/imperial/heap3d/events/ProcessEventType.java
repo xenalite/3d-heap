@@ -8,5 +8,5 @@ public enum ProcessEventType {
     STARTED,
     STOPPED,
     DEBUG_MSG,
-    PROCESS_MSG
+    SELECT, PROCESS_MSG
 }

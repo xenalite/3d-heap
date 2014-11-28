@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="699.0" prefWidth="400.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
   <tabs>
     <Tab text="Application">
          <content>
-            <fx:include source="ApplicationTab.fxml"/>
+            <fx:include source="ApplicationTab.fxml" />
          </content>
     </Tab>
     <Tab text="Breakpoints &amp; Watches">
          <content>
-            <fx:include source="BreakpointsTab.fxml"/>
+            <fx:include source="BreakpointsTab.fxml" />
          </content>
     </Tab>
-      <Tab text="Heap View" />
+      <Tab text="Heap View">
+         <content>
+             <fx:include source="HeapInfoTab.fxml" />
+         </content>
+      </Tab>
   </tabs>
 </TabPane>

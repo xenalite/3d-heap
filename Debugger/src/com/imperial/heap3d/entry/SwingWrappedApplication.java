@@ -6,8 +6,10 @@ import com.imperial.heap3d.layout.HeapGraph;
 import com.imperial.heap3d.ui.controllers.ApplicationTabController;
 import com.imperial.heap3d.ui.controllers.BottomPanelController;
 import com.imperial.heap3d.ui.controllers.BreakpointsTabController;
+import com.imperial.heap3d.ui.controllers.HeapInfoTabController;
 import com.imperial.heap3d.ui.viewmodels.ApplicationTabViewModel;
 import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
+import com.imperial.heap3d.ui.viewmodels.HeapInfoTabViewModel;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
@@ -54,9 +56,11 @@ public class SwingWrappedApplication {
         _injector.addComponent(ApplicationTabController.class);
         _injector.addComponent(BreakpointsTabController.class);
         _injector.addComponent(BottomPanelController.class);
+        _injector.addComponent(HeapInfoTabController.class);
 
         _injector.as(Characteristics.CACHE).addComponent(ApplicationTabViewModel.class);
         _injector.addComponent(BreakpointsTabViewModel.class);
+        _injector.addComponent(HeapInfoTabViewModel.class);
 
         SwingUtilities.invokeLater(this::initFrame);
     }
