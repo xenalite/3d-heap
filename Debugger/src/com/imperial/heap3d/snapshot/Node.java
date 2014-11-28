@@ -19,6 +19,7 @@ public abstract class Node {
     public Node(String name, long id) {
         this.name = name;
         this.id = id;
+        colour = new Colour(0,0,0);
     }
 
     public String getName() {
@@ -64,6 +65,10 @@ public abstract class Node {
         {
             System.err.println("Can't update non existant geometry");
         }
+    }
+
+    public Colour getColour() {
+        return colour;
     }
     //endregion
 
