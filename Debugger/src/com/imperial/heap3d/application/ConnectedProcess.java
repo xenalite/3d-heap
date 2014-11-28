@@ -7,11 +7,19 @@ import com.sun.jdi.VirtualMachine;
  */
 public class ConnectedProcess {
 
-    public final VirtualMachine virtualMachine;
-    public final Process process;
+    private final VirtualMachine _virtualMachine;
+    private final Process _process;
 
     public ConnectedProcess(VirtualMachine virtualMachine, Process process) {
-        this.process = process;
-        this.virtualMachine = virtualMachine;
+        this._process = process;
+        this._virtualMachine = virtualMachine;
+    }
+
+    public VirtualMachine getVirtualMachine() {
+        return _virtualMachine;
+    }
+
+    public Process getProcess() {
+        return _process;
     }
 }

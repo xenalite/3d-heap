@@ -1,5 +1,6 @@
 package tests.system.snapshotTest;
 
+import com.imperial.heap3d.factories.ProcessFactory;
 import javafx.embed.swing.JFXPanel;
 
 import com.google.common.eventbus.EventBus;
@@ -22,7 +23,8 @@ public class DebuggerController {
         _renderThread.start();
         EventBus e = new EventBus();
         setBreakpointsVM(new BreakpointsTabViewModel(e));
-        setApplicationVM(new ApplicationTabViewModel(e, new VirtualMachineProvider(), _heapGraphFactory));
+        setApplicationVM(new ApplicationTabViewModel(e,
+                new ProcessFactory(new VirtualMachineProvider(), e, _heapGraphFactory)));
     }
     
     public void cleanup(){

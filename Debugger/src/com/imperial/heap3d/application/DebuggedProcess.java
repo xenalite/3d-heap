@@ -1,12 +1,9 @@
 package com.imperial.heap3d.application;
 
-import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.HeapGraphFactory;
-import com.imperial.heap3d.factories.IVirtualMachineProvider;
 import com.imperial.heap3d.factories.NodesBuilder;
-import com.imperial.heap3d.factories.ThreadBuilder;
 import com.imperial.heap3d.snapshot.StackNode;
+import com.imperial.heap3d.utilities.Check;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
 import com.sun.jdi.ThreadReference;
@@ -18,29 +15,24 @@ import com.sun.jdi.request.StepRequest;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.concurrent.ExecutorService;
 
 import static com.imperial.heap3d.application.ProcessState.*;
 
 public class DebuggedProcess {
 
     private HeapGraphFactory _heapGraphFactory;
-    private StartDefinition _definition;
-    private IVirtualMachineProvider _provider;
     private VirtualMachine _instance;
     private Process _process;
     private ProcessState _state;
     private BreakpointManager _manager;
-    private EventBus _eventBus;
     private ThreadReference _threadReference;
 
-    public DebuggedProcess(StartDefinition definition, IVirtualMachineProvider provider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
-        _state = STOPPED;
-        _definition = definition;
-        _heapGraphFactory = heapGraphFactory;
-        _provider = provider;
-        _eventBus = eventBus;
-        _eventBus.register(this);
+    public DebuggedProcess(ConnectedProcess connectedProcess, BreakpointManager breakpointManager, HeapGraphFactory heapGraphFactory) {
+        _state = RUNNING;
+        _heapGraphFactory = Check.NotNull(heapGraphFactory);
+        _process = Check.NotNull(connectedProcess.getProcess());
+        _instance = Check.NotNull(connectedProcess.getVirtualMachine());
+        _manager = Check.NotNull(breakpointManager);
     }
 
     public void dispose() {
@@ -49,25 +41,7 @@ public class DebuggedProcess {
     }
 
     public void start() {
-        runProcessAndEstablishConnection();
-        ExecutorService service = ThreadBuilder.createService("stream-listener");
-        service.submit(new StreamListener(_eventBus, _process.getInputStream(), _process.getErrorStream()));
-        service.shutdown();
-    }
 
-    private void runProcessAndEstablishConnection() {
-        int port = getRandomPort();
-        ConnectedProcess cp = _provider.establish(port, () -> _definition.buildProcess(port));
-        _instance = cp.virtualMachine;
-        _process = cp.process;
-        _manager = new BreakpointManager(_instance);
-        _state = RUNNING;
-    }
-
-    private int getRandomPort() {
-        final int RANGE = 10000;
-        final int MINIMUM = 30000;
-        return ((int) Math.ceil(Math.random() * RANGE)) + MINIMUM;
     }
 
     public void pause() {
@@ -156,6 +130,7 @@ public class DebuggedProcess {
             _state = RUNNING;
         }
     }
+
     public void createStepIntoRequest() {
         if (_threadReference != null && _state == PAUSED) {
             removeStepRequests();
@@ -168,6 +143,7 @@ public class DebuggedProcess {
 
         }
     }
+
     public void createStepOutRequest() {
 
         if (_threadReference != null && _state == PAUSED) {
@@ -180,18 +156,9 @@ public class DebuggedProcess {
             _state = RUNNING;
         }
     }
-    public void addBreakpoint(String className, String argument) {
-        _manager.addBreakpoint(className, argument);
-    }
-    public void removeBreakpoint(String className, String argument) {
-        _manager.removeBreakpoint(className, argument);
-    }
-    public void addWatchpoint(String className, String argument) {
-        _manager.addWatchpoint(className, argument);
-    }
 
-    public void screenShot(String path){
-    	java.io.File f = new java.io.File(path);
-    	_heapGraphFactory.create().screenShot(f.getParent(), f.getName());
+    public void screenShot(String path) {
+        java.io.File f = new java.io.File(path);
+        _heapGraphFactory.create().screenShot(f.getParent(), f.getName());
     }
 }

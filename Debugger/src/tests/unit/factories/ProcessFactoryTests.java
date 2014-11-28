@@ -1,10 +1,12 @@
 package tests.unit.factories;
 
 import com.google.common.eventbus.EventBus;
+import com.imperial.heap3d.application.ConnectedProcess;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.IVirtualMachineProvider;
 import com.imperial.heap3d.factories.ProcessFactory;
+import com.sun.jdi.VirtualMachine;
 import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Rule;
@@ -12,9 +14,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
+import java.io.InputStream;
 
-import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -26,11 +28,14 @@ public class ProcessFactoryTests extends EasyMockSupport {
     public ExpectedException exception = ExpectedException.none();
 
     private ProcessFactory _sut;
+    private IVirtualMachineProvider _vmProvider;
+    private EventBus _eventBus;
 
     @Before
     public void setUp() {
-        _sut = new ProcessFactory(createMock(IVirtualMachineProvider.class),
-                createMock(EventBus.class), createMock(HeapGraphFactory.class));
+        _vmProvider = createMock(IVirtualMachineProvider.class);
+        _eventBus = createMock(EventBus.class);
+        _sut = new ProcessFactory(_vmProvider, _eventBus, createMock(HeapGraphFactory.class));
     }
 
     @Test
@@ -76,8 +81,17 @@ public class ProcessFactoryTests extends EasyMockSupport {
         //arrange
         StartDefinition sd = createMock(StartDefinition.class);
         Process p = createMock(Process.class);
-        expect(sd.buildProcess(anyInt())).andReturn(p);
+        expect(p.getInputStream()).andReturn(createNiceMock(InputStream.class));
+        expect(p.getErrorStream()).andReturn(createNiceMock(InputStream.class));
 
+        VirtualMachine vm = createMock(VirtualMachine.class);
+        ConnectedProcess cp = createMock(ConnectedProcess.class);
+        expect(cp.getProcess()).andReturn(p).times(2);
+        expect(cp.getVirtualMachine()).andReturn(vm).times(2);
+
+        expect(_vmProvider.establish(anyInt(), anyObject())).andReturn(cp);
+        _eventBus.register(anyObject());
+        expectLastCall().once();
         replayAll();
 
         //act
@@ -95,9 +109,24 @@ public class ProcessFactoryTests extends EasyMockSupport {
     }
 
     @Test
-    public void callGettersAfterBuildMethod_DoesNotReturnNulls() {
+    public void callGettersAfterBuildMethod_ReturnsAsExpected() {
         //arrange
-        _sut.buildComponents(createMock(StartDefinition.class));
+        StartDefinition sd = createMock(StartDefinition.class);
+        Process p = createMock(Process.class);
+        expect(p.getInputStream()).andReturn(createNiceMock(InputStream.class));
+        expect(p.getErrorStream()).andReturn(createNiceMock(InputStream.class));
+
+        VirtualMachine vm = createMock(VirtualMachine.class);
+        ConnectedProcess cp = createMock(ConnectedProcess.class);
+        expect(cp.getProcess()).andReturn(p).times(2);
+        expect(cp.getVirtualMachine()).andReturn(vm).times(2);
+
+        expect(_vmProvider.establish(anyInt(), anyObject())).andReturn(cp);
+        _eventBus.register(anyObject());
+        expectLastCall().once();
+        replayAll();
+
+        _sut.buildComponents(sd);
 
         //act
         Object o1 = _sut.getBreakpointManager();
