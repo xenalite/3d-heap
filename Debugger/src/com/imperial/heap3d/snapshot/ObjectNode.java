@@ -3,6 +3,7 @@ package com.imperial.heap3d.snapshot;
 import com.graphics.shapes.Colour;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 public class ObjectNode extends Node {
 
@@ -26,8 +27,12 @@ public class ObjectNode extends Node {
     }
 
     @Override
-    public List<Object> getPrimitives() {
-        return new LinkedList<>();
+    public Object getPrimitives() {
+    	String res = "";
+    	for(Entry e : _primitives.entrySet()){
+    		res += ("(" + e.getKey() + " : " + e.getValue() + ")");
+    	}
+        return res;
     }
 
     @Override
