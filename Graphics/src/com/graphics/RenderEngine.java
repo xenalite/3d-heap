@@ -2,9 +2,10 @@ package com.graphics;
 
 import com.graphics.entities.Camera;
 import com.graphics.entities.Light;
-import com.graphics.raycasting.Ray;
 import com.graphics.raycasting.RayCastUtil;
 import com.graphics.rendering.MasterRenderer;
+import com.graphics.shapes.Colour;
+import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -32,6 +33,7 @@ public abstract class RenderEngine implements Runnable {
 	private float r, g, b, a;
 	private Camera camera;
 
+	private boolean debugLines;
 	private boolean mouseDown;
 	private Shape selectedShape;
 
@@ -95,21 +97,19 @@ public abstract class RenderEngine implements Runnable {
 			if(Mouse.isButtonDown(1) && !mouseDown){
 				mouseDown = true;
 				selectedShape = null;
-				
-				//Make a new ray beam
-				Ray r = new Ray();
-				r.createRay(camera);
-				
-				for(Shape s : shapes){
-					Vector3f vec = RayCastUtil.rayTest(r.origin, r.direction, s);
-					if (vec != null){
-						System.out.println("Ray cast complete: Found shape :)");
-						selectedShape = s;
+
+				Vector3f vec = RayCastUtil.rayTest(camera, shapes);
+				if (vec != null){
+					System.out.println("Ray cast complete: Found shape :)");
+					if(debugLines){
+						Line l = new Line(camera.getPosition().x, camera.getPosition().y, camera.getPosition().z, vec.x, vec.y, vec.z, Colour.GREEN);
+						addShapeTo3DSpace(l);
 					}
+					selectedShape = RayCastUtil.selectedShape;
 				}
 			}
 		}
-
+		
 		afterLoop();
 		cleanUp();
 	}
@@ -190,5 +190,9 @@ public abstract class RenderEngine implements Runnable {
 			return;
 		Vector3f oldPos = camera.getPosition();
 		camera.setPosition(new Vector3f(oldPos.x + dx, oldPos.y + dy, oldPos.z + dz));
+	}
+	
+	protected void setRayPickDebugLines(boolean flag){
+		debugLines = flag;
 	}
 }

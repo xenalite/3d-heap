@@ -1,16 +1,54 @@
 package com.graphics.raycasting;
 
+import java.util.List;
+
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
+
+import com.graphics.entities.Camera;
 import com.graphics.entities.Entity;
+import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
 import com.graphics.utils.Maths;
 
 public class RayCastUtil {
 
 	public static final float ACCURACY = 0.00001f;
+	public static Shape selectedShape;
+	private static float resultDist;
 
+	public static Vector3f rayTest(Camera camera, List<Shape> shapes){
+		
+		//Make a new ray beam
+		Ray r = new Ray();
+		r.createRay(camera);
+		
+		Vector3f result = null;
+		
+		int shapesSize = shapes.size();
+		float closestDistance = Float.MAX_VALUE;
+		
+		for(int i = 0; i < shapesSize; i++){
+			
+			Shape s = shapes.get(i);
+			
+			if(s instanceof Line)
+				continue;
+			
+			Vector3f vec = rayTest(r.origin, r.direction, s);
+			
+			if (vec != null){
+				if(resultDist < closestDistance){
+					closestDistance = resultDist;
+					result = vec;
+					selectedShape = s;
+				}
+			}
+		}
+		return result;
+	}
+	
 	private static Vector3f transform4fTo3f(Entity e, int p, float[] vertexes, int zeroOrOne) {
 		
 		Vector4f point_4 = new Vector4f(vertexes[p], vertexes[p + 1], vertexes[p + 2], zeroOrOne);
@@ -20,7 +58,7 @@ public class RayCastUtil {
 		return point;
 	}
 
-	public static Vector3f rayTest(Vector3f rayOrigin, Vector3f rayDirection, Shape shape) {
+	private static Vector3f rayTest(Vector3f rayOrigin, Vector3f rayDirection, Shape shape) {
 		
 		Entity e = shape.getEntity();
 		float[] vertexes = shape.getVertices();
