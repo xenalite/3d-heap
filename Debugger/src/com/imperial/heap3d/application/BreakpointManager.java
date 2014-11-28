@@ -1,5 +1,6 @@
 package com.imperial.heap3d.application;
 
+import com.imperial.heap3d.utilities.Check;
 import com.sun.jdi.Field;
 import com.sun.jdi.Location;
 import com.sun.jdi.ReferenceType;
@@ -21,7 +22,7 @@ public class BreakpointManager {
     private VirtualMachine _instance;
 
     public BreakpointManager(VirtualMachine instance) {
-        _instance = instance;
+        _instance = Check.NotNull(instance);
         _cachedBreakpoints = new HashMap<>();
         _cachedBreakpointRequests = new HashMap<>();
     }

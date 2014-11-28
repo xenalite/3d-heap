@@ -1,10 +1,7 @@
 package com.imperial.heap3d.entry;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.factories.ControllerFactory;
-import com.imperial.heap3d.factories.HeapGraphFactory;
-import com.imperial.heap3d.factories.ThreadBuilder;
-import com.imperial.heap3d.factories.VirtualMachineProvider;
+import com.imperial.heap3d.factories.*;
 import com.imperial.heap3d.layout.HeapGraph;
 import com.imperial.heap3d.ui.controllers.ApplicationTabController;
 import com.imperial.heap3d.ui.controllers.BottomPanelController;
@@ -54,6 +51,7 @@ public class SwingWrappedApplication {
     private void run() {
         _injector.as(Characteristics.CACHE).addComponent(VirtualMachineProvider.class);
         _injector.as(Characteristics.CACHE).addComponent(EventBus.class);
+        _injector.addComponent(ProcessFactory.class);
 
         _injector.addComponent(ApplicationTabController.class);
         _injector.addComponent(BreakpointsTabController.class);

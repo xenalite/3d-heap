@@ -3,13 +3,12 @@ package com.imperial.heap3d.ui.viewmodels;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.imperial.heap3d.application.ControlEventHandler;
-import com.imperial.heap3d.application.DebuggedProcess;
 import com.imperial.heap3d.events.ControlEventFactory;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.StartDefinition;
-import com.imperial.heap3d.factories.HeapGraphFactory;
-import com.imperial.heap3d.factories.IVirtualMachineProvider;
+import com.imperial.heap3d.factories.ProcessFactory;
 import com.imperial.heap3d.factories.ThreadBuilder;
+import com.imperial.heap3d.utilities.Check;
 import com.imperial.heap3d.utilities.ICommand;
 import com.imperial.heap3d.utilities.RelayCommand;
 import javafx.application.Platform;
@@ -24,9 +23,9 @@ import static com.imperial.heap3d.events.EventType.*;
  * Created by oskar on 29/10/14.
  */
 public class ApplicationTabViewModel {
+
+    private ProcessFactory _processFactory;
     private EventBus _eventBus;
-    private IVirtualMachineProvider _VMProvider;
-    private HeapGraphFactory _heapGraphFactory;
 
     private ICommand _resumeActionCommand;
     private ICommand _pauseActionCommand;
@@ -45,11 +44,10 @@ public class ApplicationTabViewModel {
     private StringProperty _arguments;
     private StringProperty _debuggerConsole;
 
-    public ApplicationTabViewModel(EventBus eventBus, IVirtualMachineProvider VMProvider, HeapGraphFactory heapGraphFactory) {
-        _VMProvider = VMProvider;
-        _eventBus = eventBus;
+    public ApplicationTabViewModel(EventBus eventBus, ProcessFactory processFactory) {
+        _processFactory = Check.NotNull(processFactory);
+        _eventBus = Check.NotNull(eventBus);
         _eventBus.register(this);
-        _heapGraphFactory = heapGraphFactory;
 
         _startActionCommand = new RelayCommand(this::startAction);
         _startActionCommand.canExecute().set(true);
@@ -125,15 +123,14 @@ public class ApplicationTabViewModel {
         _resumeActionCommand.canExecute().set(true);
         _screenShotCommand.canExecute().set(true);
 
-        StartDefinition sd = new StartDefinition(_javaPath.get(), _className.get(), _classPath.get());
-        DebuggedProcess dprocess = new DebuggedProcess(sd, _VMProvider, _eventBus, _heapGraphFactory);
-        ControlEventHandler handler = new ControlEventHandler(dprocess, _eventBus);
+        _processFactory.buildComponents(new StartDefinition(_javaPath.get(), _className.get(), _classPath.get()));
         _eventBus.post(ControlEventFactory.createEventOfType(START));
+        ControlEventHandler controlEventHandler = _processFactory.getControlEventHandler();
 
         ExecutorService service = ThreadBuilder.createService("Control-event-handler");
         service.submit(() -> {
             try {
-                handler.run();
+                controlEventHandler.run();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

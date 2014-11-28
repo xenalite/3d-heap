@@ -1,15 +1,11 @@
 package com.imperial.heap3d.factories;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.application.BreakpointManager;
-import com.imperial.heap3d.application.ConnectedProcess;
-import com.imperial.heap3d.application.ControlEventHandler;
-import com.imperial.heap3d.application.DebuggedProcess;
+import com.imperial.heap3d.application.*;
 import com.imperial.heap3d.events.StartDefinition;
 import com.imperial.heap3d.utilities.Check;
-import com.sun.jdi.event.Event;
 
-import static com.imperial.heap3d.application.ProcessState.RUNNING;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by oskar on 28/11/14.
@@ -36,16 +32,14 @@ public class ProcessFactory {
 
         int port = getRandomPort();
         ConnectedProcess cp = _vmProvider.establish(port, () -> startDefinition.buildProcess(port));
-        
-    }
+        _breakpointManager = new BreakpointManager(cp.getVirtualMachine());
+        _debuggedProcess = new DebuggedProcess(cp, _breakpointManager, _heapGraphFactory);
+        _controlEventHandler = new ControlEventHandler(_debuggedProcess, _eventBus, _breakpointManager);
+        Process p = cp.getProcess();
 
-    private void runProcessAndEstablishConnection() {
-        int port = getRandomPort();
-        ConnectedProcess cp = _provider.establish(port, () -> _definition.buildProcess(port));
-        _instance = cp.virtualMachine;
-        _process = cp.process;
-        _manager = new BreakpointManager(_instance);
-        _state = RUNNING;
+        ExecutorService service = ThreadBuilder.createService("stream-listener");
+        service.submit(new StreamListener(_eventBus, p.getInputStream(), p.getErrorStream()));
+        service.shutdown();
     }
 
     private int getRandomPort() {
