@@ -15,10 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Vector;
+import java.util.*;
 
 import static com.imperial.heap3d.events.EventType.BREAKPOINT;
 import static com.imperial.heap3d.events.EventType.WATCHPOINT;
@@ -47,25 +44,35 @@ public class HeapInfoTabViewModel {
         _eventBus.register(this);
 
         _HeapInfo = new SimpleStringProperty(this, "", "Data from the ViewModel");
-        TreeItem<Node> nodeTreeItem = new TreeItem<>(new StackNode("Node name", 1));
-        _TreeView = new SimpleObjectProperty<>(this,"", nodeTreeItem);
+        _TreeView = new SimpleObjectProperty<>(this,"", new TreeItem<>());
     }
 
     @Subscribe
-    public void handleControlEvent(ProcessEvent pe) {
-        try {
-            switch (pe.type) {
-                case SELECT:
-                    Platform.runLater( () -> {
-                        _HeapInfo.set(pe.message);
-                        _TreeView.getValue().getChildren().add(new TreeItem<>(new ObjectNode(pe.message.substring(0,8),pe.message.length())));
-                    })  ;
-
-                    break;
-
+    public void handleNodeEvent(NodeEvent ne) {
+        Platform.runLater( () -> {
+            TreeItem<Node> root = new TreeItem<>(null);
+            root.setExpanded(true);
+            ObservableList<TreeItem<Node>> children = root.getChildren();
+            for(StackNode node : ne.nodes)
+            {
+                children.add(0,buildTree(node));
             }
+            _TreeView.setValue(root);
+        })  ;
+    }
+
+    private TreeItem<Node> buildTree(Node n)
+    {
+        TreeItem<Node> root = new TreeItem<>(n);
+        root.setExpanded(true);
+        java.util.List<Node> references = n.getReferences();
+        ObservableList<TreeItem<Node>> children = root.getChildren();
+        for(Node child : references)
+        {
+            children.add(buildTree(child));
         }
-        catch(IllegalStateException e) { System.out.println(e); }
+
+        return root;
     }
 
 

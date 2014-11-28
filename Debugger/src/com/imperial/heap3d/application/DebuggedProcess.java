@@ -1,6 +1,7 @@
 package com.imperial.heap3d.application;
 
 import com.google.common.eventbus.EventBus;
+import com.imperial.heap3d.events.NodeEvent;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.ProcessEventType;
 import com.imperial.heap3d.factories.HeapGraphFactory;
@@ -107,6 +108,7 @@ public class DebuggedProcess {
         }
         stackNodes = _builder.build(stackFrame);
         _heapGraphFactory.create().giveStackNodes(stackNodes);
+        _eventBus.post(new NodeEvent(stackNodes));
     }
 
     private void removeStepRequests() {
