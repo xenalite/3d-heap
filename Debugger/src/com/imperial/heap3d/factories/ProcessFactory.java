@@ -33,7 +33,7 @@ public class ProcessFactory {
         int port = getRandomPort();
         ConnectedProcess cp = _vmProvider.establish(port, () -> startDefinition.buildProcess(port));
         _breakpointManager = new BreakpointManager(cp.getVirtualMachine());
-        _debuggedProcess = new DebuggedProcess(cp, _breakpointManager, _heapGraphFactory);
+        _debuggedProcess = new DebuggedProcess(cp, _breakpointManager, _heapGraphFactory, _eventBus);
         _controlEventHandler = new ControlEventHandler(_debuggedProcess, _eventBus, _breakpointManager);
         Process p = cp.getProcess();
 

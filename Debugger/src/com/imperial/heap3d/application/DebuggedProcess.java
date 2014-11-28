@@ -1,58 +1,59 @@
 package com.imperial.heap3d.application;
 
+import com.google.common.eventbus.EventBus;
+import com.imperial.heap3d.events.ProcessEvent;
+import com.imperial.heap3d.events.ProcessEventType;
 import com.imperial.heap3d.factories.HeapGraphFactory;
 import com.imperial.heap3d.factories.NodesBuilder;
 import com.imperial.heap3d.snapshot.StackNode;
 import com.imperial.heap3d.utilities.Check;
-import com.sun.jdi.ReferenceType;
-import com.sun.jdi.StackFrame;
-import com.sun.jdi.ThreadReference;
-import com.sun.jdi.VirtualMachine;
+import com.sun.jdi.*;
 import com.sun.jdi.event.*;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import static com.imperial.heap3d.application.ProcessState.*;
 
 public class DebuggedProcess {
 
     private HeapGraphFactory _heapGraphFactory;
+    private EventBus _eventBus;
+    private NodesBuilder _builder;
     private VirtualMachine _instance;
     private Process _process;
     private ProcessState _state;
     private BreakpointManager _manager;
     private ThreadReference _threadReference;
 
-    public DebuggedProcess(ConnectedProcess connectedProcess, BreakpointManager breakpointManager, HeapGraphFactory heapGraphFactory) {
+    public DebuggedProcess(ConnectedProcess connectedProcess, BreakpointManager breakpointManager,
+                           HeapGraphFactory heapGraphFactory, EventBus eventBus) {
         _state = RUNNING;
         _heapGraphFactory = Check.NotNull(heapGraphFactory);
         _process = Check.NotNull(connectedProcess.getProcess());
         _instance = Check.NotNull(connectedProcess.getVirtualMachine());
         _manager = Check.NotNull(breakpointManager);
+        _eventBus = Check.NotNull(eventBus);
+        _builder = new NodesBuilder();
     }
 
     public void dispose() {
         _state = STOPPED;
+        _eventBus.post(new ProcessEvent(ProcessEventType.STOPPED));
         _process.destroy();
     }
 
-    public void start() {
-
-    }
-
     public void pause() {
-        if (_instance != null && _state == RUNNING) {
+        if (_state == RUNNING) {
             _state = PAUSED;
             _instance.suspend();
         }
     }
 
     public void resume() {
-        if (_instance != null && _state == PAUSED) {
+        if (_state == PAUSED || _state == PAUSED_AT_LOCATION) {
             _state = RUNNING;
             _threadReference = null;
             _instance.resume();
@@ -60,7 +61,7 @@ public class DebuggedProcess {
     }
 
     public boolean waitForEvents() {
-        if (_instance != null && _state == RUNNING) {
+        if (_state == RUNNING) {
             EventQueue vmQueue = _instance.eventQueue();
             EventSet set;
             try {
@@ -70,30 +71,16 @@ public class DebuggedProcess {
             }
             for (Event e : set) {
                 System.out.println(e);
-                if (e instanceof VMDeathEvent) {
+                if (e instanceof VMDeathEvent)
                     return false;
-                } else if (e instanceof ClassPrepareEvent) {
-                    ReferenceType classReference = ((ClassPrepareEvent) e).referenceType();
-                    _manager.notifyClassLoaded(classReference);
-                } else if (e instanceof ModificationWatchpointEvent) {
-                    _state = PAUSED;
-                    ModificationWatchpointEvent mwe = (ModificationWatchpointEvent) e;
-                    _threadReference = mwe.thread();
-                    removeStepRequests();
-                    analyseVariables(mwe);
-                } else if (e instanceof BreakpointEvent) {
-                    _state = PAUSED;
-                    BreakpointEvent be = (BreakpointEvent) e;
-                    _threadReference = be.thread();
-                    removeStepRequests();
-                    analyseVariables(be);
-                } else if (e instanceof StepEvent) {
-                    StepEvent se = (StepEvent) e;
-                    _threadReference = se.thread();
-                    _state = PAUSED;
-                    e.request().disable();
-                    analyseVariables((LocatableEvent) e);
-                }
+                else if (e instanceof ClassPrepareEvent)
+                    _manager.notifyClassLoaded(((ClassPrepareEvent) e).referenceType());
+                else if (e instanceof ModificationWatchpointEvent)
+                    hitLocatableEvent((LocatableEvent) e, "Watchpoint hit at %s");
+                else if (e instanceof BreakpointEvent)
+                    hitLocatableEvent((LocatableEvent) e, "Breakpoint hit at %s");
+                else if (e instanceof StepEvent)
+                    hitLocatableEvent((LocatableEvent) e, "Stepped to %s");
             }
             if (_state == RUNNING)
                 set.resume();
@@ -101,14 +88,24 @@ public class DebuggedProcess {
         return true;
     }
 
+    private void hitLocatableEvent(LocatableEvent event, String format) {
+        _state = PAUSED_AT_LOCATION;
+        _threadReference = event.thread();
+        removeStepRequests();
+        _eventBus.post(new ProcessEvent(ProcessEventType.DEBUG_MSG,
+                String.format(format, event.location())));
+        analyseVariables(event);
+    }
+
     private void analyseVariables(LocatableEvent event) {
-        Collection<StackNode> stackNodes = new LinkedList<>();
+        Collection<StackNode> stackNodes;
+        StackFrame stackFrame;
         try {
-            StackFrame stackFrame = event.thread().frame(0);
-            stackNodes = new NodesBuilder(stackFrame).build();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            stackFrame = event.thread().frame(0);
+        } catch (IncompatibleThreadStateException e) {
+            return;
         }
+        stackNodes = _builder.build(stackFrame);
         _heapGraphFactory.create().giveStackNodes(stackNodes);
     }
 
@@ -119,37 +116,22 @@ public class DebuggedProcess {
     }
 
     public void createStepOverRequest() {
-
-        if (_threadReference != null && _state == PAUSED) {
-            removeStepRequests();
-            EventRequestManager erm = _instance.eventRequestManager();
-            StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
-            sr.addCountFilter(1);
-            sr.enable();
-            resume();
-            _state = RUNNING;
-        }
+        createStepRequest(StepRequest.STEP_LINE, StepRequest.STEP_OVER);
     }
 
     public void createStepIntoRequest() {
-        if (_threadReference != null && _state == PAUSED) {
-            removeStepRequests();
-            EventRequestManager erm = _instance.eventRequestManager();
-            StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_MIN, StepRequest.STEP_INTO);
-            sr.addCountFilter(1);
-            sr.enable();
-            resume();
-            _state = RUNNING;
-
-        }
+        createStepRequest(StepRequest.STEP_MIN, StepRequest.STEP_INTO);
     }
 
     public void createStepOutRequest() {
+        createStepRequest(StepRequest.STEP_LINE, StepRequest.STEP_OUT);
+    }
 
-        if (_threadReference != null && _state == PAUSED) {
+    private void createStepRequest(int size, int depth) {
+        if (_threadReference != null && _state == PAUSED_AT_LOCATION) {
             removeStepRequests();
             EventRequestManager erm = _instance.eventRequestManager();
-            StepRequest sr = erm.createStepRequest(_threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OUT);
+            StepRequest sr = erm.createStepRequest(_threadReference, size, depth);
             sr.addCountFilter(1);
             sr.enable();
             resume();

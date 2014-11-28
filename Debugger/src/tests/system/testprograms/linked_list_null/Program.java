@@ -1,22 +1,25 @@
 package tests.system.testprograms.linked_list_null;
 
+import tests.system.testprograms.utilities.ListNode;
+
 /**
  * Created by om612 on 25/11/14.
  */
 public class Program {
 
-    public static void main(String[] args) {
-        int a = 0;
-        int b = 0;
-        int c = 0;
+    private ListNode root;
 
-        int i = method(10);
-        System.out.println(i);
+    public static void main(String[] args) {
+        Program p = new Program();
+        p.createRoot(6);
     }
 
-    public static int method(int i) {
-        if(i == 0)
-            return 1;
-        return i * method(i - 1);
+    private void createRoot(int times) {
+        if(times <= 0)
+            return;
+        ListNode ln = new ListNode();
+        ln.next = root;
+        root = ln;
+        createRoot(times - 1);
     }
 }

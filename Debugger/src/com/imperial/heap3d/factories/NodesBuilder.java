@@ -10,17 +10,14 @@ import java.util.*;
  */
 public class NodesBuilder {
 
-    private final StackFrame _stackFrame;
-    private Map<Long, Node> _uniqueNodes;
+    private Map<Long, Node> _uniqueNodes = new HashMap<>();
 
-    public NodesBuilder(StackFrame stackFrame) {
-        _stackFrame = stackFrame;
-        _uniqueNodes = new HashMap<>();
-    }
-
-    public Collection<StackNode> build() {
+    public Collection<StackNode> build(StackFrame stackFrame) {
         Collection<StackNode> stackNodes = new LinkedList<>();
-        ObjectReference thisObject = _stackFrame.thisObject();
+        if (stackFrame == null)
+            return stackNodes;
+
+        ObjectReference thisObject = stackFrame.thisObject();
 
         if (thisObject != null) {
             String name = "this";
@@ -28,14 +25,14 @@ public class NodesBuilder {
         }
         List<LocalVariable> localVariables;
         try {
-            localVariables = _stackFrame.visibleVariables();
+            localVariables = stackFrame.visibleVariables();
         } catch (AbsentInformationException ignored) {
             return stackNodes;
         }
 
         for (LocalVariable localVariable : localVariables) {
             String name = localVariable.name();
-            Value value = _stackFrame.getValue(localVariable);
+            Value value = stackFrame.getValue(localVariable);
 
             if (value == null || value instanceof PrimitiveValue) {
                 stackNodes.add(new StackNode(name, value));
@@ -50,7 +47,7 @@ public class NodesBuilder {
     private Node drillDown(String name, Value value) {
         ObjectReference reference = (ObjectReference) value;
         long id = reference.uniqueID();
-        if(_uniqueNodes.containsKey(id))
+        if (_uniqueNodes.containsKey(id))
             return _uniqueNodes.get(id);
 
         Node node;

@@ -74,10 +74,6 @@ public class ApplicationTabViewModel {
     public void handleProcessEvent(ProcessEvent pe) {
         try {
             switch (pe.type) {
-                case STARTED: {
-
-                }
-                break;
                 case STOPPED: {
                     Platform.runLater(this::setButtonsOnStop);
                 }
@@ -124,7 +120,6 @@ public class ApplicationTabViewModel {
         _screenShotCommand.canExecute().set(true);
 
         _processFactory.buildComponents(new StartDefinition(_javaPath.get(), _className.get(), _classPath.get()));
-        _eventBus.post(ControlEventFactory.createEventOfType(START));
         ControlEventHandler controlEventHandler = _processFactory.getControlEventHandler();
 
         ExecutorService service = ThreadBuilder.createService("Control-event-handler");
@@ -152,9 +147,11 @@ public class ApplicationTabViewModel {
     public StringProperty getClassNameProperty() {
         return _className;
     }
+
     public StringProperty getScreenShotPath() {
         return _screenShotPath;
     }
+
     public StringProperty getProcessConsoleProperty() { return _processConsole; }
 
     public StringProperty getDebuggerConsoleProperty() {

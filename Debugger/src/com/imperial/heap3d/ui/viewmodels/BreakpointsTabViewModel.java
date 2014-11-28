@@ -55,19 +55,11 @@ public class BreakpointsTabViewModel {
     }
 
     @Subscribe
-    public void handleEvent(ControlEvent e) {
-        if(e.type == EventType.START) {
+    public void handleProcessEvent(ProcessEvent pe) {
+        if(pe.type == ProcessEventType.STARTED) {
             _cacheEnabled = false;
             send();
         }
-        else if(e.type == EventType.STOP) {
-            _cacheEnabled = true;
-            cache();
-        }
-    }
-
-    @Subscribe
-    public void handleProcessEvent(ProcessEvent pe) {
         if(pe.type == ProcessEventType.STOPPED) {
             _cacheEnabled = true;
             cache();
@@ -109,7 +101,7 @@ public class BreakpointsTabViewModel {
 
     }
 
-    private void send() {
+    private synchronized void send() {
         if(!_cacheEnabled) {
             _cachedElements.forEach(_eventBus::post);
             _cachedElements.clear();

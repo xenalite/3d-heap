@@ -69,7 +69,7 @@ public abstract class Node {
 
     @Override
     public boolean equals(Object o) {
-        return this == o || o instanceof Node && id == ((Node) o).id;
+        return this == o || o.getClass().equals(getClass()) && id == ((Node) o).id;
     }
 
     @Override

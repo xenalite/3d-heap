@@ -23,12 +23,13 @@ public class ControlEventHandler {
 
     public ControlEventHandler(DebuggedProcess debuggedProcess, EventBus eventBus, BreakpointManager breakpointManager) {
         _controlEventQueue = new ConcurrentLinkedDeque<>();
-        _semaphore = new Semaphore(0, true);
+        _semaphore = new Semaphore(1, true);
 
         _dprocess = Check.NotNull(debuggedProcess);
         _breakpointManager = Check.NotNull(breakpointManager);
         _eventBus = Check.NotNull(eventBus);
         _eventBus.register(this);
+        _eventBus.post(new ProcessEvent(ProcessEventType.STARTED));
     }
 
     @Subscribe
@@ -108,9 +109,7 @@ public class ControlEventHandler {
     }
 
     private void dispose() {
-        _dprocess.dispose();
-
-        _eventBus.post(new ProcessEvent(ProcessEventType.STOPPED));
         _eventBus.unregister(this);
+        _dprocess.dispose();
     }
 }
