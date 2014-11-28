@@ -113,7 +113,7 @@ public class HeapGraph extends RenderEngine {
 					System.out.println(prims);
                     //TODO send control event
 
-                    String message = String.format("Selected Node: %s children: %s primitives: %s", node.getName(), node.getReferences(), node.getPrimitives());
+                    String message = String.format("Selected Node: %s \nchildren: %s \nprimitives: %s", node.getName(), node.getReferences(), node.getPrimitives());
                     _eventBus.post(new ProcessEvent(ProcessEventType.SELECT, message));
 
 					break;
