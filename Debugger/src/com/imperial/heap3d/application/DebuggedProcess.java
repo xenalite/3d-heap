@@ -12,7 +12,6 @@ import com.sun.jdi.StackFrame;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.*;
-import com.sun.jdi.request.DuplicateRequestException;
 import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.StepRequest;
@@ -191,7 +190,6 @@ public class DebuggedProcess {
         _manager.addWatchpoint(className, argument);
     }
 
-    // TODO -- I am crying blood.
     public void screenShot(String path){
     	java.io.File f = new java.io.File(path);
     	_heapGraphFactory.create().screenShot(f.getParent(), f.getName());
