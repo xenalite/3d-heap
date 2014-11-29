@@ -6,14 +6,14 @@ package tests.system.testprograms.many_methods;
 public class Program {
     static int i = 0;
 
-    public static void succ(){
+    public static void succ() {
         System.out.println("In succ");
         i++;
         i--;
         i++;
     }
 
-    public static void foo(){
+    public static void foo() {
         succ();
         succ();
         succ();
@@ -22,7 +22,7 @@ public class Program {
         sub();
     }
 
-    public static void bar(){
+    public static void bar() {
         succ();
         sub();
         succ();
@@ -31,7 +31,7 @@ public class Program {
         sub();
     }
 
-    public static void sub(){
+    public static void sub() {
         System.out.println("In sub");
         i--;
         i++;

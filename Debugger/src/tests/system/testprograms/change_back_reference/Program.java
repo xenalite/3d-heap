@@ -1,4 +1,4 @@
-package tests.system.testprograms.change_back_refernce;
+package tests.system.testprograms.change_back_reference;
 
 import tests.system.testprograms.utilities.ListNode;
 
@@ -11,6 +11,7 @@ public class Program {
         ListNode l = new ListNode(a);
         l.next = new ListNode();
         l.next = a;
+
         System.out.println(l);
     }
 }

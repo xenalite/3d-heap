@@ -9,6 +9,7 @@ public class Program {
     public static void main(String[] args) {
         ListNode l = new ListNode(new ListNode());
         l.next = new ListNode();
+
         System.out.println(l);
     }
 

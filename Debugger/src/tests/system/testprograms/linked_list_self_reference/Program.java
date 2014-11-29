@@ -1,4 +1,4 @@
-package tests.system.testprograms.linked_list_cycles;
+package tests.system.testprograms.linked_list_self_reference;
 
 import tests.system.testprograms.utilities.ListNode;
 
