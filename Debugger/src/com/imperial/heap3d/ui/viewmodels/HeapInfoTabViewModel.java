@@ -47,6 +47,24 @@ public class HeapInfoTabViewModel {
         _TreeView = new SimpleObjectProperty<>(this,"", new TreeItem<>());
     }
 
+
+    @Subscribe
+    public void handleControlEvent(ProcessEvent pe) {
+        try {
+            switch (pe.type) {
+                case SELECT:
+                    Platform.runLater( () -> {
+                        _HeapInfo.set(pe.message);
+                    })  ;
+
+                    break;
+
+            }
+        }
+        catch(IllegalStateException e) { System.out.println(e); }
+    }
+
+
     @Subscribe
     public void handleNodeEvent(NodeEvent ne) {
         Platform.runLater( () -> {
