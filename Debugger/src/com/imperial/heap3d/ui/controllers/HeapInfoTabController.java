@@ -51,11 +51,15 @@ public class HeapInfoTabController implements Initializable {
                 @Override
                 protected void updateItem(Node item, boolean empty) {
                     super.updateItem(item, empty);
-                    if (empty) {
+                    if (empty ) {
                         setGraphic(null);
                     } else {
-                        anotherLabel.setTextFill(ColorConverter.convertToPaint(item.getColour()));
-                        setGraphic(hbox);
+
+                        if(item != null) {
+                            anotherLabel.setTextFill(ColorConverter.convertToPaint(item.getColour()));
+                        }
+                            setGraphic(hbox);
+
                     }
                 }
             };
