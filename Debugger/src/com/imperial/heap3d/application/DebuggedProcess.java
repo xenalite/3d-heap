@@ -32,11 +32,12 @@ public class DebuggedProcess {
     public DebuggedProcess(ConnectedProcess connectedProcess, BreakpointManager breakpointManager,
                            HeapGraphFactory heapGraphFactory, EventBus eventBus) {
         _state = RUNNING;
-        _heapGraphFactory = Check.NotNull(heapGraphFactory);
-        _process = Check.NotNull(connectedProcess.getProcess());
-        _instance = Check.NotNull(connectedProcess.getVirtualMachine());
-        _manager = Check.NotNull(breakpointManager);
-        _eventBus = Check.NotNull(eventBus);
+        _heapGraphFactory = Check.NotNull(heapGraphFactory, "heapGraphFactory");
+        connectedProcess = Check.NotNull(connectedProcess, "connectedProcess");
+        _process = Check.NotNull(connectedProcess.getProcess(), "connectedProcess.process");
+        _instance = Check.NotNull(connectedProcess.getVirtualMachine(), "connectedProcess.virtualMachine");
+        _manager = Check.NotNull(breakpointManager, "breakpointManager");
+        _eventBus = Check.NotNull(eventBus, "eventBus");
         _builder = new NodesBuilder();
     }
 

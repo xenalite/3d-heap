@@ -34,26 +34,26 @@ public class ProcessFactoryTests extends EasyMockSupport {
     @Before
     public void setUp() {
         _vmProvider = createMock(IVirtualMachineProvider.class);
-        _eventBus = createMock(EventBus.class);
+        _eventBus = createNiceMock(EventBus.class);
         _sut = new ProcessFactory(_vmProvider, _eventBus, createMock(HeapGraphFactory.class));
     }
 
     @Test
     public void constructor_InvalidArgument_VMProvider_Throws() {
-        exception.expect(IllegalStateException.class);
+        exception.expect(IllegalArgumentException.class);
         _sut = new ProcessFactory(null, createMock(EventBus.class), createMock(HeapGraphFactory.class));
     }
 
     @Test
     public void constructor_InvalidArgument_EventBus_Throws() {
-        exception.expect(IllegalStateException.class);
+        exception.expect(IllegalArgumentException.class);
         _sut = new ProcessFactory(createMock(IVirtualMachineProvider.class),
                 null, createMock(HeapGraphFactory.class));
     }
 
     @Test
     public void constructor_InvalidArgument_HeapGraphFactory_Throws() {
-        exception.expect(IllegalStateException.class);
+        exception.expect(IllegalArgumentException.class);
         _sut = new ProcessFactory(createMock(IVirtualMachineProvider.class),
                 createMock(EventBus.class), null);
     }
@@ -72,7 +72,7 @@ public class ProcessFactoryTests extends EasyMockSupport {
 
     @Test
     public void buildComponents_InvalidArgument_Throws() {
-        exception.expect(IllegalStateException.class);
+        exception.expect(IllegalArgumentException.class);
         _sut.buildComponents(null);
     }
 

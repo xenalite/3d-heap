@@ -25,9 +25,9 @@ public class ControlEventHandler {
         _controlEventQueue = new ConcurrentLinkedDeque<>();
         _semaphore = new Semaphore(1, true);
 
-        _dprocess = Check.NotNull(debuggedProcess);
-        _breakpointManager = Check.NotNull(breakpointManager);
-        _eventBus = Check.NotNull(eventBus);
+        _dprocess = Check.NotNull(debuggedProcess, "debuggedProcess");
+        _breakpointManager = Check.NotNull(breakpointManager, "breakpointManager");
+        _eventBus = Check.NotNull(eventBus, "eventBus");
         _eventBus.register(this);
         _eventBus.post(new ProcessEvent(ProcessEventType.STARTED));
     }
@@ -38,7 +38,7 @@ public class ControlEventHandler {
         _semaphore.release();
     }
 
-    public void loop() throws InterruptedException {
+    private void loop() throws InterruptedException {
         while (true) {
             while (!_controlEventQueue.isEmpty())
                 if (!handleControlQueueItem(_controlEventQueue.removeFirst()))
@@ -89,7 +89,7 @@ public class ControlEventHandler {
             }
             break;
             case RMWATCHPOINT: {
-                _breakpointManager.addWatchpoint(e.className, e.argument);
+                _breakpointManager.removeWatchpoint(e.className, e.argument);
             }
             break;
             case SCREENSHOT: {

@@ -5,9 +5,9 @@ package com.imperial.heap3d.utilities;
  */
 public class Check {
 
-    public static <T> T NotNull(T object) {
+    public static <T> T NotNull(T object, String name) {
         if(object == null)
-            throw new IllegalStateException(String.format("%s is null", object));
+            throw new IllegalArgumentException(String.format("%s -- null exception!", name));
         return object;
     }
 }

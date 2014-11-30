@@ -22,13 +22,13 @@ public class ProcessFactory {
     private BreakpointManager _breakpointManager;
 
     public ProcessFactory(IVirtualMachineProvider vmProvider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
-        _vmProvider = Check.NotNull(vmProvider);
-        _eventBus = Check.NotNull(eventBus);
-        _heapGraphFactory = Check.NotNull(heapGraphFactory);
+        _vmProvider = Check.NotNull(vmProvider, "vmProvider");
+        _eventBus = Check.NotNull(eventBus, "eventBus");
+        _heapGraphFactory = Check.NotNull(heapGraphFactory, "heapGraphFactory");
     }
 
     public void buildComponents(StartDefinition startDefinition) {
-        Check.NotNull(startDefinition);
+        Check.NotNull(startDefinition, "startDefinition");
 
         int port = getRandomPort();
         ConnectedProcess cp = _vmProvider.establish(port, () -> startDefinition.buildProcess(port));
