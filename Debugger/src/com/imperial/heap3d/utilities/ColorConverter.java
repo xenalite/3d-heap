@@ -14,9 +14,7 @@ public class ColorConverter {
 
     public static Colour randomColour()
     {
-        float r = (float)Math.random();
-        float g = (float)Math.random();
-        float b = (float)Math.random();
-        return new Colour(r,g,b);
+        Color c = Color.hsb(Math.random()*360,1, 1);
+        return new Colour((float)c.getRed(), (float)c.getGreen(), (float)c.getBlue());
     }
 }
