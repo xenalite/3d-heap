@@ -1,11 +1,11 @@
 package tests.unit.application;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.application.BreakpointManager;
-import com.imperial.heap3d.application.ConnectedProcess;
-import com.imperial.heap3d.application.DebuggedProcess;
-import com.imperial.heap3d.events.ProcessEvent;
-import com.imperial.heap3d.factories.HeapGraphFactory;
+import com.imperial.heap3d.implementations.application.BreakpointManager;
+import com.imperial.heap3d.implementations.application.ConnectedProcess;
+import com.imperial.heap3d.implementations.application.DebuggedProcess;
+import com.imperial.heap3d.implementations.events.ProcessEvent;
+import com.imperial.heap3d.implementations.factories.HeapGraphFactory;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.*;
@@ -159,7 +159,7 @@ public class DebuggedProcessTests extends EasyMockSupport {
         SystemUnderTest.pause();
 
         //act
-        boolean result = SystemUnderTest.waitForEvents();
+        boolean result = SystemUnderTest.handleEvents();
 
         //assert
         assertTrue(result);
@@ -176,7 +176,7 @@ public class DebuggedProcessTests extends EasyMockSupport {
         replayAll();
 
         //act
-        boolean result = SystemUnderTest.waitForEvents();
+        boolean result = SystemUnderTest.handleEvents();
 
         //assert
         verifyAll();
@@ -192,7 +192,7 @@ public class DebuggedProcessTests extends EasyMockSupport {
         replayAll();
 
         //act
-        boolean result = SystemUnderTest.waitForEvents();
+        boolean result = SystemUnderTest.handleEvents();
 
         //assert
         verifyAll();
@@ -218,7 +218,7 @@ public class DebuggedProcessTests extends EasyMockSupport {
         replayAll();
 
         //act
-        boolean result = SystemUnderTest.waitForEvents();
+        boolean result = SystemUnderTest.handleEvents();
 
         //assert
         verifyAll();
@@ -242,7 +242,7 @@ public class DebuggedProcessTests extends EasyMockSupport {
         replayAll();
 
         //act
-        boolean result = SystemUnderTest.waitForEvents();
+        boolean result = SystemUnderTest.handleEvents();
 
         //assert
         verifyAll();
@@ -261,7 +261,7 @@ public class DebuggedProcessTests extends EasyMockSupport {
         replayAll();
 
         //act
-        boolean result = SystemUnderTest.waitForEvents();
+        boolean result = SystemUnderTest.handleEvents();
 
         //assert
         verifyAll();

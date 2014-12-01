@@ -1,11 +1,11 @@
 package tests.unit.viewmodels;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.events.ControlEvent;
-import com.imperial.heap3d.events.EventType;
-import com.imperial.heap3d.events.ProcessEvent;
-import com.imperial.heap3d.events.ProcessEventType;
-import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
+import com.imperial.heap3d.implementations.events.ControlEvent;
+import com.imperial.heap3d.implementations.events.EventType;
+import com.imperial.heap3d.implementations.events.ProcessEvent;
+import com.imperial.heap3d.implementations.events.ProcessEventType;
+import com.imperial.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
 import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Ignore;

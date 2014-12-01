@@ -1,6 +1,6 @@
 package tests.unit.utilities;
 
-import com.imperial.heap3d.utilities.RelayCommand;
+import com.imperial.heap3d.implementations.utilities.RelayCommand;
 import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Assert;

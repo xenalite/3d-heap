@@ -1,6 +1,6 @@
 package com.imperial.heap3d.ui.controllers;
 
-import com.imperial.heap3d.ui.viewmodels.ApplicationTabViewModel;
+import com.imperial.heap3d.implementations.viewmodels.ApplicationTabViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;

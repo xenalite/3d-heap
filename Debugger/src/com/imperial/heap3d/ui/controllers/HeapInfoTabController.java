@@ -1,18 +1,12 @@
 package com.imperial.heap3d.ui.controllers;
 
-import com.imperial.heap3d.snapshot.ArrayNode;
-import com.imperial.heap3d.snapshot.Node;
-import com.imperial.heap3d.snapshot.ObjectNode;
-import com.imperial.heap3d.snapshot.StackNode;
-import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
-import com.imperial.heap3d.ui.viewmodels.HeapInfoTabViewModel;
-import com.imperial.heap3d.utilities.ColorConverter;
-import com.sun.tools.javac.code.Attribute;
+import com.imperial.heap3d.implementations.snapshot.Node;
+import com.imperial.heap3d.implementations.viewmodels.HeapInfoTabViewModel;
+import com.imperial.heap3d.implementations.utilities.ColorConverter;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 
 
 import java.net.URL;

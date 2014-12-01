@@ -1,8 +1,8 @@
 package tests.unit.utilities;
 
-import com.imperial.heap3d.snapshot.Node;
-import com.imperial.heap3d.snapshot.ObjectNode;
-import com.imperial.heap3d.utilities.NodesComparator;
+import com.imperial.heap3d.implementations.snapshot.Node;
+import com.imperial.heap3d.implementations.snapshot.ObjectNode;
+import com.imperial.heap3d.implementations.utilities.NodesComparator;
 import org.junit.Before;
 import org.junit.Test;
 

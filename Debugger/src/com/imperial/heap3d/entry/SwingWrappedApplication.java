@@ -1,15 +1,15 @@
 package com.imperial.heap3d.entry;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.factories.*;
-import com.imperial.heap3d.layout.HeapGraph;
+import com.imperial.heap3d.implementations.factories.*;
+import com.imperial.heap3d.implementations.layout.HeapGraph;
 import com.imperial.heap3d.ui.controllers.ApplicationTabController;
 import com.imperial.heap3d.ui.controllers.BottomPanelController;
 import com.imperial.heap3d.ui.controllers.BreakpointsTabController;
 import com.imperial.heap3d.ui.controllers.HeapInfoTabController;
-import com.imperial.heap3d.ui.viewmodels.ApplicationTabViewModel;
-import com.imperial.heap3d.ui.viewmodels.BreakpointsTabViewModel;
-import com.imperial.heap3d.ui.viewmodels.HeapInfoTabViewModel;
+import com.imperial.heap3d.implementations.viewmodels.ApplicationTabViewModel;
+import com.imperial.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
+import com.imperial.heap3d.implementations.viewmodels.HeapInfoTabViewModel;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
@@ -113,10 +113,12 @@ public class SwingWrappedApplication {
 
         leftPane.setTopComponent(canvas);
         leftPane.setBottomComponent(fxBottomPanel);
+        leftPane.setDividerSize(0);
         leftPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
         pane.setLeftComponent(leftPane);
         pane.setRightComponent(fxSidebar);
+        pane.setDividerSize(0);
 
         frame.add(pane);
         frame.setSize(MIN_FRAME_WIDTH, MIN_FRAME_HEIGHT);

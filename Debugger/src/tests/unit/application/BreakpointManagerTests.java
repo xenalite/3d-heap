@@ -1,6 +1,6 @@
 package tests.unit.application;
 
-import com.imperial.heap3d.application.BreakpointManager;
+import com.imperial.heap3d.implementations.application.BreakpointManager;
 import com.sun.jdi.*;
 import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.ClassPrepareRequest;

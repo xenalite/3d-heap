@@ -1,12 +1,12 @@
 package tests.unit.application;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.application.BreakpointManager;
-import com.imperial.heap3d.application.ControlEventHandler;
-import com.imperial.heap3d.application.DebuggedProcess;
-import com.imperial.heap3d.events.ControlEvent;
-import com.imperial.heap3d.events.EventType;
-import com.imperial.heap3d.events.ProcessEvent;
+import com.imperial.heap3d.implementations.application.BreakpointManager;
+import com.imperial.heap3d.implementations.application.ControlEventHandler;
+import com.imperial.heap3d.implementations.application.DebuggedProcess;
+import com.imperial.heap3d.implementations.events.ControlEvent;
+import com.imperial.heap3d.implementations.events.EventType;
+import com.imperial.heap3d.implementations.events.ProcessEvent;
 import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Rule;
@@ -100,7 +100,7 @@ public class ControlEventHandlerTests extends EasyMockSupport {
         //arrange
         _mockEventBus.unregister(_sut);
         expectLastCall().once();
-        expect(_mockDebuggedProcess.waitForEvents()).andReturn(false);
+        expect(_mockDebuggedProcess.handleEvents()).andReturn(false);
         _mockDebuggedProcess.dispose();
         expectLastCall().once();
 
