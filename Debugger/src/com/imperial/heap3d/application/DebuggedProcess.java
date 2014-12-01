@@ -78,11 +78,23 @@ public class DebuggedProcess {
                 else if (e instanceof ClassPrepareEvent)
                     _manager.notifyClassLoaded(((ClassPrepareEvent) e).referenceType());
                 else if (e instanceof ModificationWatchpointEvent)
-                    hitLocatableEvent((LocatableEvent) e, "Watchpoint hit at %s");
+                    hitLocatableEvent((LocatableEvent) e, "Watchpoint hit at:\n" +
+                            "[Thread]:%s\n" +
+                            "[Class]:%s\n" +
+                            "[Method]:%s\n" +
+                            "[Line #]:%s");
                 else if (e instanceof BreakpointEvent)
-                    hitLocatableEvent((LocatableEvent) e, "Breakpoint hit at %s");
+                    hitLocatableEvent((LocatableEvent) e, "Breakpoint hit at:\n" +
+                            "[Thread]:%s\n" +
+                            "[Class]:%s\n" +
+                            "[Method]:%s\n" +
+                            "[Line #]:%s");
                 else if (e instanceof StepEvent)
-                    hitLocatableEvent((LocatableEvent) e, "Stepped to %s");
+                    hitLocatableEvent((LocatableEvent) e, "Stepped to:\n" +
+                            "[Thread]:%s\n" +
+                            "[Class]:%s\n" +
+                            "[Method]:%s\n" +
+                            "[Line #]:%s");
             }
             if (_state == RUNNING)
                 set.resume();
@@ -94,8 +106,8 @@ public class DebuggedProcess {
         _state = PAUSED_AT_LOCATION;
         _threadReference = event.thread();
         removeStepRequests();
-        _eventBus.post(new ProcessEvent(ProcessEventType.DEBUG_MSG,
-                String.format(format, event.location())));
+        _eventBus.post(new ProcessEvent(ProcessEventType.DEBUG_MSG, String.format(format, event.thread().name(),
+                event.location().declaringType().name(), event.location().method(), event.location().lineNumber())));
         analyseVariables(event);
     }
 
