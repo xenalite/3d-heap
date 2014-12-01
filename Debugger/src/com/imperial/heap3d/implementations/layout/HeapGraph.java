@@ -8,9 +8,11 @@ import com.graphics.shapes.Shape;
 import com.heap3d.layout.GraphImpl;
 import com.imperial.heap3d.implementations.events.*;
 import com.imperial.heap3d.implementations.layout.animation.Animate;
+import com.imperial.heap3d.implementations.layout.animation.SelectedAnimation;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.implementations.utilities.NodesComparator;
+
 
 
 
@@ -94,6 +96,7 @@ public class HeapGraph extends RenderEngine {
 	}
 
 	private Animate animation;
+	private SelectedAnimation selectedAnimation;
 	
 	@Override
 	protected void inLoop() {
@@ -113,14 +116,29 @@ public class HeapGraph extends RenderEngine {
 
 		Shape selected = getSelectedShape();
 		
+		if(selectedAnimation != null && selected != null){
+			selectedAnimation.step();
+		}else if(selectedAnimation != null){
+			selectedAnimation.stop();
+			selectedAnimation = null;
+		}
+		
 		if(selected != null && selected != lastSelectedShape){
 			lastSelectedShape = selected;
+			
 			for(Node node : allHeapNodes){
 				if(node.getGeometry() == selected){
 					String prims = "Node Selected! Primitives : "+node.getPrimitives();
 					System.out.println(prims);
                     //TODO send control event
 
+					if(selectedAnimation != null){
+						selectedAnimation.stop();
+						selectedAnimation = null;
+					}
+					
+					selectedAnimation = new SelectedAnimation(node);
+					
                     String message = String.format("Selected Node: %s \nchildren: %s \nprimitives: %s", node.getName(), node.getReferences(), node.getPrimitives());
                     _eventBus.post(new ProcessEvent(ProcessEventType.SELECT, message));
 
@@ -338,7 +356,7 @@ public class HeapGraph extends RenderEngine {
 		//Don't clear the levels since we need them for comparison
 		//Update the new stackNodes we would like to add
 		this.stackNodes = stackNodes;
-		_eventBus.post(new NodeEvent(stackNodes));
+		//_eventBus.post(new NodeEvent(stackNodes));
 		newStack = true;
 	}
 }

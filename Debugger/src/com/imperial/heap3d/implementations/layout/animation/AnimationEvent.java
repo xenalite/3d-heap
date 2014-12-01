@@ -4,7 +4,7 @@ import com.graphics.shapes.Shape;
 
 public abstract class AnimationEvent {
 
-	protected static final float ANIMATION_TIME = 120;
+	protected float ANIMATION_TIME = 120;
 	protected Shape shape;
 	protected int itteration = 0;
 
