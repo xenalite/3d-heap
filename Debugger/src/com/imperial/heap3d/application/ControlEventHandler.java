@@ -5,6 +5,8 @@ import com.google.common.eventbus.Subscribe;
 import com.imperial.heap3d.events.ControlEvent;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.ProcessEventType;
+import com.imperial.heap3d.utilities.Check;
+
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Semaphore;
 
@@ -14,16 +16,20 @@ import java.util.concurrent.Semaphore;
 public class ControlEventHandler {
 
     private DebuggedProcess _dprocess;
+    private BreakpointManager _breakpointManager;
     private EventBus _eventBus;
     private ConcurrentLinkedDeque<ControlEvent> _controlEventQueue;
     private Semaphore _semaphore;
 
-    public ControlEventHandler(DebuggedProcess dprocess, EventBus eventBus) {
-        _dprocess = dprocess;
+    public ControlEventHandler(DebuggedProcess debuggedProcess, EventBus eventBus, BreakpointManager breakpointManager) {
         _controlEventQueue = new ConcurrentLinkedDeque<>();
-        _semaphore = new Semaphore(0, true);
-        _eventBus = eventBus;
+        _semaphore = new Semaphore(1, true);
+
+        _dprocess = Check.NotNull(debuggedProcess, "debuggedProcess");
+        _breakpointManager = Check.NotNull(breakpointManager, "breakpointManager");
+        _eventBus = Check.NotNull(eventBus, "eventBus");
         _eventBus.register(this);
+        _eventBus.post(new ProcessEvent(ProcessEventType.STARTED));
     }
 
     @Subscribe
@@ -32,7 +38,7 @@ public class ControlEventHandler {
         _semaphore.release();
     }
 
-    public void loop() throws InterruptedException {
+    private void loop() throws InterruptedException {
         while (true) {
             while (!_controlEventQueue.isEmpty())
                 if (!handleControlQueueItem(_controlEventQueue.removeFirst()))
@@ -50,10 +56,6 @@ public class ControlEventHandler {
 
     private boolean handleControlQueueItem(ControlEvent e) {
         switch (e.type) {
-            case START: {
-                _dprocess.start();
-            }
-            break;
             case PAUSE: {
                 _dprocess.pause();
             }
@@ -75,21 +77,19 @@ public class ControlEventHandler {
             }
             break;
             case BREAKPOINT: {
-                _dprocess.addBreakpoint(e.className, e.argument);
+                _breakpointManager.addBreakpoint(e.className, e.argument);
             }
             break;
             case RMBREAKPOINT: {
-                //TODO
-                _dprocess.removeBreakpoint(e.className, e.argument);
+                _breakpointManager.removeBreakpoint(e.className, e.argument);
             }
             break;
             case WATCHPOINT: {
-                _dprocess.addWatchpoint(e.className, e.argument);
+                _breakpointManager.addWatchpoint(e.className, e.argument);
             }
             break;
             case RMWATCHPOINT: {
-                //TODO
-                _dprocess.addWatchpoint(e.className, e.argument);
+                _breakpointManager.removeWatchpoint(e.className, e.argument);
             }
             break;
             case SCREENSHOT: {
@@ -109,9 +109,7 @@ public class ControlEventHandler {
     }
 
     private void dispose() {
-        _dprocess.dispose();
-
-        _eventBus.post(new ProcessEvent(ProcessEventType.STOPPED));
         _eventBus.unregister(this);
+        _dprocess.dispose();
     }
 }

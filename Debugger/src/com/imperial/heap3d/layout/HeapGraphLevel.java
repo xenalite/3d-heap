@@ -50,11 +50,8 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 			float y = getY(n);
 			float z = getZ(n);
 
-			if (!isRoot(n)) {
-				n.buildGeometry(x, y, z, getScale(n));
-			}else{
-				n.buildGeometry(x, y, z, getScale(n), new Colour((float)Math.random(), (float)Math.random(), (float)Math.random()));
-			}
+			n.buildGeometry(x, y, z, getScale(n));
+
 			System.out.println("Building Node: "+n.toString());
 			r.addShapeTo3DSpace(n.getGeometry());
 			return true;

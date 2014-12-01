@@ -4,6 +4,7 @@ import com.graphics.shapes.Colour;
 import com.graphics.shapes.Cube;
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.layout.HeapGraphLevel;
+import com.imperial.heap3d.utilities.ColorConverter;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public abstract class Node {
     public Node(String name, long id) {
         this.name = name;
         this.id = id;
+        colour = ColorConverter.randomColour();
     }
 
     public String getName() {
@@ -39,10 +41,6 @@ public abstract class Node {
     public abstract List<Node> getReferences();
 
     //region Geometry
-    public void buildGeometry(float x, float y, float z, float scale, Colour c) {
-        this.geometry = new Cube(0, 0, 0, 0, 0, 0, scale, c);
-    }
-
     public void buildGeometry(float x, float y, float z, float scale) {
         this.geometry = new Cube(0, 0, 0, 0, 0, 0, scale, colour);
     }
@@ -65,11 +63,15 @@ public abstract class Node {
             System.err.println("Can't update non existant geometry");
         }
     }
+
+    public Colour getColour() {
+        return colour;
+    }
     //endregion
 
     @Override
     public boolean equals(Object o) {
-        return this == o || o instanceof Node && id == ((Node) o).id;
+        return this == o || o.getClass().equals(getClass()) && id == ((Node) o).id;
     }
 
     @Override
