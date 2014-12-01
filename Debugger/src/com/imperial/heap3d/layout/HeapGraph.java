@@ -8,11 +8,14 @@ import com.graphics.shapes.Shape;
 import com.heap3d.layout.GraphImpl;
 import com.imperial.heap3d.events.ControlEvent;
 import com.imperial.heap3d.events.EventType;
+import com.imperial.heap3d.layout.animation.Animate;
 import com.imperial.heap3d.events.ProcessEvent;
 import com.imperial.heap3d.events.ProcessEventType;
 import com.imperial.heap3d.snapshot.Node;
 import com.imperial.heap3d.snapshot.StackNode;
 import com.imperial.heap3d.utilities.NodesComparator;
+
+
 
 
 import java.awt.*;
@@ -92,10 +95,23 @@ public class HeapGraph extends RenderEngine {
 		System.out.println("End Before Loop =====================================");
 	}
 
+	private Animate animation;
+	
 	@Override
 	protected void inLoop() {
+		
+		if(animation != null){
+			if(animation.runAnimation())
+				buildEdges();
+		}
+		
 		if(newStack){
+			Set<Node> oldHeapNodes = new HashSet<Node>();
+			for(Node n : allHeapNodes)
+				oldHeapNodes.add(n);
+			animation = new Animate(oldHeapNodes);
 			beforeLoop();
+			animation.setToStackNodes(allHeapNodes);
 			newStack = false;
 		}
 		if(takeScreenShot){
@@ -165,7 +181,7 @@ public class HeapGraph extends RenderEngine {
 					}
 				}
 			}
-
+/*
 			//Build the edges in 3D space
 			//We want to do this after the nodes are created and positioned since the lines are expensive
 			for (Node n : levelGraph.getVertices())
@@ -188,12 +204,39 @@ public class HeapGraph extends RenderEngine {
 					}
 				}
 			}
-
+*/
 
 			currentLevel++;
 		}
+		
 	}
 
+	private void buildEdges(){
+		for(HeapGraphLevel levelGraph : levels){
+			//Build the edges in 3D space
+			//We want to do this after the nodes are created and positioned since the lines are expensive
+			for (Node n : levelGraph.getVertices())
+			{
+				Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
+				for(HeapEdge edge : outEdges) {
+					Node child = levelGraph.layout.getGraph().getOpposite(n,edge);
+					if(child.getGeometry() != null) {
+						edge.connect(n,child, new Colour(1, 1, 1), this);
+					} else
+					{
+						System.err.println("Can't add null edge");
+					}
+				}
+				//TODO add interlevel edges
+				Collection<HeapEdge> edges = interLevelGraph.getIncidentEdges(n);
+				if(edges != null) {
+					for (HeapEdge edge : edges) {
+						edge.connect(new Colour(1, 1, 1), this);
+					}
+				}
+			}
+		}
+	}
 
 	protected void updateCurrentLevel(StackNode stackNode)
 	{
