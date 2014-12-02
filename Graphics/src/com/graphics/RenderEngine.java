@@ -2,16 +2,20 @@ package com.graphics;
 
 import com.graphics.entities.Camera;
 import com.graphics.entities.Light;
+import com.graphics.models.Loader;
 import com.graphics.raycasting.RayCastUtil;
 import com.graphics.rendering.MasterRenderer;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
+import com.graphics.text.Text3D;
+
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
+
 import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +40,8 @@ public abstract class RenderEngine implements Runnable {
 	private boolean debugLines;
 	private boolean mouseDown;
 	private Shape selectedShape;
+	
+	private Text3D text3d;
 
 	public RenderEngine(String title, int width, int height, boolean resizable) {
 		this.title = title;
@@ -194,5 +200,11 @@ public abstract class RenderEngine implements Runnable {
 	
 	protected void setRayPickDebugLines(boolean flag){
 		debugLines = flag;
+	}
+	
+	protected Text3D getText3D(){
+		if(text3d == null)
+			text3d = new Text3D(Loader.getInstance(), this);
+		return text3d;
 	}
 }

@@ -3,12 +3,15 @@ package com.perf;
 import com.graphics.RenderEngine;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Cube;
+import com.graphics.text.Text3D;
 
 /**
  * Created by costica1234 on 26/11/14.
  */
 public class SimpleTest extends RenderEngine {
 
+	Text3D text;
+	
     public static void main(String[] args) {
         Thread t = new Thread(new SimpleTest(), "LwjglThread");
         t.start();
@@ -32,6 +35,12 @@ setRayPickDebugLines(true);
         Cube c2 = new Cube(0, 0, 90, 0, 0, 0, 1.5f, Colour.AQUA);
         addShapeTo3DSpace(c1);
         addShapeTo3DSpace(c2);
+        text = getText3D();
+        try {
+			text.printTemp(10, 10, 0, 0, 0, 0, 1, Colour.GREEN, "Aa_$");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
     @Override
