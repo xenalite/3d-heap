@@ -5,6 +5,7 @@ import com.imperial.heap3d.interfaces.application.IStepManager;
 import com.imperial.heap3d.interfaces.jdi.IEventRequestManager;
 import com.imperial.heap3d.interfaces.jdi.IVirtualMachine;
 import com.sun.jdi.ThreadReference;
+import com.sun.jdi.event.LocatableEvent;
 import com.sun.jdi.request.StepRequest;
 
 /**
@@ -38,14 +39,15 @@ public class StepManager implements IStepManager {
         if (_threadReference != null) {
             IEventRequestManager eventRequestManager = _virtualMachine.getEventRequestManager();
             eventRequestManager.disableAllStepRequests(_threadReference);
-            eventRequestManager.addStepRequest(_threadReference, size, depth);
+            eventRequestManager.createStepRequest(_threadReference, size, depth);
 
             _virtualMachine.resume();
         }
     }
 
     @Override
-    public void notifyPausedAtLocation(ThreadReference threadReference) {
-        _threadReference = threadReference;
+    public void notifyPausedAtLocation(LocatableEvent event) {
+        event = Check.NotNull(event, "event");
+        _threadReference = event.thread();
     }
 }

@@ -5,7 +5,9 @@ import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.implementations.utilities.Check;
 import com.imperial.heap3d.interfaces.application.IVariableAnalyser;
 import com.imperial.heap3d.interfaces.factories.INodeBuilder;
+import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.StackFrame;
+import com.sun.jdi.event.LocatableEvent;
 
 import java.util.Collection;
 
@@ -23,8 +25,13 @@ public class VariableAnalyser implements IVariableAnalyser {
     }
 
     @Override
-    public void analyseVariables(StackFrame stackFrame) {
-        Collection<StackNode> stackNodes = _nodeBuilder.build(stackFrame);
-        _heapGraphFactory.create().giveStackNodes(stackNodes);
+    public void analyseVariables(LocatableEvent event) {
+        event = Check.NotNull(event, "event");
+        try {
+            StackFrame stackFrame = event.thread().frame(0);
+            Collection<StackNode> stackNodes = _nodeBuilder.build(stackFrame);
+            _heapGraphFactory.create().giveStackNodes(stackNodes);
+        }
+        catch (IncompatibleThreadStateException e) { e.printStackTrace(); }
     }
 }

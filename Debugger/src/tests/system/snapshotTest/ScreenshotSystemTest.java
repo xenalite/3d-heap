@@ -1,11 +1,12 @@
 package tests.system.snapshotTest;
 
-import java.util.Arrays;
-import java.util.Collection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 @RunWith(Parameterized.class)
 public class ScreenshotSystemTest {
@@ -66,7 +67,6 @@ public class ScreenshotSystemTest {
 		} catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
-		d.screenShot("screenshots/"+classpath+"/line"+line);
 	}
 	
 }

@@ -7,9 +7,12 @@ import com.imperial.heap3d.implementations.utilities.Check;
 import com.imperial.heap3d.interfaces.jdi.IEventRequestManager;
 import com.imperial.heap3d.interfaces.jdi.IEventSet;
 import com.imperial.heap3d.interfaces.jdi.IVirtualMachine;
+import com.sun.jdi.ReferenceType;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.EventQueue;
 import com.sun.jdi.event.EventSet;
+
+import java.util.List;
 
 import static com.imperial.heap3d.implementations.application.ProcessState.*;
 
@@ -53,7 +56,7 @@ public class DVirtualMachine implements IVirtualMachine {
         IEventSet set = new NullEventSet();
         try {
             EventSet eventSet = eventQueue.remove(timeout);
-            set = new DEventSet(this, eventSet);
+            set = new DEventSet(eventSet);
         }
         catch (InterruptedException ignored) {}
         return set;
@@ -73,5 +76,11 @@ public class DVirtualMachine implements IVirtualMachine {
     @Override
     public EventQueue getEventQueue() {
         return _jdiVirtualMachine.eventQueue();
+    }
+
+    @Override
+    public List<ReferenceType> classesByName(String className) {
+        className = Check.NotNull(className, "className");
+        return _jdiVirtualMachine.classesByName(className);
     }
 }

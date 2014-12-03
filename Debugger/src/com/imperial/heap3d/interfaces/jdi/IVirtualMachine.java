@@ -1,7 +1,10 @@
 package com.imperial.heap3d.interfaces.jdi;
 
 import com.imperial.heap3d.implementations.application.ProcessState;
+import com.sun.jdi.ReferenceType;
 import com.sun.jdi.event.EventQueue;
+
+import java.util.List;
 
 /**
  * Created by om612 on 01/12/14.
@@ -19,4 +22,6 @@ public interface IVirtualMachine {
     public IEventRequestManager getEventRequestManager();
 
     public EventQueue getEventQueue();
+
+    public List<ReferenceType> classesByName(String className);
 }

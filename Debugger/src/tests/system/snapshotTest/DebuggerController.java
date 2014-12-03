@@ -61,11 +61,6 @@ public class DebuggerController {
         _breakpointsVM.getBreakpointMethodProperty().setValue(methodName);
         _breakpointsVM.addBreakpointAction();
     }
-    public void addWatchpoint(String className, String fieldName){
-        _breakpointsVM.getWatchpointClassProperty().setValue(className);
-        _breakpointsVM.getWatchpointFieldProperty().setValue(fieldName);
-        _breakpointsVM.addWatchpointAction();
-    }
 
     public void start(){
         _applicationViewModel.getStartActionCommand().execute();
@@ -73,11 +68,6 @@ public class DebuggerController {
     public void step(){
         _applicationViewModel.getStepOverActionCommand().execute();
     }
-    public void screenShot(String path){
-        _applicationViewModel.getScreenShotPath().setValue(path);
-        _applicationViewModel.getScreenShotActionCommand().execute();
-    }
-
     public void stop() {
         _applicationViewModel.getStopActionCommand().execute();
     }

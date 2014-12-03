@@ -45,7 +45,7 @@ public class ProcessFactory {
         IVirtualMachine vm = new DVirtualMachine(cp.getVirtualMachine(), processStateEventBus);
 
         _stepManager = new StepManager(vm);
-        _breakpointManager = new BreakpointManager(cp.getVirtualMachine());
+        _breakpointManager = new BreakpointManager(vm);
 
         _variableAnalyser = new VariableAnalyser(new NodeBuilder(), _heapGraphFactory);
         _debuggedProcess = new DebuggedProcess(cp.getProcess(), _breakpointManager, _stepManager,

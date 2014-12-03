@@ -17,7 +17,6 @@ public class DebuggerRunner {
     		Thread.currentThread().interrupt();
     	}
     	//		d.step();
-    	d.screenShot("ScreenShot/pic");
     	//  	}
     	try {
     		Thread.sleep(1000);
