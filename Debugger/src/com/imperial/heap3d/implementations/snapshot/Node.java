@@ -42,6 +42,7 @@ public abstract class Node {
 
     //region Geometry
     public void buildGeometry(float x, float y, float z, float scale) {
+        System.out.println("Building cube: "+this.getName());
         this.geometry = new Cube(0, 0, 0, 0, 0, 0, scale, colour);
     }
 
