@@ -2,71 +2,66 @@ package com.imperial.heap3d.implementations.application;
 
 import com.imperial.heap3d.implementations.utilities.Check;
 import com.imperial.heap3d.interfaces.application.IBreakpointManager;
+import com.imperial.heap3d.interfaces.jdi.IEventRequestManager;
+import com.imperial.heap3d.interfaces.jdi.IVirtualMachine;
 import com.sun.jdi.Field;
 import com.sun.jdi.Location;
 import com.sun.jdi.ReferenceType;
-import com.sun.jdi.VirtualMachine;
-import com.sun.jdi.request.*;
+import com.sun.jdi.request.BreakpointRequest;
+import com.sun.jdi.request.ModificationWatchpointRequest;
+import com.sun.jdi.request.WatchpointRequest;
 
+import java.util.*;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 /**
  * Created by om612 on 19/11/14.
  */
 public class BreakpointManager implements IBreakpointManager {
 
-    private Map<String, Entry<List<String>, List<String>>> _cachedBreakpoints;
-    private Map<Location, BreakpointRequest> _cachedBreakpointRequests;
-    private Map<Field, WatchpointRequest> _cachedWatchPointRequests;
-    private VirtualMachine _instance;
+    private Map<String, Entry<List<String>, List<String>>> _breakpointsToBeRequested;
+    private Map<Location, List<BreakpointRequest>> _cachedBreakpointRequests;
+    private Map<Field, List<WatchpointRequest>> _cachedWatchpointRequests;
+    private IVirtualMachine _virtualMachine;
+    private IEventRequestManager _eventRequestManager;
 
-    public BreakpointManager(VirtualMachine instance) {
-        _instance = Check.NotNull(instance, "instance");
-        _cachedBreakpoints = new HashMap<>();
+    public BreakpointManager(IVirtualMachine virtualMachine) {
+        _virtualMachine = Check.NotNull(virtualMachine, "virtualMachine");
+        _eventRequestManager = Check.NotNull(_virtualMachine.getEventRequestManager(), "eventRequestManager");
+        _breakpointsToBeRequested = new HashMap<>();
         _cachedBreakpointRequests = new HashMap<>();
-        _cachedWatchPointRequests = new HashMap<>();
+        _cachedWatchpointRequests = new HashMap<>();
     }
 
     public void notifyClassLoaded(ReferenceType referenceType) {
         String name = referenceType.name();
-        if (_cachedBreakpoints.containsKey(name)) {
-            List<String> watchpoints = _cachedBreakpoints.get(name).getValue();
+        if (_breakpointsToBeRequested.containsKey(name)) {
+            List<String> watchpoints = _breakpointsToBeRequested.get(name).getValue();
             for (String watchpoint : watchpoints)
-                createWatchpointRequest(referenceType, watchpoint);
+                createAndCacheWatchpoint(referenceType, watchpoint);
 
-            List<String> breakpoints = _cachedBreakpoints.get(name).getKey();
+            List<String> breakpoints = _breakpointsToBeRequested.get(name).getKey();
             for (String breakpoint : breakpoints)
-                createBreakpointRequest(referenceType, breakpoint);
+                createAndCacheBreakpoint(referenceType, breakpoint);
         }
-    }
-
-    private void createClassPrepareRequest(String filter) {
-        EventRequestManager erm = _instance.eventRequestManager();
-        ClassPrepareRequest cpr = erm.createClassPrepareRequest();
-        cpr.addClassFilter(filter);
-        cpr.enable();
     }
 
     public void addWatchpoint(String className, String argument) {
         if(className == null || argument == null)
             return;
 
-        List<ReferenceType> classes = _instance.classesByName(className);
+        List<ReferenceType> classes = _virtualMachine.classesByName(className);
         if (!classes.isEmpty()) {
-            createWatchpointRequest(classes.get(0), argument);
+            createAndCacheWatchpoint(classes.get(0), argument);
         } else {
             List<String> entries;
-            if (_cachedBreakpoints.containsKey(className)) {
-                entries = _cachedBreakpoints.get(className).getValue();
+            if (_breakpointsToBeRequested.containsKey(className)) {
+                entries = _breakpointsToBeRequested.get(className).getValue();
             } else {
-                createClassPrepareRequest(className);
+                _eventRequestManager.createClassPrepareRequest(className);
                 entries = new Vector<>();
-                _cachedBreakpoints.put(className, new SimpleImmutableEntry<>(new Vector<>(), entries));
+                _breakpointsToBeRequested.put(className, new SimpleImmutableEntry<>(new Vector<>(), entries));
             }
             entries.add(argument);
         }
@@ -76,17 +71,17 @@ public class BreakpointManager implements IBreakpointManager {
         if(className == null || argument == null)
             return;
 
-        List<ReferenceType> classes = _instance.classesByName(className);
+        List<ReferenceType> classes = _virtualMachine.classesByName(className);
         if (!classes.isEmpty()) {
-            createBreakpointRequest(classes.get(0), argument);
+            createAndCacheBreakpoint(classes.get(0), argument);
         } else {
             List<String> entries;
-            if (_cachedBreakpoints.containsKey(className)) {
-                entries = _cachedBreakpoints.get(className).getKey();
+            if (_breakpointsToBeRequested.containsKey(className)) {
+                entries = _breakpointsToBeRequested.get(className).getKey();
             } else {
-                createClassPrepareRequest(className);
+                _eventRequestManager.createClassPrepareRequest(className);
                 entries = new Vector<>();
-                _cachedBreakpoints.put(className, new SimpleImmutableEntry<>(entries, new Vector<>()));
+                _breakpointsToBeRequested.put(className, new SimpleImmutableEntry<>(entries, new Vector<>()));
             }
             entries.add(argument);
         }
@@ -96,13 +91,12 @@ public class BreakpointManager implements IBreakpointManager {
         if(className == null || argument == null)
             return;
 
-        List<ReferenceType> classes = _instance.classesByName(className);
+        List<ReferenceType> classes = _virtualMachine.classesByName(className);
         if (!classes.isEmpty()) {
             Location l = classes.get(0).methodsByName(argument).get(0).location();
-            EventRequestManager erm = _instance.eventRequestManager();
-            BreakpointRequest br = _cachedBreakpointRequests.get(l);
-            if (br != null) {
-                erm.deleteEventRequest(br);
+            List<BreakpointRequest> brs = _cachedBreakpointRequests.get(l);
+            if (brs != null && !brs.isEmpty()) {
+                _eventRequestManager.deleteEventRequest(brs.get(0));
                 _cachedBreakpointRequests.remove(l);
             }
         }
@@ -112,31 +106,37 @@ public class BreakpointManager implements IBreakpointManager {
         if(className == null || argument == null)
             return;
 
-        List<ReferenceType> classes = _instance.classesByName(className);
+        List<ReferenceType> classes = _virtualMachine.classesByName(className);
         if (!classes.isEmpty()) {
             Field f = classes.get(0).fieldByName(argument);
-            EventRequestManager erm = _instance.eventRequestManager();
-            WatchpointRequest br = _cachedWatchPointRequests.get(f);
-            if (br != null) {
-                erm.deleteEventRequest(br);
-                _cachedWatchPointRequests.remove(f);
+            List<WatchpointRequest> mwrs = _cachedWatchpointRequests.get(f);
+            if (mwrs != null && !mwrs.isEmpty()) {
+                _eventRequestManager.deleteEventRequest(mwrs.get(0));
+                _cachedWatchpointRequests.remove(f);
             }
         }
     }
 
-    private void createBreakpointRequest(ReferenceType classReference, String breakpoint) {
-        EventRequestManager erm = _instance.eventRequestManager();
-        Location l = classReference.methodsByName(breakpoint).get(0).location();
-        BreakpointRequest br = erm.createBreakpointRequest(l);
-        br.enable();
-        _cachedBreakpointRequests.put(l, br);
+    private void createAndCacheBreakpoint(ReferenceType referenceType, String method) {
+        BreakpointRequest br = _eventRequestManager.createBreakpointRequest(referenceType, method);
+        addEntryToCachedRequests(_cachedBreakpointRequests, br.location(), br);
     }
 
-    private void createWatchpointRequest(ReferenceType classReference, String watchpoint) {
-        EventRequestManager erm = _instance.eventRequestManager();
-        Field f = classReference.fieldByName(watchpoint);
-        ModificationWatchpointRequest mwr = erm.createModificationWatchpointRequest(f);
-        mwr.enable();
-        _cachedWatchPointRequests.put(f, mwr);
+    private void createAndCacheWatchpoint(ReferenceType referenceType, String field) {
+        ModificationWatchpointRequest mwr
+                = _eventRequestManager.createModificationWatchpointRequest(referenceType, field);
+        addEntryToCachedRequests(_cachedWatchpointRequests, mwr.field(), mwr);
+    }
+
+    private <K,V> void addEntryToCachedRequests(Map<K, List<V>> map, K key, V value) {
+        if(map.containsKey(key)) {
+            List<V> list = map.get(key);
+            list.add(value);
+        }
+        else {
+            List<V> list = new ArrayList<>();
+            list.add(value);
+            map.put(key, list);
+        }
     }
 }

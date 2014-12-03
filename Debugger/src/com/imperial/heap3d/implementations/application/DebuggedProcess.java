@@ -9,8 +9,6 @@ import com.imperial.heap3d.interfaces.application.IBreakpointManager;
 import com.imperial.heap3d.interfaces.application.IDebuggedProcess;
 import com.imperial.heap3d.interfaces.application.IStepManager;
 import com.imperial.heap3d.interfaces.application.IVariableAnalyser;
-import com.imperial.heap3d.interfaces.jdi.IEventSet;
-import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.event.*;
 
 import static com.imperial.heap3d.implementations.application.ProcessState.*;
@@ -60,7 +58,7 @@ public class DebuggedProcess implements IDebuggedProcess {
     @Override
     public boolean handleEvents(EventQueue eventQueue) {
         if(_state == RUNNING) {
-            System.out.println("handle events -- running");
+
             EventSet eventSet;
             try {
                 eventSet = eventQueue.remove(0);
@@ -86,13 +84,11 @@ public class DebuggedProcess implements IDebuggedProcess {
 
     private void hitLocatableEvent(LocatableEvent event, String format) {
         _processStateEventBus.post(PAUSED_AT_LOCATION);
-        _stepManager.notifyPausedAtLocation(event.thread());
+        _stepManager.notifyPausedAtLocation(event);
 
         _generalEventBus.post(new ProcessEvent(ProcessEventType.DEBUG_MSG, String.format(format, event.thread().name(),
                 event.location().declaringType().name(), event.location().method(), event.location().lineNumber())));
 
-        try {
-            _variableAnalyser.analyseVariables(event.thread().frame(0));
-        } catch (IncompatibleThreadStateException ignored) {}
+        _variableAnalyser.analyseVariables(event);
     }
 }

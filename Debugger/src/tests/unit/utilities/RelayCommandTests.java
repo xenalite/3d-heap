@@ -2,7 +2,6 @@ package tests.unit.utilities;
 
 import com.imperial.heap3d.implementations.utilities.RelayCommand;
 import org.easymock.EasyMockSupport;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,53 +11,52 @@ import org.junit.Test;
  */
 public class RelayCommandTests extends EasyMockSupport {
 
-    private RelayCommand _sut;
-    private Runnable mRunnable;
+    private RelayCommand SystemUnderTest;
+    private Runnable _mockRunnable;
 
     @Before
-    public void setUp() {
-        mRunnable = createMock(Runnable.class);
-        _sut = new RelayCommand(mRunnable);
-    }
-
-    @After
-    public void tearDown() {
-        verifyAll();
+    public void SetUp() {
+        _mockRunnable = createMock(Runnable.class);
+        SystemUnderTest = new RelayCommand(_mockRunnable);
     }
 
     @Test
-    public void constructor_WithInvalidArguments_Throws() {
-        replayAll();
+    public void Test_Constructor_WithInvalidArguments_Throws() {
         try {
-            _sut = new RelayCommand(null);
+            SystemUnderTest = new RelayCommand(null);
         }
         catch(IllegalArgumentException ignored) {}
     }
 
     @Test
-    public void disabled_ByDefault() {
-        replayAll();
-        Assert.assertFalse(_sut.canExecute().get());
+    public void Test_Disabled_ByDefault() {
+        Assert.assertFalse(SystemUnderTest.canExecute().get());
     }
 
     @Test
-    public void canExecute_RunnableCalled() {
+    public void Test_CanExecute_RunnableCalled() {
         //arrange
-        _sut.canExecute().set(true);
-        mRunnable.run();
+        SystemUnderTest.canExecute().set(true);
+        _mockRunnable.run();
         replayAll();
 
         //act
-        _sut.execute();
+        SystemUnderTest.execute();
+
+        //assert
+        verifyAll();
     }
 
     @Test
     public void cannotExecute_RunnableNotCalled() {
         //arrange
-        _sut.canExecute().set(false);
+        SystemUnderTest.canExecute().set(false);
         replayAll();
 
         //act
-        _sut.execute();
+        SystemUnderTest.execute();
+
+        //assert
+        verifyAll();
     }
 }

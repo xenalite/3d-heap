@@ -14,51 +14,51 @@ import static org.junit.Assert.assertTrue;
  */
 public class NodesComparatorTests {
 
-    private NodesComparator _sut;
+    private NodesComparator SystemUnderTest;
 
     @Before
-    public void setUp() {
-        _sut = new NodesComparator();
+    public void SetUp() {
+        SystemUnderTest = new NodesComparator();
     }
 
     @Test
-    public void sameNodeEquality_Equals() {
+    public void Test_SameNodeEquality_Equals() {
         Node n1 = new ObjectNode("this", 1);
-        assertTrue(_sut.compare(n1, n1));
+        assertTrue(SystemUnderTest.compare(n1, n1));
     }
 
     @Test
-    public void singleNodeEquality_Equals() {
+    public void Test_SingleNodeEquality_Equals() {
         Node n1 = new ObjectNode("this", 1);
         Node n2 = new ObjectNode("this", 1);
 
-        boolean result = _sut.compare(n1, n2);
+        boolean result = SystemUnderTest.compare(n1, n2);
 
         assertTrue(result);
     }
 
     @Test
-    public void singleNodeEquality_DoesNotEqual() {
+    public void Test_SingleNodeEquality_DoesNotEqual() {
         Node n1 = new ObjectNode("this", 1);
         Node n2 = new ObjectNode("this", 2);
 
-        boolean result = _sut.compare(n1, n2);
+        boolean result = SystemUnderTest.compare(n1, n2);
 
         assertFalse(result);
     }
 
     @Test
-    public void immediateSelfReferenceEquality_Equals() {
+    public void Test_ImmediateSelfReferenceEquality_Equals() {
         ObjectNode n1 = new ObjectNode("root", 2);
         n1.addReference(n1);
 
-        boolean result = _sut.compare(n1, n1);
+        boolean result = SystemUnderTest.compare(n1, n1);
 
         assertTrue(result);
     }
 
     @Test
-    public void cyclicReferenceEquality_Equals() {
+    public void Test_CyclicReferenceEquality_Equals() {
         ObjectNode n1 = new ObjectNode("root", 1);
         ObjectNode n2 = new ObjectNode("o1", 2);
         ObjectNode n3 = new ObjectNode("o2", 3);
@@ -66,13 +66,13 @@ public class NodesComparatorTests {
         n2.addReference(n3);
         n3.addReference(n1);
 
-        boolean result = _sut.compare(n1, n1);
+        boolean result = SystemUnderTest.compare(n1, n1);
 
         assertTrue(result);
     }
 
     @Test
-    public void cyclicReferenceEquality_DoesNotEqual() {
+    public void Test_CyclicReferenceEquality_DoesNotEqual() {
         ObjectNode n1 = new ObjectNode("root", 1);
         ObjectNode n2 = new ObjectNode("o1", 4);
         ObjectNode n3 = new ObjectNode("o2", 3);
@@ -80,13 +80,13 @@ public class NodesComparatorTests {
         n2.addReference(n3);
         n3.addReference(n1);
 
-        boolean result = _sut.compare(n1, n1);
+        boolean result = SystemUnderTest.compare(n1, n1);
 
         assertTrue(result);
     }
 
     @Test
-    public void cyclicReferenceAtTheEndEquality_Equals() {
+    public void Test_CyclicReferenceAtTheEndEquality_Equals() {
         ObjectNode n1 = new ObjectNode("root", 1);
         ObjectNode n2 = new ObjectNode("o1", 2);
         ObjectNode n3 = new ObjectNode("o2", 3);
@@ -94,13 +94,13 @@ public class NodesComparatorTests {
         n2.addReference(n3);
         n3.addReference(n3);
 
-        boolean result = _sut.compare(n1, n1);
+        boolean result = SystemUnderTest.compare(n1, n1);
 
         assertTrue(result);
     }
 
     @Test
-    public void cyclicReferenceEquality_Complex_DoesNotEqual() {
+    public void Test_CyclicReferenceEquality_Complex_DoesNotEqual() {
         ObjectNode n1 = new ObjectNode("this", 1);
         ObjectNode n2 = new ObjectNode("field1", 1);
         ObjectNode n3 = new ObjectNode("field2", 3);
@@ -125,13 +125,13 @@ public class NodesComparatorTests {
         n4b.addReference(n5b);
         n4b.addReference(n6b);
 
-        boolean result = _sut.compare(n1, n1b);
+        boolean result = SystemUnderTest.compare(n1, n1b);
 
         assertFalse(result);
     }
 
     @Test
-    public void cyclicReferenceEquality_Complex2_DoesNotEqual() {
+    public void Test_CyclicReferenceEquality_Complex2_DoesNotEqual() {
         ObjectNode n1 = new ObjectNode("n1", 1);
         ObjectNode n2 = new ObjectNode("n2", 2);
         ObjectNode n3 = new ObjectNode("n3", 3);
@@ -164,13 +164,13 @@ public class NodesComparatorTests {
         nb5.addReference(nb6);
         nb6.addReference(nb1);
 
-        boolean result = _sut.compare(n1, nb1);
+        boolean result = SystemUnderTest.compare(n1, nb1);
 
         assertFalse(result);
     }
 
     @Test
-    public void cyclicReferenceEquality_Complex3_DoesNotEqual() {
+    public void Test_CyclicReferenceEquality_Complex3_DoesNotEqual() {
         ObjectNode n1 = new ObjectNode("n1", 1);
         ObjectNode n2 = new ObjectNode("n2", 2);
         ObjectNode n3 = new ObjectNode("n3", 3);
@@ -195,13 +195,13 @@ public class NodesComparatorTests {
         n4b.addReference(n2b);
         n4b.addReference(n5b);
 
-        boolean result = _sut.compare(n1, n1b);
+        boolean result = SystemUnderTest.compare(n1, n1b);
 
         assertFalse(result);
     }
 
     @Test
-    public void linkedListEquality_Equals() {
+    public void Test_LinkedListEquality_Equals() {
         ObjectNode n1 = new ObjectNode("root", 1);
         ObjectNode n2 = new ObjectNode("node1", 2);
         ObjectNode n3 = new ObjectNode("node2", 3);
@@ -218,13 +218,13 @@ public class NodesComparatorTests {
         n2b.addReference(n3b);
         n3b.addReference(n4b);
 
-        boolean result = _sut.compare(n1, n1b);
+        boolean result = SystemUnderTest.compare(n1, n1b);
 
         assertTrue(result);
     }
 
     @Test
-    public void linkedListEquality_DoesNotEqual() {
+    public void Test_LinkedListEquality_DoesNotEqual() {
         ObjectNode n1 = new ObjectNode("root", 1);
         ObjectNode n2 = new ObjectNode("node1", 2);
         ObjectNode n3 = new ObjectNode("node2", 3);
@@ -241,13 +241,13 @@ public class NodesComparatorTests {
         n2b.addReference(n3b);
         n3b.addReference(n4b);
 
-        boolean result = _sut.compare(n1, n1b);
+        boolean result = SystemUnderTest.compare(n1, n1b);
 
         assertFalse(result);
     }
 
     @Test
-    public void binaryTreeEquality_Equals() {
+    public void Test_BinaryTreeEquality_Equals() {
         ObjectNode n1 = new ObjectNode("root", 1);
         ObjectNode n2 = new ObjectNode("left", 2);
         ObjectNode n3 = new ObjectNode("right", 3);
@@ -266,13 +266,13 @@ public class NodesComparatorTests {
         n2b.addReference(n4b);
         n3b.addReference(n5b);
 
-        boolean result = _sut.compare(n1, n1b);
+        boolean result = SystemUnderTest.compare(n1, n1b);
 
         assertTrue(result);
     }
 
     @Test
-    public void binaryTreeEquality_DoesNotEqual() {
+    public void Test_BinaryTreeEquality_DoesNotEqual() {
         ObjectNode n1 = new ObjectNode("root", 1);
         ObjectNode n2 = new ObjectNode("left", 2);
         ObjectNode n3 = new ObjectNode("right", 3);
@@ -291,7 +291,7 @@ public class NodesComparatorTests {
         n2b.addReference(n4b);
         n3b.addReference(n5b);
 
-        boolean result = _sut.compare(n1, n1b);
+        boolean result = SystemUnderTest.compare(n1, n1b);
 
         assertFalse(result);
     }
