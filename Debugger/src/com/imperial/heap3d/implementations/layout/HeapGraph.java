@@ -102,8 +102,10 @@ public class HeapGraph extends RenderEngine {
 	protected void inLoop() {
 		
 		if(animation != null){
-			if(animation.runAnimation())
-				buildEdges();
+			if(animation.runAnimation()) {
+                buildEdges();
+                animation = null;
+            }
 		}
 		
 		if(newStack){
