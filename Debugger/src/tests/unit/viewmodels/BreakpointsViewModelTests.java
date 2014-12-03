@@ -9,173 +9,106 @@ import com.imperial.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
 import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Created by om612 on 19/11/14.
  */
-@Ignore
 public class BreakpointsViewModelTests extends EasyMockSupport {
 
-    private BreakpointsTabViewModel _sut;
-    private EventBus mEventBus;
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    private BreakpointsTabViewModel SystemUnderTest;
+    private EventBus _mockEventBus;
     private static final String VALUE = "VALUE";
 
     @Before
-    public void setUp() {
-        mEventBus = createMock(EventBus.class);
-        mEventBus.register(anyObject());
-        expectLastCall();
-        replayAll();
-        _sut = new BreakpointsTabViewModel(mEventBus);
-        verifyAll();
-        resetAllToDefault();
+    public void SetUp() {
+        _mockEventBus = createMock(EventBus.class);
+        _mockEventBus.register(eq(SystemUnderTest));
+        SystemUnderTest = new BreakpointsTabViewModel(_mockEventBus);
+        resetAll();
     }
 
     @Test
-    public void constructor_WithInvalidArguments_Throws() {
-        try {
-            _sut = new BreakpointsTabViewModel(null);
-        }
-        catch(IllegalArgumentException ignored) {}
+    public void Test_Constructor_WithInvalidArguments_Throws() {
+        exception.expect(IllegalArgumentException.class);
+        SystemUnderTest = new BreakpointsTabViewModel(null);
     }
 
+    @Ignore // for convenience only.
     @Test
-    public void initially_NoBreakpointsDefined() {
-        assertTrue(_sut.getWatchpointsProperty().getValue().isEmpty());
-        assertTrue(_sut.getBreakpointsProperty().getValue().isEmpty());
-        assertTrue(_sut.getBreakpointClassProperty().getValue().isEmpty());
-        assertTrue(_sut.getWatchpointClassProperty().getValue().isEmpty());
-        assertTrue(_sut.getWatchpointFieldProperty().getValue().isEmpty());
-        assertTrue(_sut.getBreakpointMethodProperty().getValue().isEmpty());
+    public void Test_Initially_NoBreakpointsDefined() {
+        assertTrue(SystemUnderTest.getWatchpointsProperty().getValue().isEmpty());
+        assertTrue(SystemUnderTest.getBreakpointsProperty().getValue().isEmpty());
+        assertTrue(SystemUnderTest.getBreakpointClassProperty().getValue().isEmpty());
+        assertTrue(SystemUnderTest.getWatchpointClassProperty().getValue().isEmpty());
+        assertTrue(SystemUnderTest.getWatchpointFieldProperty().getValue().isEmpty());
+        assertTrue(SystemUnderTest.getBreakpointMethodProperty().getValue().isEmpty());
     }
 
+    //region Breakpoints
     @Test
-    public void addBreakpoint_noClassNameOrMethod_NotAdded() {
+    public void Test_AddBreakpoint_NoClassNameOrMethod_NotAdded() {
         //act
-        _sut.addBreakpointAction();
+        SystemUnderTest.addBreakpointAction();
 
         //assert
-        assertTrue(_sut.getBreakpointsProperty().getValue().isEmpty());
-        assertEquals("", _sut.getBreakpointClassProperty().get());
-        assertEquals("", _sut.getBreakpointMethodProperty().get());
+        assertTrue(SystemUnderTest.getBreakpointsProperty().getValue().isEmpty());
+        assertEquals("", SystemUnderTest.getBreakpointClassProperty().get());
+        assertEquals("", SystemUnderTest.getBreakpointMethodProperty().get());
     }
 
     @Test
-    public void addBreakpoint_noMethodName_NotAdded() {
+    public void Test_AddBreakpoint_NoMethodName_NotAdded() {
         //arrange
-        _sut.getBreakpointClassProperty().set(VALUE);
+        SystemUnderTest.getBreakpointClassProperty().set(VALUE);
         //act
-        _sut.addBreakpointAction();
+        SystemUnderTest.addBreakpointAction();
 
         //assert
-        assertTrue(_sut.getBreakpointsProperty().getValue().isEmpty());
-        assertEquals(VALUE, _sut.getBreakpointClassProperty().get());
-        assertEquals("", _sut.getBreakpointMethodProperty().get());
+        assertTrue(SystemUnderTest.getBreakpointsProperty().getValue().isEmpty());
+        assertEquals(VALUE, SystemUnderTest.getBreakpointClassProperty().get());
+        assertEquals("", SystemUnderTest.getBreakpointMethodProperty().get());
     }
 
     @Test
-    public void addBreakpoint_noClassName_NotAdded() {
+    public void Test_AddBreakpoint_NoClassName_NotAdded() {
         //arrange
-        _sut.getBreakpointMethodProperty().set(VALUE);
+        SystemUnderTest.getBreakpointMethodProperty().set(VALUE);
         //act
-        _sut.addBreakpointAction();
+        SystemUnderTest.addBreakpointAction();
 
         //assert
-        assertTrue(_sut.getBreakpointsProperty().getValue().isEmpty());
-        assertEquals("", _sut.getBreakpointClassProperty().get());
-        assertEquals(VALUE, _sut.getBreakpointMethodProperty().get());
+        assertTrue(SystemUnderTest.getBreakpointsProperty().getValue().isEmpty());
+        assertEquals("", SystemUnderTest.getBreakpointClassProperty().get());
+        assertEquals(VALUE, SystemUnderTest.getBreakpointMethodProperty().get());
     }
 
     @Test
-    public void addBreakpoint_validArguments_Added() {
+    public void Test_AddBreakpoint_ValidArguments_Added() {
         //arrange
-        _sut.getBreakpointClassProperty().set(VALUE);
-        _sut.getBreakpointMethodProperty().set(VALUE);
+        SystemUnderTest.getBreakpointClassProperty().set(VALUE);
+        SystemUnderTest.getBreakpointMethodProperty().set(VALUE);
 
         //act
-        _sut.addBreakpointAction();
+        SystemUnderTest.addBreakpointAction();
 
         //assert
-        assertEquals(1, _sut.getBreakpointsProperty().getValue().size());
-        assertEquals("", _sut.getBreakpointClassProperty().get());
-        assertEquals("", _sut.getBreakpointMethodProperty().get());
+        assertEquals(1, SystemUnderTest.getBreakpointsProperty().getValue().size());
+        assertEquals("", SystemUnderTest.getBreakpointClassProperty().get());
+        assertEquals("", SystemUnderTest.getBreakpointMethodProperty().get());
     }
 
     @Test
-    public void addWatchpoint_noClassNameOrMethod_NotAdded() {
-        //act
-        _sut.addWatchpointAction();
-
-        //assert
-        assertTrue(_sut.getWatchpointsProperty().getValue().isEmpty());
-        assertEquals("", _sut.getWatchpointClassProperty().get());
-        assertEquals("", _sut.getWatchpointFieldProperty().get());
-    }
-
-    @Test
-    public void addWatchpoint_noMethodName_NotAdded() {
-        //arrange
-        _sut.getWatchpointClassProperty().set(VALUE);
-        //act
-        _sut.addWatchpointAction();
-
-        //assert
-        assertTrue(_sut.getWatchpointsProperty().getValue().isEmpty());
-        assertEquals(VALUE, _sut.getWatchpointClassProperty().get());
-        assertEquals("", _sut.getWatchpointFieldProperty().get());
-    }
-
-    @Test
-    public void addWatchpoint_noClassName_NotAdded() {
-        //arrange
-        _sut.getWatchpointFieldProperty().set(VALUE);
-        //act
-        _sut.addWatchpointAction();
-
-        //assert
-        assertTrue(_sut.getWatchpointsProperty().getValue().isEmpty());
-        assertEquals("", _sut.getWatchpointClassProperty().get());
-        assertEquals(VALUE, _sut.getWatchpointFieldProperty().get());
-    }
-
-    @Test
-    public void addWatchpoint_validArguments_Added() {
-        //arrange
-        _sut.getWatchpointClassProperty().set(VALUE);
-        _sut.getWatchpointFieldProperty().set(VALUE);
-
-        //act
-        _sut.addWatchpointAction();
-
-        //assert
-        assertEquals(1, _sut.getWatchpointsProperty().getValue().size());
-        assertEquals("", _sut.getWatchpointClassProperty().get());
-        assertEquals("", _sut.getWatchpointFieldProperty().get());
-    }
-
-    @Test
-    public void watchpointsCached_ByDefault() {
-        //expect -- no posts to event bus
-        replayAll();
-        //arrange
-        _sut.getWatchpointFieldProperty().set(VALUE);
-        _sut.getWatchpointClassProperty().set(VALUE);
-
-        //act
-        _sut.addWatchpointAction();
-
-        //assert
-        verifyAll();
-    }
-
-    @Test
-    public void breakpointsCached_ByDefault() {
+    public void Test_BreakpointsCached_ByDefault() {
         //expect -- no posts to event bus
         replayAll();
         //act
@@ -185,285 +118,358 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         verifyAll();
     }
 
+
+    @Test
+    public void Test_BreakpointsSent_WhenProgramStarts() {
+        //arrange
+        setDefaultBreakpoint();
+        setDefaultBreakpoint();
+        ControlEvent e = new ControlEvent(EventType.START, null, null);
+
+        //expectation
+        _mockEventBus.post(eq(e));
+        expectLastCall().times(2);
+        replayAll();
+
+        //act
+//        SystemUnderTest.handleEvent(e);
+
+        //assert
+        assertEquals(2, SystemUnderTest.getBreakpointsProperty().getValue().size());
+        verifyAll();
+    }
+
+    @Test
+    public void Test_BreakpointsCached_WhenProgramKilled() {
+        //arrange
+        setDefaultBreakpoint();
+        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
+        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
+
+        //expectation
+        _mockEventBus.post(anyObject(ControlEvent.class));
+        replayAll();
+
+        //act
+//        SystemUnderTest.handleEvent(e1);
+//        SystemUnderTest.handleEvent(e2);
+        setDefaultBreakpoint();
+
+        //assert
+        assertEquals(2, SystemUnderTest.getBreakpointsProperty().getValue().size());
+        verifyAll();
+    }
+
+    @Test
+    public void Test_BreakpointsRemembered_ConsecutiveRuns() {
+        //arrange
+        setDefaultBreakpoint();
+        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
+        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
+
+        //expectation
+        _mockEventBus.post(anyObject(ControlEvent.class));
+        expectLastCall().atLeastOnce();
+        replayAll();
+
+        //act
+//        SystemUnderTest.handleEvent(e1);
+//        SystemUnderTest.handleEvent(e2);
+//        setDefaultBreakpoint();
+//        SystemUnderTest.handleEvent(e1);
+
+        //assert
+        assertEquals(2, SystemUnderTest.getBreakpointsProperty().getValue().size());
+        verifyAll();
+    }
+
+    @Test
+    public void Test_BreakpointsRemembered_ConsecutiveRuns_UsingProcessEvent() {
+        //arrange
+        setDefaultBreakpoint();
+        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
+        ProcessEvent e2 = new ProcessEvent(ProcessEventType.STOPPED);
+
+        //expectation
+        _mockEventBus.post(anyObject(ControlEvent.class));
+        expectLastCall().atLeastOnce();
+        replayAll();
+
+        //act
+//        SystemUnderTest.handleEvent(e1);
+//        SystemUnderTest.handleProcessEvent(e2);
+//        setDefaultBreakpoint();
+//        SystemUnderTest.handleEvent(e1);
+
+        //assert
+        assertEquals(2, SystemUnderTest.getBreakpointsProperty().getValue().size());
+        verifyAll();
+    }
+
+    @Test
+    public void Test_RemoveBreakpoints_InvalidArgument_DoesntThrow() {
+        //arrange
+        setDefaultBreakpoint();
+
+        //act
+        SystemUnderTest.removeBreakpointAction("");
+
+        //assert
+        assertEquals(1, SystemUnderTest.getBreakpointsProperty().getValue().size());
+    }
+
+    @Test
+    public void Test_RemoveBreakpoints_BeforeProgramRuns_NothingSent() {
+        //arrange
+        setDefaultBreakpoint();
+        ControlEvent e = new ControlEvent(EventType.START, null, null);
+        replayAll();
+
+        //act
+//        SystemUnderTest.removeBreakpointAction(VALUE + ":" + VALUE);
+//        SystemUnderTest.handleEvent(e);
+
+        //assert
+        assertEquals(0, SystemUnderTest.getBreakpointsProperty().getValue().size());
+        verifyAll();
+    }
+
+    @Test
+    public void Test_RemoveBreakpoints_TwoEquals_OnlyOneRemoved() {
+        //arrange
+        setDefaultBreakpoint();
+        setDefaultBreakpoint();
+        ControlEvent e = new ControlEvent(EventType.START, null, null);
+
+        _mockEventBus.post(anyObject(ControlEvent.class));
+        expectLastCall().once();
+        replayAll();
+
+        //act
+//        SystemUnderTest.removeBreakpointAction(VALUE + ":" + VALUE);
+//        SystemUnderTest.handleEvent(e);
+
+        //assert
+        assertEquals(1, SystemUnderTest.getBreakpointsProperty().getValue().size());
+        verifyAll();
+    }
+    //endregion
+
+    //region Watchpoints
+    @Test
+    public void Test_AddWatchpoint_noClassNameOrMethod_NotAdded() {
+        //act
+        SystemUnderTest.addWatchpointAction();
+
+        //assert
+        assertTrue(SystemUnderTest.getWatchpointsProperty().getValue().isEmpty());
+        assertEquals("", SystemUnderTest.getWatchpointClassProperty().get());
+        assertEquals("", SystemUnderTest.getWatchpointFieldProperty().get());
+    }
+
+    @Test
+    public void Test_AddWatchpoint_noMethodName_NotAdded() {
+        //arrange
+        SystemUnderTest.getWatchpointClassProperty().set(VALUE);
+        //act
+        SystemUnderTest.addWatchpointAction();
+
+        //assert
+        assertTrue(SystemUnderTest.getWatchpointsProperty().getValue().isEmpty());
+        assertEquals(VALUE, SystemUnderTest.getWatchpointClassProperty().get());
+        assertEquals("", SystemUnderTest.getWatchpointFieldProperty().get());
+    }
+
+    @Test
+    public void Test_AddWatchpoint_noClassName_NotAdded() {
+        //arrange
+        SystemUnderTest.getWatchpointFieldProperty().set(VALUE);
+        //act
+        SystemUnderTest.addWatchpointAction();
+
+        //assert
+        assertTrue(SystemUnderTest.getWatchpointsProperty().getValue().isEmpty());
+        assertEquals("", SystemUnderTest.getWatchpointClassProperty().get());
+        assertEquals(VALUE, SystemUnderTest.getWatchpointFieldProperty().get());
+    }
+
+    @Test
+    public void Test_AddWatchpoint_validArguments_Added() {
+        //arrange
+        SystemUnderTest.getWatchpointClassProperty().set(VALUE);
+        SystemUnderTest.getWatchpointFieldProperty().set(VALUE);
+
+        //act
+        SystemUnderTest.addWatchpointAction();
+
+        //assert
+        assertEquals(1, SystemUnderTest.getWatchpointsProperty().getValue().size());
+        assertEquals("", SystemUnderTest.getWatchpointClassProperty().get());
+        assertEquals("", SystemUnderTest.getWatchpointFieldProperty().get());
+    }
+
+    @Test
+    public void Test_WatchpointsCached_ByDefault() {
+        //expect -- no posts to event bus
+        replayAll();
+        //arrange
+        SystemUnderTest.getWatchpointFieldProperty().set(VALUE);
+        SystemUnderTest.getWatchpointClassProperty().set(VALUE);
+
+        //act
+        SystemUnderTest.addWatchpointAction();
+
+        //assert
+        verifyAll();
+    }
+
+
+
+    @Test
+    public void Test_WatchpointsSent_WhenProgramStarts() {
+        //arrange
+        setDefaultWatchpoint();
+        setDefaultWatchpoint();
+        ControlEvent e = new ControlEvent(EventType.START, null, null);
+
+        //expectation
+        _mockEventBus.post(anyObject(ControlEvent.class));
+        expectLastCall().times(2);
+        replayAll();
+
+        //act
+//        SystemUnderTest.handleEvent(e);
+
+        //assert
+        assertEquals(2, SystemUnderTest.getWatchpointsProperty().getValue().size());
+        verifyAll();
+    }
+
+    @Test
+    public void Test_WatchpointsCached_WhenProgramKilled() {
+        //arrange
+        setDefaultWatchpoint();
+        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
+        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
+
+        //expectation
+        _mockEventBus.post(anyObject(ControlEvent.class));
+        replayAll();
+
+        //act
+//        SystemUnderTest.handleEvent(e1);
+//        SystemUnderTest.handleEvent(e2);
+        setDefaultWatchpoint();
+
+        //assert
+        assertEquals(2, SystemUnderTest.getWatchpointsProperty().getValue().size());
+        verifyAll();
+    }
+
+    @Test
+    public void Test_WatchpointsRemembered_ConsecutiveRuns() {
+        //arrange
+        setDefaultWatchpoint();
+        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
+        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
+
+        //expectation
+        _mockEventBus.post(anyObject(ControlEvent.class));
+        expectLastCall().atLeastOnce();
+        replayAll();
+
+        //act
+//        SystemUnderTest.handleEvent(e1);
+//        SystemUnderTest.handleEvent(e2);
+//        setDefaultWatchpoint();
+//        SystemUnderTest.handleEvent(e1);
+
+        //assert
+        assertEquals(2, SystemUnderTest.getWatchpointsProperty().getValue().size());
+        verifyAll();
+    }
+
+    @Test
+    public void Test_WatchpointsRemembered_ConsecutiveRuns_UsingProcessEvent() {
+        //arrange
+        setDefaultWatchpoint();
+        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
+        ProcessEvent e2 = new ProcessEvent(ProcessEventType.STOPPED);
+
+        //expectation
+        _mockEventBus.post(anyObject(ControlEvent.class));
+        expectLastCall().atLeastOnce();
+        replayAll();
+
+        //act
+//        SystemUnderTest.handleEvent(e1);
+        SystemUnderTest.handleProcessEvent(e2);
+        setDefaultWatchpoint();
+//        SystemUnderTest.handleEvent(e1);
+
+        //assert
+        assertEquals(2, SystemUnderTest.getWatchpointsProperty().getValue().size());
+        verifyAll();
+    }
+
+    @Test
+    public void Test_RemoveWatchpoints_InvalidArgument_DoesntThrow() {
+        //arrange
+        setDefaultWatchpoint();
+
+        //act
+        SystemUnderTest.removeWatchpointAction("");
+
+        //assert
+        assertEquals(1, SystemUnderTest.getWatchpointsProperty().getValue().size());
+    }
+
+    @Test
+    public void Test_RemoveWatchpoints_BeforeProgramRuns_NothingSent() {
+        //arrange
+        setDefaultWatchpoint();
+        ControlEvent e = new ControlEvent(EventType.START, null, null);
+        replayAll();
+
+        //act
+        SystemUnderTest.removeWatchpointAction(VALUE + ":" + VALUE);
+//        SystemUnderTest.handleEvent(e);
+
+        //assert
+        assertEquals(0, SystemUnderTest.getWatchpointsProperty().getValue().size());
+        verifyAll();
+    }
+
+    @Test
+    public void Test_RemoveWatchpoints_TwoEquals_OnlyOneRemoved() {
+        //arrange
+        setDefaultWatchpoint();
+        setDefaultWatchpoint();
+        ControlEvent e = new ControlEvent(EventType.START, null, null);
+
+        _mockEventBus.post(anyObject(ControlEvent.class));
+        expectLastCall().once();
+        replayAll();
+
+        //act
+        SystemUnderTest.removeWatchpointAction(VALUE + ":" + VALUE);
+//        SystemUnderTest.handleEvent(e);
+
+        //assert
+        assertEquals(1, SystemUnderTest.getWatchpointsProperty().getValue().size());
+        verifyAll();
+    }
+    //endregion
+
     private void setDefaultBreakpoint() {
-        _sut.getBreakpointClassProperty().set(VALUE);
-        _sut.getBreakpointMethodProperty().set(VALUE);
-        _sut.addBreakpointAction();
+        SystemUnderTest.getBreakpointClassProperty().set(VALUE);
+        SystemUnderTest.getBreakpointMethodProperty().set(VALUE);
+        SystemUnderTest.addBreakpointAction();
     }
 
     private void setDefaultWatchpoint() {
-        _sut.getWatchpointClassProperty().set(VALUE);
-        _sut.getWatchpointFieldProperty().set(VALUE);
-        _sut.addWatchpointAction();
-    }
-
-    @Test
-    public void breakpointsSent_WhenProgramStarts() {
-        //arrange
-        setDefaultBreakpoint();
-        setDefaultBreakpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
-
-        //expectation
-        mEventBus.post(anyObject(ControlEvent.class));
-        expectLastCall().times(2);
-        replayAll();
-
-        //act
-//        _sut.handleEvent(e);
-
-        //assert
-        assertEquals(2, _sut.getBreakpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void breakpointsCached_WhenProgramKilled() {
-        //arrange
-        setDefaultBreakpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
-
-        //expectation
-        mEventBus.post(anyObject(ControlEvent.class));
-        replayAll();
-
-        //act
-//        _sut.handleEvent(e1);
-//        _sut.handleEvent(e2);
-        setDefaultBreakpoint();
-
-        //assert
-        assertEquals(2, _sut.getBreakpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void breakpointsRemembered_ConsecutiveRuns() {
-        //arrange
-        setDefaultBreakpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
-
-        //expectation
-        mEventBus.post(anyObject(ControlEvent.class));
-        expectLastCall().atLeastOnce();
-        replayAll();
-
-        //act
-//        _sut.handleEvent(e1);
-//        _sut.handleEvent(e2);
-//        setDefaultBreakpoint();
-//        _sut.handleEvent(e1);
-
-        //assert
-        assertEquals(2, _sut.getBreakpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void breakpointsRemembered_ConsecutiveRuns_UsingProcessEvent() {
-        //arrange
-        setDefaultBreakpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ProcessEvent e2 = new ProcessEvent(ProcessEventType.STOPPED);
-
-        //expectation
-        mEventBus.post(anyObject(ControlEvent.class));
-        expectLastCall().atLeastOnce();
-        replayAll();
-
-        //act
-//        _sut.handleEvent(e1);
-//        _sut.handleProcessEvent(e2);
-//        setDefaultBreakpoint();
-//        _sut.handleEvent(e1);
-
-        //assert
-        assertEquals(2, _sut.getBreakpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void removeBreakpoints_InvalidArgument_DoesntThrow() {
-        //arrange
-        setDefaultBreakpoint();
-
-        //act
-        _sut.removeBreakpointAction("");
-
-        //assert
-        assertEquals(1, _sut.getBreakpointsProperty().getValue().size());
-    }
-
-    @Test
-    public void removeBreakpoints_BeforeProgramRuns_NothingSent() {
-        //arrange
-        setDefaultBreakpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
-        replayAll();
-
-        //act
-//        _sut.removeBreakpointAction(VALUE + ":" + VALUE);
-//        _sut.handleEvent(e);
-
-        //assert
-        assertEquals(0, _sut.getBreakpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void removeBreakpoints_TwoEquals_OnlyOneRemoved() {
-        //arrange
-        setDefaultBreakpoint();
-        setDefaultBreakpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
-
-        mEventBus.post(anyObject(ControlEvent.class));
-        expectLastCall().once();
-        replayAll();
-
-        //act
-//        _sut.removeBreakpointAction(VALUE + ":" + VALUE);
-//        _sut.handleEvent(e);
-
-        //assert
-        assertEquals(1, _sut.getBreakpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void watchpointsSent_WhenProgramStarts() {
-        //arrange
-        setDefaultWatchpoint();
-        setDefaultWatchpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
-
-        //expectation
-        mEventBus.post(anyObject(ControlEvent.class));
-        expectLastCall().times(2);
-        replayAll();
-
-        //act
-//        _sut.handleEvent(e);
-
-        //assert
-        assertEquals(2, _sut.getWatchpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void watchpointsCached_WhenProgramKilled() {
-        //arrange
-        setDefaultWatchpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
-
-        //expectation
-        mEventBus.post(anyObject(ControlEvent.class));
-        replayAll();
-
-        //act
-//        _sut.handleEvent(e1);
-//        _sut.handleEvent(e2);
-        setDefaultWatchpoint();
-
-        //assert
-        assertEquals(2, _sut.getWatchpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void watchpointsRemembered_ConsecutiveRuns() {
-        //arrange
-        setDefaultWatchpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
-
-        //expectation
-        mEventBus.post(anyObject(ControlEvent.class));
-        expectLastCall().atLeastOnce();
-        replayAll();
-
-        //act
-//        _sut.handleEvent(e1);
-//        _sut.handleEvent(e2);
-//        setDefaultWatchpoint();
-//        _sut.handleEvent(e1);
-
-        //assert
-        assertEquals(2, _sut.getWatchpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void watchpointsRemembered_ConsecutiveRuns_UsingProcessEvent() {
-        //arrange
-        setDefaultWatchpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ProcessEvent e2 = new ProcessEvent(ProcessEventType.STOPPED);
-
-        //expectation
-        mEventBus.post(anyObject(ControlEvent.class));
-        expectLastCall().atLeastOnce();
-        replayAll();
-
-        //act
-//        _sut.handleEvent(e1);
-        _sut.handleProcessEvent(e2);
-        setDefaultWatchpoint();
-//        _sut.handleEvent(e1);
-
-        //assert
-        assertEquals(2, _sut.getWatchpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void removeWatchpoints_InvalidArgument_DoesntThrow() {
-        //arrange
-        setDefaultWatchpoint();
-
-        //act
-        _sut.removeWatchpointAction("");
-
-        //assert
-        assertEquals(1, _sut.getWatchpointsProperty().getValue().size());
-    }
-
-    @Test
-    public void removeWatchpoints_BeforeProgramRuns_NothingSent() {
-        //arrange
-        setDefaultWatchpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
-        replayAll();
-
-        //act
-        _sut.removeWatchpointAction(VALUE + ":" + VALUE);
-//        _sut.handleEvent(e);
-
-        //assert
-        assertEquals(0, _sut.getWatchpointsProperty().getValue().size());
-        verifyAll();
-    }
-
-    @Test
-    public void removeWatchpoints_TwoEquals_OnlyOneRemoved() {
-        //arrange
-        setDefaultWatchpoint();
-        setDefaultWatchpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
-
-        mEventBus.post(anyObject(ControlEvent.class));
-        expectLastCall().once();
-        replayAll();
-
-        //act
-        _sut.removeWatchpointAction(VALUE + ":" + VALUE);
-//        _sut.handleEvent(e);
-
-        //assert
-        assertEquals(1, _sut.getWatchpointsProperty().getValue().size());
-        verifyAll();
+        SystemUnderTest.getWatchpointClassProperty().set(VALUE);
+        SystemUnderTest.getWatchpointFieldProperty().set(VALUE);
+        SystemUnderTest.addWatchpointAction();
     }
 }
