@@ -111,33 +111,21 @@ public class HeapGraph extends RenderEngine {
     }
 
     private Shape logo;
-    private Animate animation;
+    private Animate animation = new Animate();
     private SelectedAnimation selectedAnimation;
 
     @Override
     protected void inLoop() {
-        if(logo != null)
-    		logo.getEntity().increaseRotation(0, 1, 0);
-    	
-    	
-        if (animation != null) {
-            if (animation.runAnimation()) {
-                try {
-                    buildEdges();
-                } catch (Exception e) {
-                    System.out.println("Caught exception building edges " + e.toString());
-                }
-                animation = null;
-                System.out.println("Animating!" + super.getNumberOfShapes());
-            }
-        }
+        if (logo != null)
+            logo.getEntity().increaseRotation(0, 1, 0);
 
+        animation.step();
         if (newStack) {
             System.out.println("New Stack");
             Set<Node> oldHeapNodes = allHeapNodes.values().stream().collect(Collectors.toSet());
-            animation = new Animate(oldHeapNodes);
             resetStack();
-            animation.setToStackNodes(allHeapNodes.values().stream().collect(Collectors.toSet()));
+            animation.initialise(oldHeapNodes,
+                    allHeapNodes.values().stream().collect(Collectors.toSet()), this::buildEdges);
             newStack = false;
         }
 
@@ -146,7 +134,7 @@ public class HeapGraph extends RenderEngine {
         if (selectedAnimation != null && selected != null) {
             selectedAnimation.step();
         } else if (selectedAnimation != null) {
-            selectedAnimation.stop();
+            selectedAnimation.finish();
             selectedAnimation = null;
         }
 
@@ -160,7 +148,7 @@ public class HeapGraph extends RenderEngine {
                     //TODO send control event
 
                     if (selectedAnimation != null) {
-                        selectedAnimation.stop();
+                        selectedAnimation.finish();
                         selectedAnimation = null;
                     }
 

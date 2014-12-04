@@ -1,36 +1,34 @@
 package com.imperial.heap3d.implementations.layout.animation;
 
+import com.graphics.entities.Entity;
 import com.imperial.heap3d.implementations.snapshot.Node;
 
-public class SelectedAnimation extends AnimationEvent{
+public class SelectedAnimation extends AnimationEvent {
 
 	private static final float GROW_RANGE = 0.3f;
-	
-	private float startingScale, bound;
-	private float incScale;
-	
+
+	private float startingScale, incrementScale, bound;
+	private Entity entity;
+
 	public SelectedAnimation(Node selectedNode) {
-		ANIMATION_TIME = 30;
-		this.shape = selectedNode.getGeometry();
-		startingScale = shape.getEntity().getScale();
-		bound = (GROW_RANGE*startingScale);
-		incScale = bound/ANIMATION_TIME;
+		super(30);
+		entity = selectedNode.getGeometry().getEntity();
+		startingScale = entity.getScale();
+		bound = (GROW_RANGE * startingScale);
+		incrementScale = bound / maxIterations;
 	}
 
 	@Override
-	public void step(){
-		float newScale = shape.getEntity().getScale()+incScale;
-		shape.getEntity().setScale(newScale);
-		
-		if(newScale >= startingScale + bound || newScale <= startingScale - bound)
-			incScale = -incScale;
+	protected void executeStep() {
+		float newScale = entity.getScale() + incrementScale;
+		entity.setScale(newScale);
+
+		if (newScale >= startingScale + bound || newScale <= startingScale - bound)
+			incrementScale = -incrementScale;
 	}
-	
-	public void stop(){
-		System.out.println("here------");
-		shape.getEntity().setScale(startingScale);
-		System.out.println(startingScale);
-		System.out.println(shape.getEntity().getScale());
+
+	@Override
+	public void finish() {
+		entity.setScale(startingScale);
 	}
-	
 }

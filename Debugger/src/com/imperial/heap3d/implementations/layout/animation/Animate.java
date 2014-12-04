@@ -1,84 +1,97 @@
 package com.imperial.heap3d.implementations.layout.animation;
 
+import com.imperial.heap3d.implementations.snapshot.Node;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import com.imperial.heap3d.implementations.snapshot.Node;
 
 public class Animate {
 
-	private Set<Node> fromNodes;
-	private Set<Node> toNodes;
-	private List<AnimationEvent> deleteEvents, moveEvents, addEvents;
-	
-	public Animate(Set<Node> allHeapNodes){
-		this.fromNodes = allHeapNodes;
+	private boolean finished;
+	private Set<Node> startingNodes;
+	private Set<Node> finishingNodes;
+	private Runnable finishingCommand;
+	private List<AnimationEvent> deleteEvents = new ArrayList<>();
+	private List<AnimationEvent> moveEvents = new ArrayList<>();
+	private List<AnimationEvent> addEvents = new ArrayList<>();
+
+	public void initialise(Set<Node> startingNodes, Set<Node> finishingNodes, Runnable finishingCommand) {
+		finish();
+		finished = false;
+		this.startingNodes = startingNodes;
+		this.finishingNodes = finishingNodes;
+		this.finishingCommand = finishingCommand;
+
+		createEvents();
 	}
 
-	public void setToStackNodes(Set<Node> allHeapNodes) {
-		this.toNodes = allHeapNodes;
-		deleteEvents = new ArrayList<AnimationEvent>();
-		moveEvents = new ArrayList<AnimationEvent>();
-		addEvents = new ArrayList<AnimationEvent>();
-		
-		makeEvents();
+	private void finish() {
+		while (!finished)
+			step();
+		cleanUp();
 	}
-	
-	private void makeEvents() {
-		for(Node fromNode : fromNodes){
+
+	public boolean step() {
+		if (finished)
+			return true;
+
+		boolean isAnimationFinished = true;
+		isAnimationFinished &= step(deleteEvents);
+		isAnimationFinished &= step(moveEvents);
+		isAnimationFinished &= step(addEvents);
+		finished = isAnimationFinished;
+		if(finished)
+			finishingCommand.run();
+		return isAnimationFinished;
+	}
+
+	private boolean step(List<AnimationEvent> events) {
+		if (!events.isEmpty() && !events.get(0).isFinished()) {
+			for (AnimationEvent event : events)
+				event.step();
+			return false;
+		}
+		return true;
+	}
+
+	private void cleanUp() {
+		startingNodes = null;
+		finishingNodes = null;
+		deleteEvents.clear();
+		moveEvents.clear();
+		addEvents.clear();
+	}
+
+	private void createEvents() {
+		for (Node fromNode : startingNodes) {
 			boolean moveAnimation = false;
-			for(Node toNode : toNodes){
-				if(toNode.equals(fromNode)){
+			for (Node toNode : finishingNodes) {
+
+				if (toNode.equals(fromNode)) {
 					moveAnimation = true;
 					moveEvents.add(new MoveAnimation(fromNode, toNode));
 					break;
 				}
 			}
-			
-			if(!moveAnimation){
-				// It has been deleted!
+
+			if (!moveAnimation) {
 				deleteEvents.add(new DeleteAnimation(fromNode));
 			}
 		}
-		
-		for(Node toNode : toNodes){
+
+		for (Node toNode : finishingNodes) {
 			boolean moveAnimation = false;
-			for(Node fromNode : fromNodes){
-				if(toNode.equals(fromNode)){
+			for (Node fromNode : startingNodes) {
+				if (toNode.equals(fromNode)) {
 					moveAnimation = true;
 				}
 			}
-			
-			if(!moveAnimation){
-				// It has been added!
+
+			if (!moveAnimation) {
 				addEvents.add(new AddAnimation(toNode));
 			}
 		}
-		
-	}
 
-	public boolean runAnimation(){
-		
-		boolean done = true;
-		
-		if(!deleteEvents.isEmpty() && !deleteEvents.get(0).finishedAnimation()){
-			for(AnimationEvent deleted : deleteEvents)
-				deleted.step();
-			done = false;
-		}
-		
-		if(!moveEvents.isEmpty() && !moveEvents.get(0).finishedAnimation()){
-			for(AnimationEvent move : moveEvents)
-				move.step();
-			done = false;
-		}
-
-		if(!addEvents.isEmpty() && !addEvents.get(0).finishedAnimation()){
-			for(AnimationEvent newEvents : addEvents)
-				newEvents.step();
-			done = false;
-		}
-		
-		return done;
 	}
 }

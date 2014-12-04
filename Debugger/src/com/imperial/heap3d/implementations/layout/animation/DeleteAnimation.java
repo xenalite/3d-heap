@@ -1,21 +1,26 @@
 package com.imperial.heap3d.implementations.layout.animation;
 
+import com.graphics.entities.Entity;
 import com.imperial.heap3d.implementations.snapshot.Node;
 
-public class DeleteAnimation extends AnimationEvent{
+public class DeleteAnimation extends AnimationEvent {
 
-	private float decScale;
-	
+	private Entity entity;
+	private float decrementScale;
+
 	public DeleteAnimation(Node nodeToDelete) {
-		this.shape = nodeToDelete.getGeometry();
-		decScale = -nodeToDelete.getGeometry().getEntity().getScale()/ANIMATION_TIME;
+		entity = nodeToDelete.getGeometry().getEntity();
+		decrementScale = -nodeToDelete.getGeometry().getEntity().getScale() / maxIterations;
 	}
 
 	@Override
-	public void step(){
-		float newScale = shape.getEntity().getScale()+decScale;
-		shape.getEntity().setScale(newScale < 0 ? 0 : newScale);
-		itteration++;
+	public void executeStep() {
+		float newScale = entity.getScale() + decrementScale;
+		entity.setScale(newScale < 0 ? 0 : newScale);
 	}
-	
+
+	@Override
+	public void finish() {
+		entity.setScale(0);
+	}
 }
