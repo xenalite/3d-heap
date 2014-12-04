@@ -4,14 +4,12 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.implementations.application.*;
 import com.imperial.heap3d.implementations.events.StartDefinition;
 import com.imperial.heap3d.implementations.jdi.DVirtualMachine;
-import com.imperial.heap3d.utilities.Check;
 import com.imperial.heap3d.interfaces.application.IBreakpointManager;
 import com.imperial.heap3d.interfaces.application.IStepManager;
 import com.imperial.heap3d.interfaces.application.IVariableAnalyser;
 import com.imperial.heap3d.interfaces.factories.IVirtualMachineProvider;
 import com.imperial.heap3d.interfaces.jdi.IVirtualMachine;
-
-import java.util.concurrent.ExecutorService;
+import com.imperial.heap3d.utilities.Check;
 
 /**
  * Created by oskar on 28/11/14.
@@ -22,12 +20,6 @@ public class ProcessFactory {
     private IVirtualMachineProvider _vmProvider;
     private EventBus _eventBus;
     private HeapGraphFactory _heapGraphFactory;
-
-    private DebuggedProcess _debuggedProcess;
-    private ControlEventHandler _controlEventHandler;
-    private IBreakpointManager _breakpointManager;
-    private IStepManager _stepManager;
-    private IVariableAnalyser _variableAnalyser;
 
     public ProcessFactory(IVirtualMachineProvider vmProvider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
         _vmProvider = Check.NotNull(vmProvider, "vmProvider");
@@ -40,25 +32,18 @@ public class ProcessFactory {
 
         int port = getRandomPort();
         EventBus processStateEventBus = new EventBus();
-        ConnectedProcess cp = _vmProvider.establish(port, () -> startDefinition.buildProcess(port));
-        Process p = cp.getProcess();
+        ConnectedProcess cp = _vmProvider.establish(port, () -> startDefinition.buildProcess(port, _eventBus));
         IVirtualMachine vm = new DVirtualMachine(cp.getVirtualMachine(), processStateEventBus);
 
-        _stepManager = new StepManager(vm);
-        _breakpointManager = new BreakpointManager(vm);
+        IStepManager _stepManager = new StepManager(vm);
+        IBreakpointManager _breakpointManager = new BreakpointManager(vm);
 
-        _variableAnalyser = new VariableAnalyser(new NodeBuilder(), _heapGraphFactory);
-        _debuggedProcess = new DebuggedProcess(cp.getProcess(), _breakpointManager, _stepManager,
+        IVariableAnalyser _variableAnalyser = new VariableAnalyser(new NodeBuilder(), _heapGraphFactory);
+        DebuggedProcess _debuggedProcess = new DebuggedProcess(cp.getProcess(), _breakpointManager, _stepManager,
                 _variableAnalyser, _eventBus, processStateEventBus);
 
-        _controlEventHandler = new ControlEventHandler(_debuggedProcess, _eventBus, vm,
+        return new ControlEventHandler(_debuggedProcess, _eventBus, vm,
                 _breakpointManager, _stepManager);
-
-        ExecutorService service = ThreadBuilder.createService("stream-listener");
-        service.submit(new StreamListener(_eventBus, p.getInputStream(), p.getErrorStream()));
-        service.shutdown();
-
-        return _controlEventHandler;
     }
 
     private int getRandomPort() {
