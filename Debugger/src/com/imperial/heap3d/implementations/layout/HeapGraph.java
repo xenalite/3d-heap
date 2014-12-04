@@ -56,10 +56,6 @@ public class HeapGraph extends RenderEngine {
 
     private void resetStack(){
         System.out.println("Start Before Loop ---------------------------------------------");
-        //clearShapesFrom3DSpace();
-//		levels.clear();
-//		allHeapNodes.clear();
-//		interLevelGraph = new GraphImpl<>();
         currentLevel = 0;
         for (StackNode stackNode : stackNodes) {
             System.out.println("Stack Node: " + stackNode.getName());
@@ -96,6 +92,7 @@ public class HeapGraph extends RenderEngine {
                 //TODO change levels to a stack or deque or hashmap
                 //needs to be done in reverse, since remove level uses id to remove
                 HeapGraphLevel level = levels.get(i);
+                assert (level.id == i);
                 removeLevel(level);
             }
         }
@@ -119,8 +116,8 @@ public class HeapGraph extends RenderEngine {
 
     @Override
     protected void inLoop() {
-    	
-    	if(logo != null)
+        System.out.println(this.getNumberOfShapes());
+        if(logo != null)
     		logo.getEntity().increaseRotation(0, 1, 0);
     	
     	

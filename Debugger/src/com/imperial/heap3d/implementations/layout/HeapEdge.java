@@ -16,9 +16,11 @@ public class HeapEdge {
 
     private Line line;
 
-    public void connect(Node from, Node to, Colour color, RenderEngine world) {
+    public void connect(Node from, Node to, Colour color, HeapGraph world) {
         Cube fromCube = (Cube) from.getGeometry();
         Cube toCube = (Cube) to.getGeometry();
+        if(line != null)
+            world.removeShapeFrom3DSpace(line);
         line = new Line(fromCube, toCube, color);
         world.addShapeTo3DSpace(line);
     }
