@@ -238,24 +238,26 @@ public class HeapGraph extends RenderEngine {
                 currentLevel++;
             } else {
                 //same node, but different children
+                System.out.println("Need to rebuild the graph!!!");
 
                 //If the stacknode only has primitive values
                 if (!stackNode.hasReference()) {
                     //no change to layout since primitives exist inside the object
                     currentLevel++;
                 } else {
-                    //The stacknode has references
-
-                    //Build all the nodes(including the root), adding them to the layout world and 3D space
-                    //Add edges between the nodes
-                    rebuildGraph(stackNode, levelGraph);
-
-                    //Layout the nodes on this level with the stackNode as the root
-                    levelGraph.layout.layout(stackNode);
-                    //update the 3D positions of all the nodes
-                    for (Node n : levelGraph.getVertices()) {
-                        n.updatePosition();
-                    }
+                    //Rebuild th graph
+                    //Remove delete vertices
+                        //Remove any interLevel edges asociated with them?
+//                    rebuildGraph(stackNode, levelGraph);
+//
+//                    //Layout the nodes on this level with the stackNode as the root
+//                    levelGraph.layout.layout(stackNode);
+//                    //update the 3D positions of all the nodes
+//                    for (Node n : levelGraph.getVertices()) {
+//                        n.updatePosition();
+//                    }
+                    removeLevel(levelGraph);
+                    addLevel(stackNode);
                 }
             }
         } else {
@@ -328,12 +330,45 @@ public class HeapGraph extends RenderEngine {
     private void removeLevel(HeapGraphLevel levelGraph) {
         System.out.println("Removing level "+levelGraph.id);
         for (Node n : levelGraph.getVertices()) {
-            for (HeapEdge edge : levelGraph.getOutEdges(n)) {
-                removeShapeFrom3DSpace(edge.getLine());
+            try{
+            removeNode(n, levelGraph);} catch (Exception e){
+                System.out.println(e);
             }
-            removeShapeFrom3DSpace(n.getGeometry());
         }
         this.levels.remove(levelGraph.id);
+    }
+
+    private void removeNode(Node n, HeapGraphLevel levelGraph)
+    {
+        for (HeapEdge edge : levelGraph.getOutEdges(n)) {
+            removeShapeFrom3DSpace(edge.getLine());
+        }
+        removeShapeFrom3DSpace(n.getGeometry());
+        synchronized (interLevelGraph) {
+            Collection<HeapEdge> outEdges = interLevelGraph.getOutEdges(n);
+            if (outEdges != null) {
+                Iterator<HeapEdge> iterator = outEdges.iterator();
+                while (iterator.hasNext()) {
+                    HeapEdge edge = iterator.next();
+                    //removeShapeFrom3DSpace(edge.getLine());
+                }
+                outEdges.forEach(e -> removeShapeFrom3DSpace(e.getLine()));
+            }
+
+            Collection<HeapEdge> inEdges = interLevelGraph.getInEdges(n);
+            if (inEdges != null) {
+                Iterator<HeapEdge> iterator = inEdges.iterator();
+                while (iterator.hasNext()) {
+                    HeapEdge edge = iterator.next();
+                    //removeShapeFrom3DSpace(edge.getLine());
+                }
+                inEdges.forEach(e -> removeShapeFrom3DSpace(e.getLine()));
+            }
+
+
+            interLevelGraph.removeVertex(n);
+        }
+        allHeapNodes.remove(n);
     }
 
     @Override
