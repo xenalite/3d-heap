@@ -41,7 +41,7 @@ public class Animate {
 		isAnimationFinished &= step(moveEvents);
 		isAnimationFinished &= step(addEvents);
 		finished = isAnimationFinished;
-		if(finished)
+		if(finished && finishingCommand != null)
 			finishingCommand.run();
 		return isAnimationFinished;
 	}
