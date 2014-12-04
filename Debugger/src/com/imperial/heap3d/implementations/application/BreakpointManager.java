@@ -1,6 +1,6 @@
 package com.imperial.heap3d.implementations.application;
 
-import com.imperial.heap3d.implementations.utilities.Check;
+import com.imperial.heap3d.utilities.Check;
 import com.imperial.heap3d.interfaces.application.IBreakpointManager;
 import com.imperial.heap3d.interfaces.jdi.IEventRequestManager;
 import com.imperial.heap3d.interfaces.jdi.IVirtualMachine;

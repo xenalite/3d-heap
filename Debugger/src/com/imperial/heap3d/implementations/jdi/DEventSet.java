@@ -1,6 +1,6 @@
 package com.imperial.heap3d.implementations.jdi;
 
-import com.imperial.heap3d.implementations.utilities.Check;
+import com.imperial.heap3d.utilities.Check;
 import com.imperial.heap3d.interfaces.jdi.IEventSet;
 import com.sun.jdi.event.Event;
 import com.sun.jdi.event.EventSet;

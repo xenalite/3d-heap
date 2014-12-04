@@ -2,7 +2,7 @@ package com.imperial.heap3d.implementations.application;
 
 import com.imperial.heap3d.implementations.factories.HeapGraphFactory;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
-import com.imperial.heap3d.implementations.utilities.Check;
+import com.imperial.heap3d.utilities.Check;
 import com.imperial.heap3d.interfaces.application.IVariableAnalyser;
 import com.imperial.heap3d.interfaces.factories.INodeBuilder;
 import com.sun.jdi.IncompatibleThreadStateException;

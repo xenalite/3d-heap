@@ -21,17 +21,23 @@ import com.graphics.shapes.Colour;
  */
 public class OBJLoader {
 
-	public static RawModel loadObjModel(String fileName, Loader loader, Colour col){
+	public static RawModel loadObjModel(boolean withinJar, String fileName, Loader loader, Colour col){
 		FileReader fr = null;
 		InputStreamReader r = null;
 		try {
 			// This is used for loading within jar
-			r = new InputStreamReader(OBJLoader.class.getClassLoader().getResourceAsStream(fileName));
-			//fr = new FileReader(new File(fileName));
+			if(withinJar)
+				r = new InputStreamReader(OBJLoader.class.getClassLoader().getResourceAsStream(fileName));
+			else
+				fr = new FileReader(new File(fileName));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		BufferedReader reader = new BufferedReader(r);
+		BufferedReader reader = null;
+		if(withinJar)
+			reader = new BufferedReader(r);
+		else
+			reader = new BufferedReader(fr);
 		String line;
 		List<Vector3f> vertices = new ArrayList<Vector3f>();
 		List<Vector2f> textures = new ArrayList<Vector2f>();
@@ -92,10 +98,6 @@ public class OBJLoader {
 				String[] vertex1 = currentLine[1].split("/");
 				String[] vertex2 = currentLine[2].split("/");
 				String[] vertex3 = currentLine[3].split("/");
-				
-				for(int i = 0; i < vertex1.length; i++){
-					System.out.println(i + ": " + vertex1[i]);
-				}
 				
 				processVertex(vertex1, indices, textures, normals, textureArray, normalsArray);
 				processVertex(vertex2, indices, textures, normals, textureArray, normalsArray);

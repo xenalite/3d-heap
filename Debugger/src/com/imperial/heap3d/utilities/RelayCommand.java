@@ -1,6 +1,5 @@
-package com.imperial.heap3d.implementations.utilities;
+package com.imperial.heap3d.utilities;
 
-import com.imperial.heap3d.interfaces.utilities.ICommand;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 

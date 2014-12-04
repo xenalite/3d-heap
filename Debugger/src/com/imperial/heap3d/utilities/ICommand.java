@@ -1,4 +1,4 @@
-package com.imperial.heap3d.interfaces.utilities;
+package com.imperial.heap3d.utilities;
 
 import javafx.beans.property.BooleanProperty;
 

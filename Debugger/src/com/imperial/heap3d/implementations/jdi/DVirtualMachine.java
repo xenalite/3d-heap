@@ -3,7 +3,7 @@ package com.imperial.heap3d.implementations.jdi;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.imperial.heap3d.implementations.application.ProcessState;
-import com.imperial.heap3d.implementations.utilities.Check;
+import com.imperial.heap3d.utilities.Check;
 import com.imperial.heap3d.interfaces.jdi.IEventRequestManager;
 import com.imperial.heap3d.interfaces.jdi.IEventSet;
 import com.imperial.heap3d.interfaces.jdi.IVirtualMachine;

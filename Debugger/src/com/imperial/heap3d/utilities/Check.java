@@ -1,4 +1,4 @@
-package com.imperial.heap3d.implementations.utilities;
+package com.imperial.heap3d.utilities;
 
 /**
  * Created by oskar on 28/11/14.
