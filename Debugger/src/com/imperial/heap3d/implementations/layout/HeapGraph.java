@@ -6,13 +6,16 @@ import com.graphics.RenderEngine;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 import com.heap3d.layout.GraphImpl;
-import com.imperial.heap3d.implementations.events.*;
-import com.imperial.heap3d.implementations.layout.animation.Animate;
+import com.imperial.heap3d.implementations.events.NodeEvent;
+import com.imperial.heap3d.implementations.events.ProcessEvent;
+import com.imperial.heap3d.implementations.events.ProcessEventType;
+import com.imperial.heap3d.implementations.layout.animation.Animation;
+import com.imperial.heap3d.implementations.layout.animation.IAnimation;
+import com.imperial.heap3d.implementations.layout.animation.NullAnimation;
 import com.imperial.heap3d.implementations.layout.animation.SelectedAnimation;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.utilities.NodesComparator;
-
 
 import java.awt.*;
 import java.util.*;
@@ -111,7 +114,7 @@ public class HeapGraph extends RenderEngine {
     }
 
     private Shape logo;
-    private Animate animation = new Animate();
+    private IAnimation animation = new NullAnimation();
     private SelectedAnimation selectedAnimation;
 
     @Override
@@ -119,13 +122,20 @@ public class HeapGraph extends RenderEngine {
         if (logo != null)
             logo.getEntity().increaseRotation(0, 1, 0);
 
-        animation.step();
+        if(animation.executeStepAndCheckIfDone()) {
+            try {
+                buildEdges();
+            }
+            catch (Exception ignored) {}
+            animation = new NullAnimation();
+        }
+
         if (newStack) {
             System.out.println("New Stack");
             Set<Node> oldHeapNodes = allHeapNodes.values().stream().collect(Collectors.toSet());
             resetStack();
-            animation.initialise(oldHeapNodes,
-                    allHeapNodes.values().stream().collect(Collectors.toSet()), this::buildEdges);
+            animation.finalise();
+            animation = new Animation(oldHeapNodes, allHeapNodes.values().stream().collect(Collectors.toSet()));
             newStack = false;
         }
 

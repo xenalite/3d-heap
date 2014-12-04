@@ -6,44 +6,45 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class Animate {
+public class Animation implements IAnimation {
 
-	private boolean finished;
+	private boolean alreadyDone;
 	private Set<Node> startingNodes;
 	private Set<Node> finishingNodes;
-	private Runnable finishingCommand;
 	private List<AnimationEvent> deleteEvents = new ArrayList<>();
 	private List<AnimationEvent> moveEvents = new ArrayList<>();
 	private List<AnimationEvent> addEvents = new ArrayList<>();
 
-	public void initialise(Set<Node> startingNodes, Set<Node> finishingNodes, Runnable finishingCommand) {
-		finish();
-		finished = false;
+	public Animation(Set<Node> startingNodes, Set<Node> finishingNodes) {
 		this.startingNodes = startingNodes;
 		this.finishingNodes = finishingNodes;
-		this.finishingCommand = finishingCommand;
-
+		alreadyDone = false;
 		createEvents();
 	}
 
-	private void finish() {
-		while (!finished)
-			step();
-		cleanUp();
-	}
-
-	public boolean step() {
-		if (finished)
+	@Override
+	public boolean executeStepAndCheckIfDone() {
+		if (alreadyDone)
 			return true;
 
 		boolean isAnimationFinished = true;
 		isAnimationFinished &= step(deleteEvents);
 		isAnimationFinished &= step(moveEvents);
 		isAnimationFinished &= step(addEvents);
-		finished = isAnimationFinished;
-		if(finished && finishingCommand != null)
-			finishingCommand.run();
+		alreadyDone = isAnimationFinished;
 		return isAnimationFinished;
+	}
+
+	@Override
+	public void finalise() {
+		for(AnimationEvent event : deleteEvents)
+			event.finish();
+
+		for(AnimationEvent event : addEvents)
+			event.finish();
+
+		for(AnimationEvent event : moveEvents)
+			event.finish();
 	}
 
 	private boolean step(List<AnimationEvent> events) {
@@ -53,14 +54,6 @@ public class Animate {
 			return false;
 		}
 		return true;
-	}
-
-	private void cleanUp() {
-		startingNodes = null;
-		finishingNodes = null;
-		deleteEvents.clear();
-		moveEvents.clear();
-		addEvents.clear();
 	}
 
 	private void createEvents() {
