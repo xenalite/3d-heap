@@ -51,7 +51,7 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 
 			n.buildGeometry(x, y, z, getScale(n));
 
-			System.out.println("Building Node: "+n.toString());
+			//TODO remove System.out.println("Building Node: "+n.toString());
 			r.addShapeTo3DSpace(n.getGeometry());
 			return true;
 		} else
