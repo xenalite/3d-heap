@@ -44,6 +44,7 @@ public class HeapGraph extends RenderEngine {
     public void handleStartEvent(ProcessEvent e) {
         if (e.type == ProcessEventType.STARTED) {
             synchronized (stackNodes) {
+            	logo = null;
                 currentLevel = 0;
                 newStack = false;
                 stackNodes.clear();
@@ -89,14 +90,22 @@ public class HeapGraph extends RenderEngine {
 
         }
         System.out.println("End Before Loop =====================================");
+        
+        logo = modelToShape("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
+        super.addShapeTo3DSpace(logo);
     }
 
+    private Shape logo;
     private Animate animation;
     private SelectedAnimation selectedAnimation;
 
     @Override
     protected void inLoop() {
-
+    	
+    	if(logo != null)
+    		logo.getEntity().increaseRotation(0, 1, 0);
+    	
+    	
         if (animation != null) {
             if (animation.runAnimation()) {
                 try {
