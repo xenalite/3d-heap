@@ -64,6 +64,10 @@ public class RayCastUtil {
 		float[] vertexes = shape.getVertices();
 		float[] normals = shape.getNormals();
 		int[] indicies = shape.getIndices();
+		
+		if(vertexes == null || normals == null || indicies == null)
+			return null;
+		
 		Vector3f result = null;
 		float resultDist = Float.MAX_VALUE;
 

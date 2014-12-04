@@ -37,7 +37,7 @@ setRayPickDebugLines(true);
         addShapeTo3DSpace(c2);
         text = getText3D();
         try {
-			text.print(10, 10, 0, 0, 0, 0, 1, Colour.GREEN, "$");
+			text.print(10, 10, 0, 0, 0, 0, 0.1f, Colour.GREEN, "hello_robert$");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
