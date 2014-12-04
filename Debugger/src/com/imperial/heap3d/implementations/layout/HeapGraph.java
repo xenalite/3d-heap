@@ -106,8 +106,8 @@ public class HeapGraph extends RenderEngine {
     protected void beforeLoop() {
         super.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
         resetStack();
-//        logo = modelToShape("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
-//        super.addShapeTo3DSpace(logo);
+        logo = modelToShape("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
+        super.addShapeTo3DSpace(logo);
     }
 
     private Shape logo;
