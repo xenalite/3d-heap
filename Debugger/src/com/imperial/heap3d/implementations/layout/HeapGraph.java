@@ -116,7 +116,6 @@ public class HeapGraph extends RenderEngine {
 
     @Override
     protected void inLoop() {
-        System.out.println(this.getNumberOfShapes());
         if(logo != null)
     		logo.getEntity().increaseRotation(0, 1, 0);
     	
@@ -215,38 +214,6 @@ public class HeapGraph extends RenderEngine {
 
     }
 
-    private void buildEdges() {
-        for (HeapGraphLevel levelGraph : levels) {
-            //Build the edges in 3D space
-            //We want to do this after the nodes are created and positioned since the lines are expensive
-            for (Node n : levelGraph.getVertices()) {
-                Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
-                for (HeapEdge edge : outEdges) {
-                    Node child = levelGraph.layout.getGraph().getOpposite(n, edge);
-                    if (child.getGeometry() != null) {
-                        edge.connect(n, child, new Colour(1, 1, 1), this);
-                    } else {
-                        System.err.println("Can't add null edge");
-                    }
-                }
-                //TODO add interlevel edges
-                Collection<HeapEdge> edges = interLevelGraph.getOutEdges(n);
-                if (edges != null) {
-                    for (HeapEdge edge : edges) {
-                        Node from = interLevelGraph.getSource(edge);
-                        Node to = interLevelGraph.getDest(edge);
-                        if(from.getGeometry() == null || to.getGeometry() == null)
-                        {
-                            System.out.println("Some interlevel node was null");
-                        } else {
-                            System.out.println("Creating 3D edge between levels");
-                            edge.connect(from, to, new Colour(1, 1, 1), this);
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     protected void updateCurrentLevel(StackNode stackNode) {
         NodesComparator comparator = new NodesComparator();
@@ -292,6 +259,39 @@ public class HeapGraph extends RenderEngine {
             addLevel(stackNode);
         }
 
+    }
+
+    private void buildEdges() {
+        for (HeapGraphLevel levelGraph : levels) {
+            //Build the edges in 3D space
+            //We want to do this after the nodes are created and positioned since the lines are expensive
+            for (Node n : levelGraph.getVertices()) {
+                Collection<HeapEdge> outEdges = levelGraph.layout.getGraph().getOutEdges(n);
+                for (HeapEdge edge : outEdges) {
+                    Node child = levelGraph.layout.getGraph().getOpposite(n, edge);
+                    if (child.getGeometry() != null) {
+                        edge.connect(n, child, new Colour(1, 1, 1), this);
+                    } else {
+                        System.err.println("Can't add null edge");
+                    }
+                }
+                //TODO add interlevel edges
+                Collection<HeapEdge> edges = interLevelGraph.getOutEdges(n);
+                if (edges != null) {
+                    for (HeapEdge edge : edges) {
+                        Node from = interLevelGraph.getSource(edge);
+                        Node to = interLevelGraph.getDest(edge);
+                        if(from.getGeometry() == null || to.getGeometry() == null)
+                        {
+                            System.out.println("Some interlevel node was null");
+                        } else {
+                            System.out.println("Creating 3D edge between levels");
+                            edge.connect(from, to, new Colour(1, 1, 1), this);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
