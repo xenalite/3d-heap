@@ -30,17 +30,17 @@ public class Text3D {
 	// TODO models need to be generated
 	private void initModels(Loader loader) {
 		
-		asciiToModel.put((char)ASCII_DOLLAR, OBJLoader.loadObjModel("letters/a.obj", loader, Colour.AQUA));
-		/*
-		asciiToModel.put((char)ASCII_UNDERSCORE, OBJLoader.loadObjModel("dollar.obj", loader));
+		String prefix = "letters/";
+		
+		asciiToModel.put((char)ASCII_DOLLAR, OBJLoader.loadObjModel(prefix + "dollar.obj", loader, Colour.AQUA));
+		asciiToModel.put((char)ASCII_UNDERSCORE, OBJLoader.loadObjModel(prefix + "underscore.obj", loader, Colour.AQUA));
 		
 		for(int i = ASCII_LOWER_A; i <= ASCII_LOWER_Z; i++)
-			asciiToModel.put((char)i, OBJLoader.loadObjModel((char)i+".obj", loader));
-		
+			asciiToModel.put((char)i, OBJLoader.loadObjModel(prefix + (char)i + ".obj", loader, Colour.AQUA));
+		/*
 		for(int i = ASCII_UPPER_A; i <= ASCII_UPPER_Z; i++)
-			asciiToModel.put((char)i, OBJLoader.loadObjModel((char)i+".obj", loader));
-			*/
-		
+			asciiToModel.put((char)i, OBJLoader.loadObjModel(prefix + (char)i+".obj", loader, Colour.AQUA));
+		*/
 	}
 	
 	public void print(float x, float y, float z, float rotX, float rotY, float rotZ, float scale, Colour col, String message) throws Exception{
@@ -54,13 +54,9 @@ public class Text3D {
 			if(model == null)
 				throw new Exception("Invalid char: " + c);
 			
-			Letter l = new Letter(x, y, z, rotX, rotY, rotZ, scale*8, col, model);
-			System.out.println(l);
-			System.out.println(l.getEntity().getPosition());
-			System.out.println(l);
-			System.out.println(l.getEntity().getScale());
+			Letter l = new Letter(x, y, z, rotX, rotY, rotZ, scale, col, model);
 			re.addShapeTo3DSpace(l);
-			x++;
+			x+=3.8*scale;
 		}
 	}
 	
