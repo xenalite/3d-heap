@@ -4,13 +4,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.graphics.models.Loader;
 import com.graphics.models.RawModel;
+import com.graphics.shapes.Colour;
 
 /**
  * Loading in .obj files from programs such as 3DSMax and Maya
@@ -18,14 +21,17 @@ import com.graphics.models.RawModel;
  */
 public class OBJLoader {
 
-	public static RawModel loadObjModel(String fileName, Loader loader){
+	public static RawModel loadObjModel(String fileName, Loader loader, Colour col){
 		FileReader fr = null;
+		InputStreamReader r = null;
 		try {
-			fr = new FileReader(new File("res/"+fileName));
-		} catch (FileNotFoundException e) {
+			// This is used for loading within jar
+			r = new InputStreamReader(OBJLoader.class.getClassLoader().getResourceAsStream(fileName));
+			//fr = new FileReader(new File(fileName));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		BufferedReader reader = new BufferedReader(fr);
+		BufferedReader reader = new BufferedReader(r);
 		String line;
 		List<Vector3f> vertices = new ArrayList<Vector3f>();
 		List<Vector2f> textures = new ArrayList<Vector2f>();
@@ -87,6 +93,10 @@ public class OBJLoader {
 				String[] vertex2 = currentLine[2].split("/");
 				String[] vertex3 = currentLine[3].split("/");
 				
+				for(int i = 0; i < vertex1.length; i++){
+					System.out.println(i + ": " + vertex1[i]);
+				}
+				
 				processVertex(vertex1, indices, textures, normals, textureArray, normalsArray);
 				processVertex(vertex2, indices, textures, normals, textureArray, normalsArray);
 				processVertex(vertex3, indices, textures, normals, textureArray, normalsArray);
@@ -114,7 +124,16 @@ public class OBJLoader {
 			indicesArray[i++] = indice;
 		}
 		
-		return null;//loader.loadToVAO(verticesArray, textureArray, normalsArray, indicesArray); TODO
+		float[] colourValues = new float[verticesArray.length];
+		
+		i = 0;
+		for (; i < colourValues.length; i += 3) {
+			colourValues[i] = col.getR();
+			colourValues[i + 1] = col.getG();
+			colourValues[i + 2] = col.getB();
+		}
+		
+		return loader.loadToVAO(verticesArray, colourValues, normalsArray, indicesArray);
 	}
 	
 	private static void processVertex(String[] vertexData,
@@ -123,9 +142,9 @@ public class OBJLoader {
 
 		int currentVertexPointer = Integer.parseInt(vertexData[0]) - 1;
 		indices.add(currentVertexPointer);
-		Vector2f currentTex = textures.get(Integer.parseInt(vertexData[1]) - 1);
-		textureArray[currentVertexPointer*2] = currentTex.x;
-		textureArray[currentVertexPointer*2 + 1] = 1 - currentTex.y;
+	//	Vector2f currentTex = textures.get(Integer.parseInt(vertexData[1]) - 1);
+	//	textureArray[currentVertexPointer*2] = currentTex.x;
+	//	textureArray[currentVertexPointer*2 + 1] = 1 - currentTex.y;
 		Vector3f currentNorm = normals.get(Integer.parseInt(vertexData[2]) - 1);
 		normalsArray[currentVertexPointer*3] = currentNorm.x;
 		normalsArray[currentVertexPointer*3 + 1] = currentNorm.y;
