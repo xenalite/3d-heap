@@ -16,10 +16,10 @@ public class NodesComparator {
         return compare(n1, n2, new HashSet<>());
     }
 
-    private boolean compare(Node n1, Node n2, Set<Long> seenIds) {
+    private boolean compare(Node n1, Node n2, Set<Node> seenIds) {
         if (!n1.equals(n2))
             return false;
-        if (seenIds.contains(n1.getId()))
+        if (seenIds.contains(n1))
             return true;
 
         List<Node> ln1 = n1.getReferences();
@@ -29,7 +29,7 @@ public class NodesComparator {
 
         Iterator<Node> it1 = ln1.iterator();
         Iterator<Node> it2 = ln2.iterator();
-        seenIds.add(n1.getId());
+        seenIds.add(n1);
 
         while (it1.hasNext()) {
             Node c1 = it1.next();

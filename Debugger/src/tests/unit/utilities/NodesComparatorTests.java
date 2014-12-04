@@ -2,6 +2,7 @@ package tests.unit.utilities;
 
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.ObjectNode;
+import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.implementations.utilities.NodesComparator;
 import org.junit.Before;
 import org.junit.Test;
@@ -292,6 +293,23 @@ public class NodesComparatorTests {
         n3b.addReference(n5b);
 
         boolean result = SystemUnderTest.compare(n1, n1b);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void Test_StackNode_ChangeBack_DoesNotEqual(){
+        ObjectNode a1 = new ObjectNode("a",1);
+        ObjectNode l1 = new ObjectNode("l",2);
+        l1.addReference(a1);
+        StackNode s1 = new StackNode("l",l1);
+
+        ObjectNode l2 = new ObjectNode("l",2);
+        ObjectNode n2 = new ObjectNode("next",3);
+        StackNode s2 = new StackNode("l",l2);
+        l2.addReference(n2);
+
+        boolean result = SystemUnderTest.compare(s1, s2);
 
         assertFalse(result);
     }
