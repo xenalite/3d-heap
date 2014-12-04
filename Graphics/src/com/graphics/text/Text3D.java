@@ -32,15 +32,15 @@ public class Text3D {
 		
 		String prefix = "letters/";
 		
-		asciiToModel.put((char)ASCII_DOLLAR, OBJLoader.loadObjModel(prefix + "dollar.obj", loader, Colour.AQUA));
-		asciiToModel.put((char)ASCII_UNDERSCORE, OBJLoader.loadObjModel(prefix + "underscore.obj", loader, Colour.AQUA));
+		asciiToModel.put((char)ASCII_DOLLAR, OBJLoader.loadObjModel(prefix + "special/dollar.obj", loader, Colour.AQUA));
+		asciiToModel.put((char)ASCII_UNDERSCORE, OBJLoader.loadObjModel(prefix + "special/underscore.obj", loader, Colour.AQUA));
 		
 		for(int i = ASCII_LOWER_A; i <= ASCII_LOWER_Z; i++)
-			asciiToModel.put((char)i, OBJLoader.loadObjModel(prefix + (char)i + ".obj", loader, Colour.AQUA));
-		/*
+			asciiToModel.put((char)i, OBJLoader.loadObjModel(prefix + "lower/" + (char)i + ".obj", loader, Colour.AQUA));
+		
 		for(int i = ASCII_UPPER_A; i <= ASCII_UPPER_Z; i++)
-			asciiToModel.put((char)i, OBJLoader.loadObjModel(prefix + (char)i+".obj", loader, Colour.AQUA));
-		*/
+			asciiToModel.put((char)i, OBJLoader.loadObjModel(prefix + "upper/" + (char)i+".obj", loader, Colour.AQUA));
+		
 	}
 	
 	public void print(float x, float y, float z, float rotX, float rotY, float rotZ, float scale, Colour col, String message) throws Exception{
