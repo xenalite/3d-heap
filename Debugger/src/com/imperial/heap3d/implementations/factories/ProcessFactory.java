@@ -16,7 +16,6 @@ import com.imperial.heap3d.utilities.Check;
  */
 public class ProcessFactory {
 
-    private static final String EXCEPTION_FORMAT = "Process Factory: %s not build yet.";
     private IVirtualMachineProvider _vmProvider;
     private EventBus _eventBus;
     private HeapGraphFactory _heapGraphFactory;
