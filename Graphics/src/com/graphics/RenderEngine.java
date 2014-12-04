@@ -3,12 +3,15 @@ package com.graphics;
 import com.graphics.entities.Camera;
 import com.graphics.entities.Light;
 import com.graphics.models.Loader;
+import com.graphics.models.RawModel;
 import com.graphics.raycasting.RayCastUtil;
 import com.graphics.rendering.MasterRenderer;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Line;
+import com.graphics.shapes.Model;
 import com.graphics.shapes.Shape;
 import com.graphics.text.Text3D;
+import com.graphics.utils.OBJLoader;
 
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -140,6 +143,12 @@ public abstract class RenderEngine implements Runnable {
 
 	public void addShapeTo3DSpace(Shape e) {
 		shapes.add(e);
+	}
+	
+	public Shape modelToShape(String pathToModel, float x, float y, float z, float scale, Colour col) {
+		RawModel rm = OBJLoader.loadObjModel(false, pathToModel, Loader.getInstance(), col);
+		Shape s = new Model(x, y, z, 0, 0, 0, scale, col, rm);
+		return s;
 	}
 
 	protected void removeShapeFrom3DSpace(Shape e) {
