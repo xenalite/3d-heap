@@ -2,7 +2,6 @@ package tests.unit.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.implementations.events.ControlEvent;
-import com.imperial.heap3d.implementations.events.EventType;
 import com.imperial.heap3d.implementations.events.ProcessEvent;
 import com.imperial.heap3d.implementations.events.ProcessEventType;
 import com.imperial.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
@@ -13,6 +12,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static com.imperial.heap3d.implementations.events.ProcessEventType.STARTED;
+import static com.imperial.heap3d.implementations.events.ProcessEventType.STOPPED;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by om612 on 19/11/14.
  */
+@Ignore
 public class BreakpointsViewModelTests extends EasyMockSupport {
 
     @Rule
@@ -43,7 +45,6 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         SystemUnderTest = new BreakpointsTabViewModel(null);
     }
 
-    @Ignore // for convenience only.
     @Test
     public void Test_Initially_NoBreakpointsDefined() {
         assertTrue(SystemUnderTest.getWatchpointsProperty().getValue().isEmpty());
@@ -124,15 +125,15 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         //arrange
         setDefaultBreakpoint();
         setDefaultBreakpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
+        ProcessEvent e = new ProcessEvent(STARTED);
 
         //expectation
-        _mockEventBus.post(eq(e));
+        _mockEventBus.post(anyObject(ControlEvent.class));
         expectLastCall().times(2);
         replayAll();
 
         //act
-//        SystemUnderTest.handleEvent(e);
+        SystemUnderTest.handleProcessEvent(e);
 
         //assert
         assertEquals(2, SystemUnderTest.getBreakpointsProperty().getValue().size());
@@ -143,16 +144,16 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
     public void Test_BreakpointsCached_WhenProgramKilled() {
         //arrange
         setDefaultBreakpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
+        ProcessEvent e1 = new ProcessEvent(STARTED);
+        ProcessEvent e2 = new ProcessEvent(STOPPED);
 
         //expectation
         _mockEventBus.post(anyObject(ControlEvent.class));
         replayAll();
 
         //act
-//        SystemUnderTest.handleEvent(e1);
-//        SystemUnderTest.handleEvent(e2);
+        SystemUnderTest.handleProcessEvent(e1);
+        SystemUnderTest.handleProcessEvent(e2);
         setDefaultBreakpoint();
 
         //assert
@@ -164,8 +165,8 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
     public void Test_BreakpointsRemembered_ConsecutiveRuns() {
         //arrange
         setDefaultBreakpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
+        ProcessEvent e1 = new ProcessEvent(STARTED);
+        ProcessEvent e2 = new ProcessEvent(STOPPED);
 
         //expectation
         _mockEventBus.post(anyObject(ControlEvent.class));
@@ -173,10 +174,10 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         replayAll();
 
         //act
-//        SystemUnderTest.handleEvent(e1);
-//        SystemUnderTest.handleEvent(e2);
-//        setDefaultBreakpoint();
-//        SystemUnderTest.handleEvent(e1);
+        SystemUnderTest.handleProcessEvent(e1);
+        SystemUnderTest.handleProcessEvent(e2);
+        setDefaultBreakpoint();
+        SystemUnderTest.handleProcessEvent(e1);
 
         //assert
         assertEquals(2, SystemUnderTest.getBreakpointsProperty().getValue().size());
@@ -187,8 +188,8 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
     public void Test_BreakpointsRemembered_ConsecutiveRuns_UsingProcessEvent() {
         //arrange
         setDefaultBreakpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ProcessEvent e2 = new ProcessEvent(ProcessEventType.STOPPED);
+        ProcessEvent e1 = new ProcessEvent(STARTED);
+        ProcessEvent e2 = new ProcessEvent(STOPPED);
 
         //expectation
         _mockEventBus.post(anyObject(ControlEvent.class));
@@ -196,10 +197,10 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         replayAll();
 
         //act
-//        SystemUnderTest.handleEvent(e1);
-//        SystemUnderTest.handleProcessEvent(e2);
-//        setDefaultBreakpoint();
-//        SystemUnderTest.handleEvent(e1);
+        SystemUnderTest.handleProcessEvent(e1);
+        SystemUnderTest.handleProcessEvent(e2);
+        setDefaultBreakpoint();
+        SystemUnderTest.handleProcessEvent(e1);
 
         //assert
         assertEquals(2, SystemUnderTest.getBreakpointsProperty().getValue().size());
@@ -222,12 +223,12 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
     public void Test_RemoveBreakpoints_BeforeProgramRuns_NothingSent() {
         //arrange
         setDefaultBreakpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
+        ProcessEvent e = new ProcessEvent(STARTED);
         replayAll();
 
         //act
-//        SystemUnderTest.removeBreakpointAction(VALUE + ":" + VALUE);
-//        SystemUnderTest.handleEvent(e);
+        SystemUnderTest.removeBreakpointAction(VALUE + ":" + VALUE);
+        SystemUnderTest.handleProcessEvent(e);
 
         //assert
         assertEquals(0, SystemUnderTest.getBreakpointsProperty().getValue().size());
@@ -239,15 +240,15 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         //arrange
         setDefaultBreakpoint();
         setDefaultBreakpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
+        ProcessEvent e = new ProcessEvent(STARTED);
 
         _mockEventBus.post(anyObject(ControlEvent.class));
         expectLastCall().once();
         replayAll();
 
         //act
-//        SystemUnderTest.removeBreakpointAction(VALUE + ":" + VALUE);
-//        SystemUnderTest.handleEvent(e);
+        SystemUnderTest.removeBreakpointAction(VALUE + ":" + VALUE);
+        SystemUnderTest.handleProcessEvent(e);
 
         //assert
         assertEquals(1, SystemUnderTest.getBreakpointsProperty().getValue().size());
@@ -330,7 +331,7 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         //arrange
         setDefaultWatchpoint();
         setDefaultWatchpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
+        ProcessEvent e = new ProcessEvent(STARTED);
 
         //expectation
         _mockEventBus.post(anyObject(ControlEvent.class));
@@ -338,7 +339,7 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         replayAll();
 
         //act
-//        SystemUnderTest.handleEvent(e);
+        SystemUnderTest.handleProcessEvent(e);
 
         //assert
         assertEquals(2, SystemUnderTest.getWatchpointsProperty().getValue().size());
@@ -349,16 +350,16 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
     public void Test_WatchpointsCached_WhenProgramKilled() {
         //arrange
         setDefaultWatchpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
+        ProcessEvent e1 = new ProcessEvent(STARTED);
+        ProcessEvent e2 = new ProcessEvent(STOPPED);
 
         //expectation
         _mockEventBus.post(anyObject(ControlEvent.class));
         replayAll();
 
         //act
-//        SystemUnderTest.handleEvent(e1);
-//        SystemUnderTest.handleEvent(e2);
+        SystemUnderTest.handleProcessEvent(e1);
+        SystemUnderTest.handleProcessEvent(e2);
         setDefaultWatchpoint();
 
         //assert
@@ -370,8 +371,8 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
     public void Test_WatchpointsRemembered_ConsecutiveRuns() {
         //arrange
         setDefaultWatchpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
-        ControlEvent e2 = new ControlEvent(EventType.STOP, null, null);
+        ProcessEvent e1 = new ProcessEvent(STARTED);
+        ProcessEvent e2 = new ProcessEvent(STOPPED);
 
         //expectation
         _mockEventBus.post(anyObject(ControlEvent.class));
@@ -379,10 +380,10 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         replayAll();
 
         //act
-//        SystemUnderTest.handleEvent(e1);
-//        SystemUnderTest.handleEvent(e2);
-//        setDefaultWatchpoint();
-//        SystemUnderTest.handleEvent(e1);
+        SystemUnderTest.handleProcessEvent(e1);
+        SystemUnderTest.handleProcessEvent(e2);
+        setDefaultWatchpoint();
+        SystemUnderTest.handleProcessEvent(e1);
 
         //assert
         assertEquals(2, SystemUnderTest.getWatchpointsProperty().getValue().size());
@@ -393,7 +394,7 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
     public void Test_WatchpointsRemembered_ConsecutiveRuns_UsingProcessEvent() {
         //arrange
         setDefaultWatchpoint();
-        ControlEvent e1 = new ControlEvent(EventType.START, null, null);
+        ProcessEvent e1 = new ProcessEvent(STARTED);
         ProcessEvent e2 = new ProcessEvent(ProcessEventType.STOPPED);
 
         //expectation
@@ -402,10 +403,10 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         replayAll();
 
         //act
-//        SystemUnderTest.handleEvent(e1);
+        SystemUnderTest.handleProcessEvent(e1);
         SystemUnderTest.handleProcessEvent(e2);
         setDefaultWatchpoint();
-//        SystemUnderTest.handleEvent(e1);
+        SystemUnderTest.handleProcessEvent(e1);
 
         //assert
         assertEquals(2, SystemUnderTest.getWatchpointsProperty().getValue().size());
@@ -428,12 +429,12 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
     public void Test_RemoveWatchpoints_BeforeProgramRuns_NothingSent() {
         //arrange
         setDefaultWatchpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
+        ProcessEvent e = new ProcessEvent(STARTED);
         replayAll();
 
         //act
         SystemUnderTest.removeWatchpointAction(VALUE + ":" + VALUE);
-//        SystemUnderTest.handleEvent(e);
+        SystemUnderTest.handleProcessEvent(e);
 
         //assert
         assertEquals(0, SystemUnderTest.getWatchpointsProperty().getValue().size());
@@ -445,7 +446,7 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         //arrange
         setDefaultWatchpoint();
         setDefaultWatchpoint();
-        ControlEvent e = new ControlEvent(EventType.START, null, null);
+        ProcessEvent e = new ProcessEvent(STARTED);
 
         _mockEventBus.post(anyObject(ControlEvent.class));
         expectLastCall().once();
@@ -453,7 +454,7 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
 
         //act
         SystemUnderTest.removeWatchpointAction(VALUE + ":" + VALUE);
-//        SystemUnderTest.handleEvent(e);
+        SystemUnderTest.handleProcessEvent(e);
 
         //assert
         assertEquals(1, SystemUnderTest.getWatchpointsProperty().getValue().size());

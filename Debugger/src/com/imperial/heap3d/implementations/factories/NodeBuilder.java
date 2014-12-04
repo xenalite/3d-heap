@@ -18,17 +18,18 @@ public class NodeBuilder implements INodeBuilder {
         if (stackFrame == null)
             return stackNodes;
 
-        ObjectReference thisObject = stackFrame.thisObject();
-
-        if (thisObject != null) {
-            String name = "this";
-            stackNodes.add(new StackNode(name, drillDown(name, thisObject)));
-        }
         List<LocalVariable> localVariables;
         try {
             localVariables = stackFrame.visibleVariables();
         } catch (AbsentInformationException ignored) {
             return stackNodes;
+        }
+
+        ObjectReference thisObject = stackFrame.thisObject();
+
+        if (thisObject != null) {
+            String name = "this";
+            stackNodes.add(new StackNode(name, drillDown(name, thisObject)));
         }
 
         for (LocalVariable localVariable : localVariables) {

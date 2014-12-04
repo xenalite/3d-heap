@@ -2,9 +2,9 @@ package com.imperial.heap3d.implementations.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.imperial.heap3d.utilities.ConvenienceConstants;
 import com.imperial.heap3d.implementations.events.*;
 import com.imperial.heap3d.utilities.Check;
+import com.imperial.heap3d.utilities.ConvenienceConstants;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -132,6 +132,8 @@ public class BreakpointsTabViewModel {
 
     public void removeBreakpointAction(String selectedItem) {
         String[] values = selectedItem.split(DELIM);
+        if(values.length != 2)
+            return;
         _breakpoints.getValue().remove(selectedItem);
         for (ControlEvent ce : _cachedElements) {
             if (Objects.equals(ce.className, values[0]) && Objects.equals(ce.argument, values[1]) &&
@@ -146,6 +148,8 @@ public class BreakpointsTabViewModel {
 
     public void removeWatchpointAction(String selectedItem) {
         String[] values = selectedItem.split(DELIM);
+        if(values.length != 2)
+            return;
         _watchpoints.getValue().remove(selectedItem);
         for(ControlEvent ce : _cachedElements) {
             if (Objects.equals(ce.className, values[0]) && Objects.equals(ce.argument, values[1]) &&
