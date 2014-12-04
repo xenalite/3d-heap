@@ -1,6 +1,7 @@
 package tests.unit.application;
 
 import com.imperial.heap3d.implementations.application.BreakpointManager;
+import com.imperial.heap3d.interfaces.jdi.IVirtualMachine;
 import com.sun.jdi.*;
 import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.ClassPrepareRequest;
@@ -28,15 +29,15 @@ public class BreakpointManagerTests extends EasyMockSupport {
     public ExpectedException exception = ExpectedException.none();
 
     private BreakpointManager _sut;
-    private VirtualMachine _mockInstance;
+    private IVirtualMachine _mockVirtualMachine;
 
     private final String CLASSNAME = "CLASS";
     private final String ARGUMENT = "ARGUMENT";
 
     @Before
     public void setUp() {
-        _mockInstance = createMock(VirtualMachine.class);
-        _sut = new BreakpointManager(_mockInstance);
+        _mockVirtualMachine = createMock(IVirtualMachine.class);
+        _sut = new BreakpointManager(_mockVirtualMachine);
     }
 
     @Test
@@ -86,12 +87,12 @@ public class BreakpointManagerTests extends EasyMockSupport {
     }
 
     private void createExpectations_ClassNotLoaded() {
-        expect(_mockInstance.classesByName(CLASSNAME))
+        expect(_mockVirtualMachine.classesByName(CLASSNAME))
                 .andReturn(new LinkedList<>()).times(2);
 
         EventRequestManager erm = createMock(EventRequestManager.class);
         ClassPrepareRequest cpr = createMock(ClassPrepareRequest.class);
-        expect(_mockInstance.eventRequestManager()).andReturn(erm);
+        expect(_mockVirtualMachine.getEventRequestManager()).andReturn(erm);
         expect(erm.createClassPrepareRequest()).andReturn(cpr);
         cpr.addClassFilter(CLASSNAME);
         expectLastCall().once();
@@ -130,13 +131,14 @@ public class BreakpointManagerTests extends EasyMockSupport {
     }
 
     private void createExpectations_ClassNotLoaded_Multiple() {
-        expect(_mockInstance.classesByName(CLASSNAME+1)).andReturn(new LinkedList<>());
-        expect(_mockInstance.classesByName(CLASSNAME+2)).andReturn(new LinkedList<>());
-        expect(_mockInstance.classesByName(CLASSNAME+3)).andReturn(new LinkedList<>());
+        expect(_mockVirtualMachine.classesByName(CLASSNAME+1)).andReturn(new LinkedList<>());
+        expect(_mockVirtualMachine.classesByName(CLASSNAME+2)).andReturn(new LinkedList<>());
+        expect(_mockVirtualMachine.classesByName(CLASSNAME+3)).andReturn(new LinkedList<>());
 
         EventRequestManager erm = createMock(EventRequestManager.class);
         ClassPrepareRequest cpr = createMock(ClassPrepareRequest.class);
-        expect(_mockInstance.eventRequestManager()).andReturn(erm).times(3);
+//        expect(_mockVirtualMachine)
+//        expect(_mockVirtualMachine.eventRequestManager()).andReturn(erm).times(3);
         expect(erm.createClassPrepareRequest()).andReturn(cpr).times(3);
         cpr.addClassFilter(anyString());
         expectLastCall().times(3);
@@ -148,7 +150,7 @@ public class BreakpointManagerTests extends EasyMockSupport {
     public void ClassLoaded_AddBreakpoint_CreatesBreakpointRequest() {
         //arrange
         ReferenceType rt = createMock(ReferenceType.class);
-        expect(_mockInstance.classesByName(CLASSNAME))
+        expect(_mockVirtualMachine.classesByName(CLASSNAME))
                 .andReturn(new LinkedList<ReferenceType>() {{
                     add(rt);
                 }});
@@ -157,7 +159,7 @@ public class BreakpointManagerTests extends EasyMockSupport {
         Location l = createMock(Location.class);
         Method m = createMock(Method.class);
         BreakpointRequest br = createMock(BreakpointRequest.class);
-        expect(_mockInstance.eventRequestManager()).andReturn(erm);
+        expect(_mockVirtualMachine.eventRequestManager()).andReturn(erm);
         expect(rt.methodsByName(ARGUMENT)).andReturn(new LinkedList<Method>() {{ add(m); }});
         expect(m.location()).andReturn(l);
         expect(erm.createBreakpointRequest(l)).andReturn(br);
@@ -176,13 +178,15 @@ public class BreakpointManagerTests extends EasyMockSupport {
     public void ClassLoaded_AddWatchpoint_CreatesWatchpointRequest() {
         //arrange
         ReferenceType rt = createMock(ReferenceType.class);
-        expect(_mockInstance.classesByName(CLASSNAME))
-                .andReturn(new LinkedList<ReferenceType>() {{ add(rt); }});
+        expect(_mockVirtualMachine.classesByName(CLASSNAME))
+                .andReturn(new LinkedList<ReferenceType>() {{
+                    add(rt);
+                }});
 
         EventRequestManager erm = createMock(EventRequestManager.class);
         Field f = createMock(Field.class);
         ModificationWatchpointRequest mwr = createMock(ModificationWatchpointRequest.class);
-        expect(_mockInstance.eventRequestManager()).andReturn(erm);
+        expect(_mockVirtualMachine.eventRequestManager()).andReturn(erm);
         expect(rt.fieldByName(ARGUMENT)).andReturn(f);
         expect(erm.createModificationWatchpointRequest(f)).andReturn(mwr);
         mwr.enable();
@@ -201,12 +205,14 @@ public class BreakpointManagerTests extends EasyMockSupport {
     public void ClassLoaded_RemoveBreakpoint_BreakpointRequestRemoved() {
         //arrange
         ReferenceType rt = createMock(ReferenceType.class);
-        expect(_mockInstance.classesByName(CLASSNAME))
-                .andReturn(new LinkedList<ReferenceType>() {{ add(rt); }});
+        expect(_mockVirtualMachine.classesByName(CLASSNAME))
+                .andReturn(new LinkedList<ReferenceType>() {{
+                    add(rt);
+                }});
 
         EventRequestManager erm = createMock(EventRequestManager.class);
         BreakpointRequest br = createMock(BreakpointRequest.class);
-        expect(_mockInstance.eventRequestManager()).andReturn(erm);
+        expect(_mockVirtualMachine.eventRequestManager()).andReturn(erm);
         expect(erm.breakpointRequests().stream().filter(anyObject())
                 .findFirst()).andReturn(Optional.of(br));
         erm.deleteEventRequest(br);
@@ -225,12 +231,14 @@ public class BreakpointManagerTests extends EasyMockSupport {
     public void ClassLoaded_RemoveWatchpoint_WatchpointRequestRemoved() {
         //arrange
         ReferenceType rt = createMock(ReferenceType.class);
-        expect(_mockInstance.classesByName(CLASSNAME))
-                .andReturn(new LinkedList<ReferenceType>() {{ add(rt); }});
+        expect(_mockVirtualMachine.classesByName(CLASSNAME))
+                .andReturn(new LinkedList<ReferenceType>() {{
+                    add(rt);
+                }});
 
         EventRequestManager erm = createMock(EventRequestManager.class);
         ModificationWatchpointRequest mwr = createMock(ModificationWatchpointRequest.class);
-        expect(_mockInstance.eventRequestManager()).andReturn(erm);
+        expect(_mockVirtualMachine.eventRequestManager()).andReturn(erm);
         expect(erm.modificationWatchpointRequests())
                 .andReturn(new LinkedList<ModificationWatchpointRequest>() {{ add(mwr); }});
         erm.deleteEventRequest(mwr);
@@ -259,7 +267,7 @@ public class BreakpointManagerTests extends EasyMockSupport {
     @Test
     public void NotifyClassLoaded_MultipleRequestsAdded() {
         //arrange
-        expect(_mockInstance.classesByName(anyString()))
+        expect(_mockVirtualMachine.classesByName(anyString()))
                 .andReturn(new LinkedList<>()).times(3);
 
         EventRequestManager erm = createMock(EventRequestManager.class);
@@ -271,7 +279,7 @@ public class BreakpointManagerTests extends EasyMockSupport {
         BreakpointRequest br = createMock(BreakpointRequest.class);
         ModificationWatchpointRequest mwr = createMock(ModificationWatchpointRequest.class);
 
-        expect(_mockInstance.eventRequestManager()).andReturn(erm).times(4);
+        expect(_mockVirtualMachine.eventRequestManager()).andReturn(erm).times(4);
         expect(erm.createClassPrepareRequest()).andReturn(cpr).times(2);
         cpr.addClassFilter(anyString());
         expectLastCall().times(2);

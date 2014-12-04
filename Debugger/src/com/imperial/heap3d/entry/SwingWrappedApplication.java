@@ -3,10 +3,11 @@ package com.imperial.heap3d.entry;
 import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.implementations.factories.*;
 import com.imperial.heap3d.implementations.layout.HeapGraph;
-import com.imperial.heap3d.ui.controllers.*;
 import com.imperial.heap3d.implementations.viewmodels.ApplicationTabViewModel;
 import com.imperial.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
 import com.imperial.heap3d.implementations.viewmodels.HeapInfoTabViewModel;
+import com.imperial.heap3d.implementations.viewmodels.SidebarViewModel;
+import com.imperial.heap3d.ui.controllers.*;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
@@ -59,6 +60,7 @@ public class SwingWrappedApplication {
         _injector.as(Characteristics.CACHE).addComponent(ApplicationTabViewModel.class);
         _injector.addComponent(BreakpointsTabViewModel.class);
         _injector.addComponent(HeapInfoTabViewModel.class);
+        _injector.addComponent(SidebarViewModel.class);
 
         SwingUtilities.invokeLater(this::initFrame);
     }
