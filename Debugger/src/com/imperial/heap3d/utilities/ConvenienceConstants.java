@@ -1,4 +1,4 @@
-package com.imperial.heap3d.entry;
+package com.imperial.heap3d.utilities;
 
 /**
  * Created by om612 on 04/12/14.

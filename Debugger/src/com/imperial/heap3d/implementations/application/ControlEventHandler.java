@@ -5,7 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.imperial.heap3d.implementations.events.ControlEvent;
 import com.imperial.heap3d.implementations.events.ProcessEvent;
 import com.imperial.heap3d.implementations.events.ProcessEventType;
-import com.imperial.heap3d.implementations.utilities.Check;
+import com.imperial.heap3d.utilities.Check;
 import com.imperial.heap3d.interfaces.application.IBreakpointManager;
 import com.imperial.heap3d.interfaces.application.IDebuggedProcess;
 import com.imperial.heap3d.interfaces.application.IStepManager;

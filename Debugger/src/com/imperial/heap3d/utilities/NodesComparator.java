@@ -1,4 +1,4 @@
-package com.imperial.heap3d.implementations.utilities;
+package com.imperial.heap3d.utilities;
 
 import com.imperial.heap3d.implementations.snapshot.Node;
 

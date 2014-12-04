@@ -4,7 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.implementations.application.*;
 import com.imperial.heap3d.implementations.events.StartDefinition;
 import com.imperial.heap3d.implementations.jdi.DVirtualMachine;
-import com.imperial.heap3d.implementations.utilities.Check;
+import com.imperial.heap3d.utilities.Check;
 import com.imperial.heap3d.interfaces.application.IBreakpointManager;
 import com.imperial.heap3d.interfaces.application.IStepManager;
 import com.imperial.heap3d.interfaces.application.IVariableAnalyser;

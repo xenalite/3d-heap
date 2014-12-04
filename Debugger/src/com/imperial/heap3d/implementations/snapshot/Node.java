@@ -4,7 +4,7 @@ import com.graphics.shapes.Colour;
 import com.graphics.shapes.Cube;
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.implementations.layout.HeapGraphLevel;
-import com.imperial.heap3d.implementations.utilities.ColorConverter;
+import com.imperial.heap3d.utilities.ColorConverter;
 
 import java.util.List;
 

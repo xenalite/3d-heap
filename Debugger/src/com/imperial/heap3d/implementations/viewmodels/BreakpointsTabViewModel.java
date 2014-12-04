@@ -2,9 +2,9 @@ package com.imperial.heap3d.implementations.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.imperial.heap3d.entry.ConvenienceConstants;
+import com.imperial.heap3d.utilities.ConvenienceConstants;
 import com.imperial.heap3d.implementations.events.*;
-import com.imperial.heap3d.implementations.utilities.Check;
+import com.imperial.heap3d.utilities.Check;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

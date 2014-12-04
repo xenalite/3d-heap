@@ -11,7 +11,7 @@ import com.imperial.heap3d.implementations.layout.animation.Animate;
 import com.imperial.heap3d.implementations.layout.animation.SelectedAnimation;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
-import com.imperial.heap3d.implementations.utilities.NodesComparator;
+import com.imperial.heap3d.utilities.NodesComparator;
 
 
 import java.awt.*;
