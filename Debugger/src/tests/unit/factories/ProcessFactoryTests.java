@@ -26,53 +26,42 @@ public class ProcessFactoryTests extends EasyMockSupport {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private ProcessFactory _sut;
-    private IVirtualMachineProvider _vmProvider;
-    private EventBus _eventBus;
+    private ProcessFactory SystemUnderTest;
+    private IVirtualMachineProvider _mockProvider;
+    private EventBus _mockEventbus;
+    private HeapGraphFactory _mockHeapGraphFactory;
 
     @Before
-    public void setUp() {
-        _vmProvider = createMock(IVirtualMachineProvider.class);
-        _eventBus = createNiceMock(EventBus.class);
-        _sut = new ProcessFactory(_vmProvider, _eventBus, createMock(HeapGraphFactory.class));
+    public void SetUp() {
+        _mockProvider = createMock(IVirtualMachineProvider.class);
+        _mockEventbus = createMock(EventBus.class);
+        _mockHeapGraphFactory = createMock(HeapGraphFactory.class);
+        SystemUnderTest = new ProcessFactory(_mockProvider, _mockEventbus, _mockHeapGraphFactory);
+        resetAll();
     }
 
     @Test
-    public void constructor_InvalidArgument_VMProvider_Throws() {
+    public void Test_Constructor_InvalidArgument_VMProvider_Throws() {
         exception.expect(IllegalArgumentException.class);
-        _sut = new ProcessFactory(null, createMock(EventBus.class), createMock(HeapGraphFactory.class));
+        SystemUnderTest = new ProcessFactory(null, _mockEventbus, _mockHeapGraphFactory);
     }
 
     @Test
-    public void constructor_InvalidArgument_EventBus_Throws() {
+    public void Test_Constructor_InvalidArgument_EventBus_Throws() {
         exception.expect(IllegalArgumentException.class);
-        _sut = new ProcessFactory(createMock(IVirtualMachineProvider.class),
-                null, createMock(HeapGraphFactory.class));
+        SystemUnderTest = new ProcessFactory(_mockProvider, null, _mockHeapGraphFactory);
     }
 
     @Test
-    public void constructor_InvalidArgument_HeapGraphFactory_Throws() {
+    public void Test_Constructor_InvalidArgument_HeapGraphFactory_Throws() {
         exception.expect(IllegalArgumentException.class);
-        _sut = new ProcessFactory(createMock(IVirtualMachineProvider.class),
-                createMock(EventBus.class), null);
+        SystemUnderTest = new ProcessFactory(_mockProvider, _mockEventbus, null);
     }
 
     @Test
-    public void callGettersBeforeBuildMethod_DebuggedProcess_Throws() {
-        exception.expect(IllegalStateException.class);
-//        _sut.getDebuggedProcess();
-    }
-
-    @Test
-    public void callGettersBeforeBuildMethod_ControlEventHandler_Throws() {
-        exception.expect(IllegalStateException.class);
-//        _sut.getControlEventHandler();
-    }
-
-    @Test
-    public void buildComponents_InvalidArgument_Throws() {
+    public void Test_BuildComponents_InvalidArgument_Throws() {
         exception.expect(IllegalArgumentException.class);
-        _sut.buildComponents(null);
+        SystemUnderTest.buildComponents(null);
     }
 
     @Test
@@ -88,13 +77,13 @@ public class ProcessFactoryTests extends EasyMockSupport {
         expect(cp.getProcess()).andReturn(p).times(2);
         expect(cp.getVirtualMachine()).andReturn(vm).times(2);
 
-        expect(_vmProvider.establish(anyInt(), anyObject())).andReturn(cp);
-        _eventBus.register(anyObject());
+        expect(_mockProvider.establish(anyInt(), anyObject())).andReturn(cp);
+        _mockEventbus.register(anyObject());
         expectLastCall().once();
         replayAll();
 
         //act
-        _sut.buildComponents(sd);
+        SystemUnderTest.buildComponents(sd);
 
         //assert
 
@@ -104,7 +93,7 @@ public class ProcessFactoryTests extends EasyMockSupport {
     @Test
     public void callGettersBeforeBuildMethod_BreakpointManager_Throws() {
         exception.expect(IllegalStateException.class);
-//        _sut.getBreakpointManager();
+//        SystemUnderTest.getBreakpointManager();
     }
 
     @Test
@@ -120,17 +109,17 @@ public class ProcessFactoryTests extends EasyMockSupport {
         expect(cp.getProcess()).andReturn(p).times(2);
         expect(cp.getVirtualMachine()).andReturn(vm).times(2);
 
-        expect(_vmProvider.establish(anyInt(), anyObject())).andReturn(cp);
-        _eventBus.register(anyObject());
+        expect(_mockProvider.establish(anyInt(), anyObject())).andReturn(cp);
+        _mockEventbus.register(anyObject());
         expectLastCall().once();
         replayAll();
 
-        _sut.buildComponents(sd);
+        SystemUnderTest.buildComponents(sd);
 
         //act
-//        Object o1 = _sut.getBreakpointManager();
-//        Object o2 = _sut.getControlEventHandler();
-//        Object o3 = _sut.getDebuggedProcess();
+//        Object o1 = SystemUnderTest.getBreakpointManager();
+//        Object o2 = SystemUnderTest.getControlEventHandler();
+//        Object o3 = SystemUnderTest.getDebuggedProcess();
 
         //assert
 //        assertNotNull(o1);

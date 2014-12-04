@@ -54,9 +54,7 @@ public class HeapGraph extends RenderEngine {
         }
     }
 
-    @Override
-    protected void beforeLoop() {
-        super.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
+    private void resetStack(){
         System.out.println("Start Before Loop ---------------------------------------------");
         //clearShapesFrom3DSpace();
 //		levels.clear();
@@ -90,7 +88,13 @@ public class HeapGraph extends RenderEngine {
 
         }
         System.out.println("End Before Loop =====================================");
-        
+
+    }
+
+    @Override
+    protected void beforeLoop() {
+        super.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
+        resetStack();
         logo = modelToShape("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
         super.addShapeTo3DSpace(logo);
     }
@@ -122,7 +126,7 @@ public class HeapGraph extends RenderEngine {
             System.out.println("New Stack");
             Set<Node> oldHeapNodes = allHeapNodes.values().stream().collect(Collectors.toSet());
             animation = new Animate(oldHeapNodes);
-            beforeLoop();
+            resetStack();
             animation.setToStackNodes(allHeapNodes.values().stream().collect(Collectors.toSet()));
             newStack = false;
         }
