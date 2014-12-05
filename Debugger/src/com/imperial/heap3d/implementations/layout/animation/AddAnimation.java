@@ -17,8 +17,9 @@ public class AddAnimation extends AnimationEvent {
 	}
 
 	@Override
-	protected void executeStep() {
+	public void step() {
 		entity.setScale(entity.getScale() + increment);
+		++iteration;
 	}
 
 	@Override

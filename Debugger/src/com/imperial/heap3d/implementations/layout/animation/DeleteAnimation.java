@@ -14,9 +14,10 @@ public class DeleteAnimation extends AnimationEvent {
 	}
 
 	@Override
-	public void executeStep() {
+	public void step() {
 		float newScale = entity.getScale() + decrementScale;
 		entity.setScale(newScale < 0 ? 0 : newScale);
+		++iteration;
 	}
 
 	@Override

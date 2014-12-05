@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 import com.heap3d.layout.GraphImpl;
+import com.imperial.heap3d.implementations.events.NodeEvent;
 import com.imperial.heap3d.implementations.events.ProcessEvent;
 import com.imperial.heap3d.implementations.events.ProcessEventType;
 import com.imperial.heap3d.implementations.layout.animation.Animation;
@@ -31,7 +32,6 @@ public class HeapGraph {
     protected GraphImpl<Node, HeapEdge> interLevelGraph = new GraphImpl<>();
 
     private IAnimation animation = new NullAnimation();
-    private SelectedAnimation selectedAnimation;
 
     private final IRenderEngine _renderEngine;
     private final Lock LOCK = new ReentrantReadWriteLock().writeLock();
@@ -99,7 +99,7 @@ public class HeapGraph {
 
         boolean newNodes = receiveNodes();
         if(newNodes) {
-            _eventBus.post(_stackNodes);
+            _eventBus.post(new NodeEvent(_stackNodes));
             System.out.println("New Stack");
             Set<Node> oldHeapNodes = allHeapNodes.values().stream().collect(Collectors.toSet());
             resetStack();
@@ -107,6 +107,13 @@ public class HeapGraph {
             animation = new Animation(oldHeapNodes, allHeapNodes.values().stream().collect(Collectors.toSet()));
         }
 
+        selectionMethod();
+    }
+
+    // TODO -- TO BE MOVED OUTSIDE OF THIS CLASS
+    private Shape lastSelectedShape = null;
+    private SelectedAnimation selectedAnimation;
+    private void selectionMethod() {
         Shape selected = _renderEngine.getSelectedShape();
 
         if (selectedAnimation != null && selected != null) {
@@ -141,8 +148,6 @@ public class HeapGraph {
         }
     }
 
-    private Shape lastSelectedShape = null;
-
     protected void addLevel(StackNode stackNode) {
 
         //make a new levelGraph and add it to the list of levels
@@ -174,7 +179,6 @@ public class HeapGraph {
         }
 
     }
-
 
     protected void updateCurrentLevel(StackNode stackNode) {
         NodesComparator comparator = new NodesComparator();

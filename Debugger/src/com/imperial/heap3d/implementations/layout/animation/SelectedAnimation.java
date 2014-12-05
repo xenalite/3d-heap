@@ -5,7 +5,7 @@ import com.imperial.heap3d.implementations.snapshot.Node;
 
 public class SelectedAnimation extends AnimationEvent {
 
-	private static final float GROW_RANGE = 0.3f;
+	private static final float GROW_RANGE = 0.2f;
 
 	private float startingScale, incrementScale, bound;
 	private Entity entity;
@@ -19,7 +19,7 @@ public class SelectedAnimation extends AnimationEvent {
 	}
 
 	@Override
-	protected void executeStep() {
+	public void step() {
 		float newScale = entity.getScale() + incrementScale;
 		entity.setScale(newScale);
 

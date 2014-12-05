@@ -23,8 +23,9 @@ public class MoveAnimation extends AnimationEvent {
 	}
 
 	@Override
-	protected void executeStep() {
+	public void step() {
 		shape.getEntity().increasePosition(incrementX, incrementY, incrementZ);
+		++iteration;
 	}
 
 	@Override
