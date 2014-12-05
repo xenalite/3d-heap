@@ -2,7 +2,6 @@ package com.imperial.heap3d.implementations.layout;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.graphics.RenderEngine;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 import com.heap3d.layout.GraphImpl;
@@ -17,31 +16,42 @@ import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.utilities.NodesComparator;
 
-import java.awt.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class HeapGraph extends RenderEngine {
+public class HeapGraph {
 
     private java.util.List<HeapGraphLevel> levels = new LinkedList<>();
     private int currentLevel = 0;
     private boolean newStack = false;
-    private Collection<StackNode> stackNodes;
+    private Collection<StackNode> stackNodes = new LinkedList<>();
     private EventBus _eventBus;
     protected Map<Node,Node> allHeapNodes = new HashMap<>();
     protected GraphImpl<Node, HeapEdge> interLevelGraph = new GraphImpl<>();
 
-    public HeapGraph(Canvas canvas, Collection<StackNode> stackNodes, EventBus eventBus) {
-        super(canvas);
-        this.stackNodes = stackNodes;
+    private Shape logo;
+    private IAnimation animation = new NullAnimation();
+    private SelectedAnimation selectedAnimation;
+
+    private final IRenderEngine _renderEngine;
+
+    public HeapGraph(IRenderEngine renderEngine, EventBus eventBus) {
+        _renderEngine = renderEngine;
         _eventBus = eventBus;
         _eventBus.register(this);
     }
 
-    public HeapGraph(Collection<StackNode> stackNodes) {
-        super("Heap Visualizer", 1280, 720, false);
-        this.stackNodes = stackNodes;
-    }
+//    public HeapGraph(Canvas canvas, Collection<StackNode> stackNodes, EventBus eventBus) {
+//        super(canvas);
+//        this.stackNodes = stackNodes;
+//        _eventBus = eventBus;
+//        _eventBus.register(this);
+//    }
+//
+//    public HeapGraph(Collection<StackNode> stackNodes) {
+//        super("Heap Visualizer", 1280, 720, false);
+//        this.stackNodes = stackNodes;
+//    }
 
     @Subscribe
     public void handleStartEvent(ProcessEvent e) {
@@ -52,7 +62,8 @@ public class HeapGraph extends RenderEngine {
                 newStack = false;
                 stackNodes.clear();
                 levels.clear();
-                super.clearShapesFrom3DSpace();
+                _renderEngine.clear3DSpace();
+//                super.clearShapesFrom3DSpace();
             }
         }
     }
@@ -105,20 +116,19 @@ public class HeapGraph extends RenderEngine {
 
     }
 
-    @Override
-    protected void beforeLoop() {
-        super.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
+    public void beforeLoop() {
+        // TODO -- set bg colour
+        _renderEngine.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
         resetStack();
-        logo = modelToShape("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
-        super.addShapeTo3DSpace(logo);
+
+        logo = _renderEngine.createShapeFromModel("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
+        _renderEngine.addTo3DSpace(logo);
+//        logo = modelToShape();
+//        super.addShapeTo3DSpace(logo);
     }
 
-    private Shape logo;
-    private IAnimation animation = new NullAnimation();
-    private SelectedAnimation selectedAnimation;
 
-    @Override
-    protected void inLoop() {
+    public void inLoop() {
         if (logo != null)
             logo.getEntity().increaseRotation(0, 1, 0);
 
@@ -139,7 +149,7 @@ public class HeapGraph extends RenderEngine {
             newStack = false;
         }
 
-        Shape selected = getSelectedShape();
+        Shape selected = _renderEngine.getSelectedShape();
 
         if (selectedAnimation != null && selected != null) {
             selectedAnimation.step();
@@ -175,11 +185,6 @@ public class HeapGraph extends RenderEngine {
 
     private Shape lastSelectedShape = null;
 
-    @Override
-    protected void afterLoop() {
-        stackNodes.size();
-    }
-
     protected void addLevel(StackNode stackNode) {
 
         //make a new levelGraph and add it to the list of levels
@@ -189,7 +194,7 @@ public class HeapGraph extends RenderEngine {
         //If the stacknode only has primitive values
         if (!stackNode.hasReference()) {
             //build the root / stackNode
-            levelGraph.buildNode(stackNode, this);
+            levelGraph.buildNode(stackNode, _renderEngine);
             //Update the position in the Layout World Space
             levelGraph.layout.layout(stackNode);
             //Update the root position in the 3D world space
@@ -268,7 +273,7 @@ public class HeapGraph extends RenderEngine {
                 for (HeapEdge edge : outEdges) {
                     Node child = levelGraph.layout.getGraph().getOpposite(n, edge);
                     if (child.getGeometry() != null) {
-                        edge.connect(n, child, new Colour(1, 1, 1), this);
+                        edge.connect(n, child, new Colour(1, 1, 1), _renderEngine);
                     } else {
                         System.err.println("Can't add null edge");
                     }
@@ -284,7 +289,7 @@ public class HeapGraph extends RenderEngine {
                             System.out.println("Some interlevel node was null");
                         } else {
                             System.out.println("Creating 3D edge between levels");
-                            edge.connect(from, to, new Colour(1, 1, 1), this);
+                            edge.connect(from, to, new Colour(1, 1, 1), _renderEngine);
                         }
                     }
                 }
@@ -330,7 +335,7 @@ public class HeapGraph extends RenderEngine {
     private void buildNodes(Node n, HeapGraphLevel level) {
         if (!allHeapNodes.containsKey(n)) {
             allHeapNodes.put(n,n);
-            level.buildNode(n, this);
+            level.buildNode(n, _renderEngine);
             java.util.List<Node> references = n.getReferences();
             for (Node child : references) {
                 if (allHeapNodes.containsKey(child)) {
@@ -364,15 +369,18 @@ public class HeapGraph extends RenderEngine {
     private void removeNode(Node n, HeapGraphLevel levelGraph)
     {
         for (HeapEdge edge : levelGraph.getOutEdges(n)) {
-            removeShapeFrom3DSpace(edge.getLine());
+            _renderEngine.removeFrom3DSpace(edge.getLine());
+//            removeShapeFrom3DSpace(edge.getLine());
         }
-        removeShapeFrom3DSpace(n.getGeometry());
+        _renderEngine.removeFrom3DSpace(n.getGeometry());
+//        removeShapeFrom3DSpace(n.getGeometry());
         synchronized (interLevelGraph) {
             Collection<HeapEdge> outEdges = interLevelGraph.getOutEdges(n);
             if (outEdges != null) {
                 for(HeapEdge edge : outEdges)
                 {
-                    removeShapeFrom3DSpace(edge.getLine());
+                    _renderEngine.removeFrom3DSpace(edge.getLine());
+//                    removeShapeFrom3DSpace(edge.getLine());
                     interLevelGraph.removeEdge(edge);
                     System.out.println("Removing interlevel outedge "+edge);
                 }
@@ -383,7 +391,8 @@ public class HeapGraph extends RenderEngine {
                 for(HeapEdge edge : inEdges)
                 {
                     System.out.println("Removing interlevel inedge "+edge);
-                    removeShapeFrom3DSpace(edge.getLine());
+                    _renderEngine.removeFrom3DSpace(edge.getLine());
+//                    removeShapeFrom3DSpace(edge.getLine());
                 }
             }
 
@@ -393,18 +402,8 @@ public class HeapGraph extends RenderEngine {
         allHeapNodes.remove(n);
     }
 
-    @Override
-    public void addShapeTo3DSpace(Shape geometry) {
-        super.addShapeTo3DSpace(geometry);
-    }
-
-
-    public void removeShapeFrom3DSpace(Shape shape) {
-        super.removeShapeFrom3DSpace(shape);
-    }
-
     public void finish() {
-        super.breakOutOfLoop();
+//        super.breakOutOfLoop();
         System.out.println("Finished");
     }
 

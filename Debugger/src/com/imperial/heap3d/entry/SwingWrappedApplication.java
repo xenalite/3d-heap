@@ -3,6 +3,7 @@ package com.imperial.heap3d.entry;
 import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.implementations.factories.*;
 import com.imperial.heap3d.implementations.layout.HeapGraph;
+import com.imperial.heap3d.implementations.layout.RenderEngineAdapter;
 import com.imperial.heap3d.implementations.viewmodels.ApplicationTabViewModel;
 import com.imperial.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
 import com.imperial.heap3d.implementations.viewmodels.HeapInfoTabViewModel;
@@ -98,7 +99,14 @@ public class SwingWrappedApplication {
         canvas.setSize(MIN_CANVAS_WIDTH, MIN_CANVAS_HEIGHT);
         canvas.setVisible(true);
 
-        HeapGraphFactory factory = new HeapGraphFactory(canvas, _injector.getComponent(EventBus.class));
+        RenderEngineAdapter renderEngine = new RenderEngineAdapter(canvas);
+        HeapGraph heapGraph = new HeapGraph(renderEngine, _injector.getComponent(EventBus.class));
+
+        renderEngine.before(heapGraph::beforeLoop);
+        renderEngine.during(heapGraph::inLoop);
+        renderEngine.after(() -> {});
+
+        HeapGraphFactory factory = new HeapGraphFactory(heapGraph);
         _injector.as(Characteristics.CACHE).addComponent(factory);
 
         JFrame frame = new JFrame();
@@ -127,9 +135,8 @@ public class SwingWrappedApplication {
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        HeapGraph hgraph = factory.create();
         ExecutorService service = ThreadBuilder.createService("lwjgl");
-        service.submit(hgraph);
+        service.submit(renderEngine);
         service.shutdown();
     }
 }
