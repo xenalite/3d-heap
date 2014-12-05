@@ -3,7 +3,7 @@ package com.imperial.heap3d.implementations.layout;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by oskar on 05/12/14.
@@ -22,9 +22,9 @@ public interface IRenderEngine {
 
     public void setBackgroundColour(float a, float b, float c, float d);
 
-    public void before(Collection<Runnable> commands);
+    public void before(List<Runnable> commands);
 
-    public void during(Collection<Runnable> commands);
+    public void during(List<Runnable> commands);
 
-    public void after(Collection<Runnable> commands);
+    public void after(List<Runnable> commands);
 }

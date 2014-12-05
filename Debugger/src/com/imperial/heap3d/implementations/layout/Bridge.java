@@ -19,9 +19,6 @@ public class Bridge {
 
     public Bridge(RenderEngineAdapter adapter, EventBus eventBus) {
         _adapter = Check.NotNull(adapter, "adapter");
-        _adapter.before(_nullRunnable);
-        _adapter.during(_nullRunnable);
-        _adapter.after(_nullRunnable);
         _eventBus = Check.NotNull(eventBus, "eventBus");
         _eventBus.register(this);
     }

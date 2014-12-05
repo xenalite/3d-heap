@@ -78,19 +78,19 @@ public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
 
     //region IRenderEngine-Command-Hooks
     @Override
-    public void before(Collection<Runnable> commands) {
+    public void before(List<Runnable> commands) {
         _before.clear();
         _before.addAll(commands);
     }
 
     @Override
-    public void during(Collection<Runnable> commands) {
+    public void during(List<Runnable> commands) {
         _during.clear();
         _during.addAll(commands);
     }
 
     @Override
-    public void after(Collection<Runnable> commands) {
+    public void after(List<Runnable> commands) {
         _after.clear();
         _after.addAll(commands);
     }
