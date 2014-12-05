@@ -5,15 +5,20 @@ import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 
 /**
  * Created by oskar on 05/12/14.
  */
 public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
 
-    private Runnable _before;
-    private Runnable _during;
-    private Runnable _after;
+    private List<Runnable> _before = Collections.synchronizedList(new ArrayList<>());
+    private List<Runnable> _during = Collections.synchronizedList(new ArrayList<>());
+    private List<Runnable> _after = Collections.synchronizedList(new ArrayList<>());
 
     public RenderEngineAdapter(Canvas canvas) {
         super(canvas);
@@ -54,34 +59,40 @@ public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
     //region RenderEngine-Loop
     @Override
     protected void beforeLoop() {
-        _before.run();
+        for(Runnable r : _before)
+            r.run();
     }
 
     @Override
     protected void inLoop() {
-        _during.run();
+        for(Runnable r : _during)
+            r.run();
     }
 
     @Override
     protected void afterLoop() {
-        _after.run();
+        for(Runnable r : _after)
+            r.run();
     }
     //endregion
 
     //region IRenderEngine-Command-Hooks
     @Override
-    public void before(Runnable command) {
-        _before = command;
+    public void before(Collection<Runnable> commands) {
+        _before.clear();
+        _before.addAll(commands);
     }
 
     @Override
-    public void during(Runnable command) {
-        _during = command;
+    public void during(Collection<Runnable> commands) {
+        _during.clear();
+        _during.addAll(commands);
     }
 
     @Override
-    public void after(Runnable command) {
-        _after = command;
+    public void after(Collection<Runnable> commands) {
+        _after.clear();
+        _after.addAll(commands);
     }
     //endregion
 }

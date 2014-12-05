@@ -41,18 +41,6 @@ public class HeapGraph {
         _eventBus.register(this);
     }
 
-//    public HeapGraph(Canvas canvas, Collection<StackNode> stackNodes, EventBus eventBus) {
-//        super(canvas);
-//        this.stackNodes = stackNodes;
-//        _eventBus = eventBus;
-//        _eventBus.register(this);
-//    }
-//
-//    public HeapGraph(Collection<StackNode> stackNodes) {
-//        super("Heap Visualizer", 1280, 720, false);
-//        this.stackNodes = stackNodes;
-//    }
-
     @Subscribe
     public void handleStartEvent(ProcessEvent e) {
         if (e.type == ProcessEventType.STARTED) {
@@ -63,7 +51,6 @@ public class HeapGraph {
                 stackNodes.clear();
                 levels.clear();
                 _renderEngine.clear3DSpace();
-//                super.clearShapesFrom3DSpace();
             }
         }
     }
