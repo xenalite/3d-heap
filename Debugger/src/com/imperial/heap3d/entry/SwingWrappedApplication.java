@@ -150,7 +150,14 @@ public class SwingWrappedApplication {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         ExecutorService service = ThreadBuilder.createService("lwjgl");
-        service.submit(renderEngine);
+        service.submit(() -> {
+            try {
+                renderEngine.run();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         service.shutdown();
     }
 }
