@@ -24,6 +24,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -103,7 +104,11 @@ public class SwingWrappedApplication {
         RenderEngineAdapter renderEngine = new RenderEngineAdapter(canvas);
         HeapGraph heapGraph = new HeapGraph(renderEngine, _injector.getComponent(EventBus.class));
 
-        renderEngine.before(new ArrayList<Runnable>() {{ add(heapGraph::beforeLoop); }});
+
+        List<Runnable> beforeCommands = new ArrayList<>();
+        beforeCommands.add(() -> renderEngine.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f));
+
+        renderEngine.before(beforeCommands);
         renderEngine.during(new ArrayList<Runnable>() {{
             add(heapGraph::inLoop);
         }});

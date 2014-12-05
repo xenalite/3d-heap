@@ -6,7 +6,6 @@ import com.graphics.shapes.Shape;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

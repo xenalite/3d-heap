@@ -3,7 +3,12 @@ package com.imperial.heap3d.implementations.layout;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.imperial.heap3d.implementations.events.ProcessEvent;
+import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.utilities.Check;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static com.imperial.heap3d.implementations.events.ProcessEventType.STARTED;
 
@@ -12,7 +17,6 @@ import static com.imperial.heap3d.implementations.events.ProcessEventType.STARTE
  */
 public class Bridge {
 
-    private final NullRunnable _nullRunnable = new NullRunnable();
     private final RenderEngineAdapter _adapter;
     private final EventBus _eventBus;
     private HeapGraph _heapGraph;
@@ -27,6 +31,15 @@ public class Bridge {
     public void handleProcessEvent(ProcessEvent event) {
         if(event.type == STARTED) {
             _heapGraph = new HeapGraph(_adapter, _eventBus);
+            List<Runnable> commands = new ArrayList<>();
+            commands.add(_heapGraph::initialise);
+            commands.add(_heapGraph::inLoop);
+
+            _adapter.during(commands);
         }
+    }
+
+    public void giveStackNodes(Collection<StackNode> stackNodes) {
+        _heapGraph.giveStackNodes(stackNodes);
     }
 }
