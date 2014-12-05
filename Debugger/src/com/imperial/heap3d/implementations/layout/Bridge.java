@@ -27,7 +27,6 @@ public class Bridge {
     public void handleProcessEvent(ProcessEvent event) {
         if(event.type == STARTED) {
             _heapGraph = new HeapGraph(_adapter, _eventBus);
-            _adapter.during(_heapGraph::inLoop);
         }
     }
 }

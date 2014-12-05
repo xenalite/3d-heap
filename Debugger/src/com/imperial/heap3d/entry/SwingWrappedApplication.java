@@ -23,6 +23,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -102,9 +103,10 @@ public class SwingWrappedApplication {
         RenderEngineAdapter renderEngine = new RenderEngineAdapter(canvas);
         HeapGraph heapGraph = new HeapGraph(renderEngine, _injector.getComponent(EventBus.class));
 
-        renderEngine.before(heapGraph::beforeLoop);
-        renderEngine.during(heapGraph::inLoop);
-        renderEngine.after(() -> {});
+        renderEngine.before(new ArrayList<Runnable>() {{ add(heapGraph::beforeLoop); }});
+        renderEngine.during(new ArrayList<Runnable>() {{
+            add(heapGraph::inLoop);
+        }});
 
         HeapGraphFactory factory = new HeapGraphFactory(heapGraph);
         _injector.as(Characteristics.CACHE).addComponent(factory);
