@@ -24,7 +24,7 @@ public class DebuggerController {
     }
     
     public void cleanup(){
-    	_heapGraphFactory.create().finish();
+//    	_heapGraphFactory.create().finish();
     	try {
 			_renderThread.join();
 		} catch (InterruptedException e) {

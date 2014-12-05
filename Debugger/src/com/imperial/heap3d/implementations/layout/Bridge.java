@@ -40,6 +40,6 @@ public class Bridge {
     }
 
     public void giveStackNodes(Collection<StackNode> stackNodes) {
-        _heapGraph.giveStackNodes(stackNodes);
+        _heapGraph.giveNodes(stackNodes);
     }
 }

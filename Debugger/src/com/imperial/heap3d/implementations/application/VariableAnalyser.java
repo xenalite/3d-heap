@@ -30,7 +30,7 @@ public class VariableAnalyser implements IVariableAnalyser {
         try {
             StackFrame stackFrame = event.thread().frame(0);
             Collection<StackNode> stackNodes = _nodeBuilder.build(stackFrame);
-            _heapGraphFactory.create().giveStackNodes(stackNodes);
+            _heapGraphFactory.create().giveNodes(stackNodes);
         }
         catch (IncompatibleThreadStateException e) { e.printStackTrace(); }
     }

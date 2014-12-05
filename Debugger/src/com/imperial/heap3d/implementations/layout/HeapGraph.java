@@ -4,7 +4,6 @@ import com.google.common.eventbus.EventBus;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 import com.heap3d.layout.GraphImpl;
-import com.imperial.heap3d.implementations.events.NodeEvent;
 import com.imperial.heap3d.implementations.events.ProcessEvent;
 import com.imperial.heap3d.implementations.events.ProcessEventType;
 import com.imperial.heap3d.implementations.layout.animation.Animation;
@@ -16,24 +15,26 @@ import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.utilities.NodesComparator;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 public class HeapGraph {
 
-    private java.util.List<HeapGraphLevel> levels = new LinkedList<>();
+    private List<HeapGraphLevel> levels = new LinkedList<>();
     private int currentLevel = 0;
-    private boolean newStack = false;
 
-    private Collection<StackNode> stackNodes = Collections.synchronizedList(new ArrayList<>());
+    private Collection<StackNode> _stackNodes = new ArrayList<>();
+    private Collection<StackNode> _nodesToBe = null;
     private EventBus _eventBus;
     protected Map<Node, Node> allHeapNodes = new HashMap<>();
     protected GraphImpl<Node, HeapEdge> interLevelGraph = new GraphImpl<>();
 
-    private Shape logo;
     private IAnimation animation = new NullAnimation();
     private SelectedAnimation selectedAnimation;
 
     private final IRenderEngine _renderEngine;
+    private final Lock LOCK = new ReentrantReadWriteLock().writeLock();
 
     public HeapGraph(IRenderEngine renderEngine, EventBus eventBus) {
         _renderEngine = renderEngine;
@@ -44,7 +45,7 @@ public class HeapGraph {
     private void resetStack() {
         System.out.println("Start Before Loop ---------------------------------------------");
         currentLevel = 0;
-        for (StackNode stackNode : stackNodes) {
+        for (StackNode stackNode : _stackNodes) {
             System.out.println("Stack Node: " + stackNode.getName());
             //We are looking at an old portion of the stack
             if (currentLevel < levels.size()) {
@@ -70,8 +71,8 @@ public class HeapGraph {
             }
         }
 
-        if (stackNodes.size() < levels.size()) {
-            int diff = levels.size() - stackNodes.size();
+        if (_stackNodes.size() < levels.size()) {
+            int diff = levels.size() - _stackNodes.size();
             System.out.println("Diff " + diff);
             for (int i = levels.size() - 1; i >= currentLevel; i--) {
                 //TODO change levels to a stack or deque or hashmap
@@ -87,22 +88,7 @@ public class HeapGraph {
 
     }
 
-    public void beforeLoop() {
-        // TODO -- set bg colour
-
-        resetStack();
-
-//        logo = _renderEngine.createShapeFromModel("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
-//        _renderEngine.addTo3DSpace(logo);
-//        logo = modelToShape();
-//        super.addShapeTo3DSpace(logo);
-    }
-
-
     public void inLoop() {
-        if (logo != null)
-            logo.getEntity().increaseRotation(0, 1, 0);
-
         if (animation.executeStepAndCheckIfDone()) {
             try {
                 buildEdges();
@@ -111,13 +97,14 @@ public class HeapGraph {
             animation = new NullAnimation();
         }
 
-        if (newStack) {
+        boolean newNodes = receiveNodes();
+        if(newNodes) {
+            _eventBus.post(_stackNodes);
             System.out.println("New Stack");
             Set<Node> oldHeapNodes = allHeapNodes.values().stream().collect(Collectors.toSet());
             resetStack();
             animation.finalise();
             animation = new Animation(oldHeapNodes, allHeapNodes.values().stream().collect(Collectors.toSet()));
-            newStack = false;
         }
 
         Shape selected = _renderEngine.getSelectedShape();
@@ -370,19 +357,22 @@ public class HeapGraph {
         allHeapNodes.remove(n);
     }
 
-    public void finish() {
-//        super.breakOutOfLoop();
-        System.out.println("Finished");
+    public void giveNodes(Collection<StackNode> nodesToBe) {
+        LOCK.lock();
+        _nodesToBe = nodesToBe;
+        LOCK.unlock();
     }
 
-    public void giveStackNodes(Collection<StackNode> stackNodes) {
+    public boolean receiveNodes() {
+        boolean receivedNewNodes;
+        LOCK.lock();
+        receivedNewNodes = _nodesToBe != null;
+        if(receivedNewNodes)
+            _stackNodes = _nodesToBe;
+        _nodesToBe = null;
+        LOCK.unlock();
 
-
-        //Update the new stackNodes we would like to add
-        this.stackNodes = stackNodes;
-        _eventBus.post(new NodeEvent(stackNodes));
-        //set the flag for the render loop
-        newStack = true;
+        return receivedNewNodes;
     }
 
     public void initialise() {
