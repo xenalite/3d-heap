@@ -1,9 +1,7 @@
 package com.imperial.heap3d.implementations.layout;
 
-import com.google.common.eventbus.EventBus;
 import com.graphics.shapes.Colour;
 import com.heap3d.layout.GraphImpl;
-import com.imperial.heap3d.implementations.events.NodeEvent;
 import com.imperial.heap3d.implementations.layout.animation.Animation;
 import com.imperial.heap3d.implementations.layout.animation.IAnimation;
 import com.imperial.heap3d.implementations.layout.animation.NullAnimation;
@@ -23,7 +21,6 @@ public class HeapGraph {
 
     private Collection<StackNode> _stackNodes = new ArrayList<>();
     private Collection<StackNode> _nodesToBe = null;
-    private EventBus _eventBus;
     private Map<Node, Node> allHeapNodes = new HashMap<>();
     private GraphImpl<Node, HeapEdge> interLevelGraph = new GraphImpl<>();
 
@@ -32,9 +29,8 @@ public class HeapGraph {
     private final IRenderEngine _renderEngine;
     private final Lock LOCK = new ReentrantReadWriteLock().writeLock();
 
-    public HeapGraph(IRenderEngine renderEngine, EventBus eventBus) {
+    public HeapGraph(IRenderEngine renderEngine) {
         _renderEngine = renderEngine;
-        _eventBus = eventBus;
     }
 
     private void resetStack() {
@@ -63,7 +59,6 @@ public class HeapGraph {
 
         boolean newNodes = receiveNodes();
         if (newNodes) {
-            _eventBus.post(new NodeEvent(_stackNodes));
             Set<Node> oldHeapNodes = allHeapNodes.values().stream().collect(Collectors.toSet());
             resetStack();
             animation.finalise();

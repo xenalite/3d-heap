@@ -3,6 +3,7 @@ package com.imperial.heap3d.implementations.layout;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.graphics.shapes.Shape;
+import com.imperial.heap3d.implementations.events.NodeEvent;
 import com.imperial.heap3d.implementations.events.ProcessEvent;
 import com.imperial.heap3d.implementations.events.ProcessEventType;
 import com.imperial.heap3d.implementations.layout.animation.SelectedAnimation;
@@ -30,7 +31,7 @@ public class Bridge {
         _eventBus = Check.NotNull(eventBus, "eventBus");
         _eventBus.register(this);
         // TODO - Dependency Injection
-        _heapGraph = new HeapGraph(_renderEngine, _eventBus);
+        _heapGraph = new HeapGraph(_renderEngine);
         List<Runnable> commands = new ArrayList<>();
         commands.add(_heapGraph::inLoop);
         commands.add(this::selectionMethod);
@@ -78,6 +79,8 @@ public class Bridge {
     }
 
     public void giveNodes(Collection<StackNode> stackNodes) {
+        stackNodes = Check.NotNull(stackNodes, "stackNodes");
         _heapGraph.giveNodes(stackNodes);
+        _eventBus.post(new NodeEvent(stackNodes));
     }
 }

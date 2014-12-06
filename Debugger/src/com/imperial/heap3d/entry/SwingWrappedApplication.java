@@ -108,7 +108,7 @@ public class SwingWrappedApplication {
         canvas.setVisible(true);
 
         RenderEngineAdapter renderEngine = new RenderEngineAdapter(canvas);
-        HeapGraph heapGraph = new HeapGraph(renderEngine, _injector.getComponent(EventBus.class));
+        HeapGraph heapGraph = new HeapGraph(renderEngine);
 
         final Shape[] logo = new Shape[1];
         List<Runnable> beforeCommands = new ArrayList<>();
