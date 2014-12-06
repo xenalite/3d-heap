@@ -9,8 +9,9 @@ import java.awt.*;
 public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 
 	int id;
-	Layout<Node, HeapEdge> layout;
+	private Layout<Node, HeapEdge> layout;
 	public static float levelOffset = 10f;
+	public Boolean updated = false;
 
 	public StackNode getRoot() {
 		return root;
@@ -52,6 +53,26 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 		} else
 		{
 			return false;
+		}
+	}
+
+	public void runLayout()
+	{
+		if(getRoot() != null)
+		{
+			layout.layout(getRoot());
+			updated = true;
+		}
+	}
+
+	public void updatePositions()
+	{
+		if(updated)
+		{
+			for (Node node : getVertices()) {
+				node.updatePosition();
+			}
+			updated = false;
 		}
 	}
 
