@@ -1,6 +1,8 @@
 package com.imperial.heap3d.entry;
 
 import com.google.common.eventbus.EventBus;
+import com.graphics.shapes.Colour;
+import com.graphics.shapes.Shape;
 import com.imperial.heap3d.implementations.factories.ControllerFactory;
 import com.imperial.heap3d.implementations.factories.ProcessFactory;
 import com.imperial.heap3d.implementations.factories.ThreadBuilder;
@@ -108,19 +110,18 @@ public class SwingWrappedApplication {
         RenderEngineAdapter renderEngine = new RenderEngineAdapter(canvas);
         HeapGraph heapGraph = new HeapGraph(renderEngine, _injector.getComponent(EventBus.class));
 
-//        final Shape[] logo = new Shape[1];
+        final Shape[] logo = new Shape[1];
         List<Runnable> beforeCommands = new ArrayList<>();
         beforeCommands.add(() -> {
-//            TODO -- THE BRIDGE WILL REMOVE LOGO WHEN START EVENT HAPPENS. FOR NOW ITS DISABLED
-//            logo[0] = renderEngine.createShapeFromModel("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
-//            renderEngine.addTo3DSpace(logo[0]);
+            logo[0] = renderEngine.createShapeFromModel("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
+            renderEngine.addTo3DSpace(logo[0]);
 
             renderEngine.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
         });
         renderEngine.before(beforeCommands);
 
         List<Runnable> duringCommands = new ArrayList<>();
-//        duringCommands.add(() -> logo[0].getEntity().increaseRotation(0, 1, 0));
+        duringCommands.add(() -> logo[0].getEntity().increaseRotation(0, 1, 0));
         duringCommands.add(heapGraph::inLoop);
         renderEngine.during(duringCommands);
 
