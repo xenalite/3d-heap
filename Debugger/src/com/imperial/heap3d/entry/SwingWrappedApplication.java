@@ -1,7 +1,10 @@
 package com.imperial.heap3d.entry;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.implementations.factories.*;
+import com.imperial.heap3d.implementations.factories.ControllerFactory;
+import com.imperial.heap3d.implementations.factories.ProcessFactory;
+import com.imperial.heap3d.implementations.factories.ThreadBuilder;
+import com.imperial.heap3d.implementations.factories.VirtualMachineProvider;
 import com.imperial.heap3d.implementations.layout.HeapGraph;
 import com.imperial.heap3d.implementations.layout.RenderEngineAdapter;
 import com.imperial.heap3d.implementations.viewmodels.ApplicationTabViewModel;
@@ -14,7 +17,6 @@ import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import org.picocontainer.Characteristics;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.behaviors.OptInCaching;
@@ -26,6 +28,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+
+import static org.picocontainer.Characteristics.CACHE;
 
 /**
  * Created by oskar on 22/11/14.
@@ -50,8 +54,8 @@ public class SwingWrappedApplication {
     }
 
     private void run() {
-        _injector.as(Characteristics.CACHE).addComponent(VirtualMachineProvider.class);
-        _injector.as(Characteristics.CACHE).addComponent(EventBus.class);
+        _injector.as(CACHE).addComponent(VirtualMachineProvider.class);
+        _injector.as(CACHE).addComponent(EventBus.class);
         _injector.addComponent(ProcessFactory.class);
 
         _injector.addComponent(ApplicationTabController.class);
@@ -60,7 +64,7 @@ public class SwingWrappedApplication {
         _injector.addComponent(HeapInfoTabController.class);
         _injector.addComponent(SidebarController.class);
 
-        _injector.as(Characteristics.CACHE).addComponent(ApplicationTabViewModel.class);
+        _injector.as(CACHE).addComponent(ApplicationTabViewModel.class);
         _injector.addComponent(BreakpointsTabViewModel.class);
         _injector.addComponent(HeapInfoTabViewModel.class);
         _injector.addComponent(SidebarViewModel.class);
@@ -120,8 +124,7 @@ public class SwingWrappedApplication {
         duringCommands.add(heapGraph::inLoop);
         renderEngine.during(duringCommands);
 
-        HeapGraphFactory factory = new HeapGraphFactory(heapGraph);
-        _injector.as(Characteristics.CACHE).addComponent(factory);
+        _injector.as(CACHE).addComponent(renderEngine);
 
         JFrame frame = new JFrame();
         JSplitPane pane = new JSplitPane();

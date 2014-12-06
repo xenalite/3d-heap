@@ -38,6 +38,7 @@ public class HeapGraph {
 
     public HeapGraph(IRenderEngine renderEngine, EventBus eventBus) {
         _renderEngine = renderEngine;
+        _renderEngine.clear3DSpace();
         _eventBus = eventBus;
         _eventBus.register(this);
     }
@@ -77,6 +78,11 @@ public class HeapGraph {
         selectionMethod();
     }
 
+//    public Set<Node> getCurrentNodes() {
+//        return Collections.unmodifiableSet(allHeapNodes);
+//        return null;
+//    }
+
     // TODO -- TO BE MOVED OUTSIDE OF THIS CLASS
     private Shape lastSelectedShape = null;
     private SelectedAnimation selectedAnimation;
@@ -111,7 +117,7 @@ public class HeapGraph {
         }
     }
 
-    protected void addLevel(StackNode stackNode) {
+    private void addLevel(StackNode stackNode) {
         HeapGraphLevel levelGraph = new HeapGraphLevel(currentLevel);
         levels.add(levelGraph.id, levelGraph);
 
@@ -130,7 +136,7 @@ public class HeapGraph {
         }
     }
 
-    protected void updateCurrentLevel(StackNode stackNode) {
+    private void updateCurrentLevel(StackNode stackNode) {
         NodesComparator comparator = new NodesComparator();
 
         HeapGraphLevel levelGraph = levels.get(currentLevel);
@@ -168,8 +174,7 @@ public class HeapGraph {
                     for (HeapEdge edge : edges) {
                         Node from = interLevelGraph.getSource(edge);
                         Node to = interLevelGraph.getDest(edge);
-                        if (from.getGeometry() == null || to.getGeometry() == null) {
-                        } else {
+                        if (from.getGeometry() != null && to.getGeometry() != null) {
                             edge.connect(from, to, new Colour(1, 1, 1), _renderEngine);
                         }
                     }
@@ -195,7 +200,7 @@ public class HeapGraph {
         if (!allHeapNodes.containsKey(n)) {
             allHeapNodes.put(n, n);
             level.buildNode(n, _renderEngine);
-            java.util.List<Node> references = n.getReferences();
+            List<Node> references = n.getReferences();
             for (Node child : references) {
                 if (allHeapNodes.containsKey(child)) {
                     child = allHeapNodes.get(child);
@@ -208,9 +213,8 @@ public class HeapGraph {
     }
 
     private void removeLevel(HeapGraphLevel levelGraph) {
-        for (Node n : levelGraph.getVertices()) {
+        for (Node n : levelGraph.getVertices())
             removeNode(n, levelGraph);
-        }
         this.levels.remove(levelGraph.id);
     }
 
@@ -236,7 +240,7 @@ public class HeapGraph {
         LOCK.unlock();
     }
 
-    public boolean receiveNodes() {
+    private boolean receiveNodes() {
         boolean receivedNewNodes;
         LOCK.lock();
         receivedNewNodes = _nodesToBe != null;
@@ -248,11 +252,8 @@ public class HeapGraph {
         return receivedNewNodes;
     }
 
-    public void initialise() {
-        _renderEngine.clear3DSpace();
-    }
-
     public void dispose() {
         _eventBus.unregister(this);
+        _renderEngine.clear3DSpace();
     }
 }

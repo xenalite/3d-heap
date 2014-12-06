@@ -4,6 +4,8 @@ import com.google.common.eventbus.EventBus;
 import com.imperial.heap3d.implementations.application.*;
 import com.imperial.heap3d.implementations.events.StartDefinition;
 import com.imperial.heap3d.implementations.jdi.DVirtualMachine;
+import com.imperial.heap3d.implementations.layout.Bridge;
+import com.imperial.heap3d.implementations.layout.IRenderEngine;
 import com.imperial.heap3d.interfaces.application.IBreakpointManager;
 import com.imperial.heap3d.interfaces.application.IStepManager;
 import com.imperial.heap3d.interfaces.application.IVariableAnalyser;
@@ -18,12 +20,12 @@ public class ProcessFactory {
 
     private IVirtualMachineProvider _vmProvider;
     private EventBus _eventBus;
-    private HeapGraphFactory _heapGraphFactory;
+    private IRenderEngine _renderEngine;
 
-    public ProcessFactory(IVirtualMachineProvider vmProvider, EventBus eventBus, HeapGraphFactory heapGraphFactory) {
+    public ProcessFactory(IVirtualMachineProvider vmProvider, EventBus eventBus, IRenderEngine renderEngine) {
         _vmProvider = Check.NotNull(vmProvider, "vmProvider");
         _eventBus = Check.NotNull(eventBus, "eventBus");
-        _heapGraphFactory = Check.NotNull(heapGraphFactory, "heapGraphFactory");
+        _renderEngine = Check.NotNull(renderEngine, "renderEngine");
     }
 
     public ControlEventHandler buildComponents(StartDefinition startDefinition) {
@@ -37,7 +39,8 @@ public class ProcessFactory {
         IStepManager _stepManager = new StepManager(vm);
         IBreakpointManager _breakpointManager = new BreakpointManager(vm);
 
-        IVariableAnalyser _variableAnalyser = new VariableAnalyser(new NodeBuilder(), _heapGraphFactory);
+        Bridge bridge = new Bridge(_renderEngine, _eventBus);
+        IVariableAnalyser _variableAnalyser = new VariableAnalyser(new NodeBuilder(), bridge);
         DebuggedProcess _debuggedProcess = new DebuggedProcess(cp.getProcess(), _breakpointManager, _stepManager,
                 _variableAnalyser, _eventBus, processStateEventBus);
 
