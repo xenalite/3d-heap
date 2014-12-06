@@ -46,9 +46,9 @@ public class HeapGraph {
         currentLevel = 0;
         for (StackNode stackNode : _stackNodes) {
             if (currentLevel < levels.size()) {
-                    updateCurrentLevel(stackNode);
+                updateCurrentLevel(stackNode);
             } else {
-                    addLevel(stackNode);
+                addLevel(stackNode);
             }
         }
 
@@ -62,12 +62,12 @@ public class HeapGraph {
 
     public void inLoop() {
         if (animation.executeStepAndCheckIfDone()) {
-                buildEdges();
+            buildEdges();
             animation = new NullAnimation();
         }
 
         boolean newNodes = receiveNodes();
-        if(newNodes) {
+        if (newNodes) {
             _eventBus.post(new NodeEvent(_stackNodes));
             Set<Node> oldHeapNodes = allHeapNodes.values().stream().collect(Collectors.toSet());
             resetStack();
@@ -80,6 +80,7 @@ public class HeapGraph {
     // TODO -- TO BE MOVED OUTSIDE OF THIS CLASS
     private Shape lastSelectedShape = null;
     private SelectedAnimation selectedAnimation;
+
     private void selectionMethod() {
         Shape selected = _renderEngine.getSelectedShape();
 
@@ -208,32 +209,25 @@ public class HeapGraph {
 
     private void removeLevel(HeapGraphLevel levelGraph) {
         for (Node n : levelGraph.getVertices()) {
-                removeNode(n, levelGraph);
+            removeNode(n, levelGraph);
         }
         this.levels.remove(levelGraph.id);
     }
 
     private void removeNode(Node n, HeapGraphLevel levelGraph) {
-        for (HeapEdge edge : levelGraph.getOutEdges(n)) {
-            _renderEngine.removeFrom3DSpace(edge.getLine());
-        }
-        _renderEngine.removeFrom3DSpace(n.getGeometry());
-        Collection<HeapEdge> outEdges = interLevelGraph.getOutEdges(n);
-        if (outEdges != null) {
-            for (HeapEdge edge : outEdges) {
-                _renderEngine.removeFrom3DSpace(edge.getLine());
-                interLevelGraph.removeEdge(edge);
-            }
-        }
+        removeEdges(levelGraph.getOutEdges(n));
+        removeEdges(interLevelGraph.getOutEdges(n));
+        removeEdges(interLevelGraph.getInEdges(n));
 
-        Collection<HeapEdge> inEdges = interLevelGraph.getInEdges(n);
-        if (inEdges != null) {
-            for (HeapEdge edge : inEdges) {
-                _renderEngine.removeFrom3DSpace(edge.getLine());
-            }
-        }
+        _renderEngine.removeFrom3DSpace(n.getGeometry());
         interLevelGraph.removeVertex(n);
         allHeapNodes.remove(n);
+    }
+
+    private void removeEdges(Collection<HeapEdge> edges) {
+        if (edges != null)
+            for (HeapEdge edge : edges)
+                _renderEngine.removeFrom3DSpace(edge.getLine());
     }
 
     public void giveNodes(Collection<StackNode> nodesToBe) {
@@ -246,7 +240,7 @@ public class HeapGraph {
         boolean receivedNewNodes;
         LOCK.lock();
         receivedNewNodes = _nodesToBe != null;
-        if(receivedNewNodes)
+        if (receivedNewNodes)
             _stackNodes = _nodesToBe;
         _nodesToBe = null;
         LOCK.unlock();
