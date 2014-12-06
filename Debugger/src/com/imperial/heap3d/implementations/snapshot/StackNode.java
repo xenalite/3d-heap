@@ -47,8 +47,13 @@ public class StackNode extends Node {
 
     @Override
     public boolean equals(Object o) {
-        return this == o || o instanceof StackNode && getId() == ((StackNode) o).getId();
+        return this == o || o instanceof StackNode &&
+                getId() == ((StackNode) o).getId() &&
+                getName().equals(((StackNode) o).getName());
     }
 
-
+    @Override
+    public int hashCode() {
+        return super.hashCode() ^ getName().hashCode();
+    }
 }

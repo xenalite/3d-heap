@@ -12,7 +12,6 @@ import com.imperial.heap3d.utilities.NodesComparator;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 public class HeapGraph {
 
@@ -59,10 +58,10 @@ public class HeapGraph {
 
         boolean newNodes = receiveNodes();
         if (newNodes) {
-            Set<Node> oldHeapNodes = allHeapNodes.stream().collect(Collectors.toSet());
+            Set<Node> oldHeapNodes = new HashSet<>(allHeapNodes);
             resetStack();
             animation.finalise();
-            animation = new Animation(oldHeapNodes, allHeapNodes.stream().collect(Collectors.toSet()));
+            animation = new Animation(oldHeapNodes, allHeapNodes);
         }
     }
 
