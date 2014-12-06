@@ -27,10 +27,6 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 	@Override
 	public boolean addVertex(Node vertex) {
 		if (vertex instanceof StackNode) {
-			if(root != null)
-			{
-				System.out.println("Re-adding root!");
-			}
 			root = (StackNode) vertex;
 		}
 
@@ -46,12 +42,11 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 	public boolean buildNode(Node n, IRenderEngine r) {
 		if (addVertex(n)) {
 			float x = getX(n);
-			float y = getY(n);
+			float y = getY();
 			float z = getZ(n);
 
 			n.buildGeometry(x, y, z, getScale(n));
 
-			//TODO remove System.out.println("Building Node: "+n.toString());
 			r.addTo3DSpace(n.getGeometry());
 			return true;
 		} else
@@ -85,10 +80,8 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 		return y;
 	}
 
-	public float getY(Node n) {
+	public float getY() {
 		return levelOffset * id;
-//				isRoot(n) ? levelOffset * id
-//				: ((float) Math.random() * levelOffset) + id * levelOffset;
 	}
 
 	public float getScale(Node n) {
@@ -96,23 +89,13 @@ public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
 	}
 
 	public Boolean isRoot(Node n) {
-		//TODO improve 
 		return n == root;
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-
-		HeapGraphLevel that = (HeapGraphLevel) o;
-
-		if (id != that.id)
-			return false;
-
-		return true;
+		return this == o || !(o == null || getClass() != o.getClass())
+				&& id == ((HeapGraphLevel) o).id;
 	}
 
 	@Override

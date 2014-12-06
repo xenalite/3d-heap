@@ -14,6 +14,8 @@ public class Program {
         buildNextChainLink(buildNextChainLink(buildNextChainLink(right)));
 
         TreeNode root = new TreeNode(left, right);
+        left = null;
+        right = null;
         print(root);
     }
 

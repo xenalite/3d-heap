@@ -2,15 +2,11 @@ package com.imperial.heap3d.implementations.layout;
 
 import com.google.common.eventbus.EventBus;
 import com.graphics.shapes.Colour;
-import com.graphics.shapes.Shape;
 import com.heap3d.layout.GraphImpl;
 import com.imperial.heap3d.implementations.events.NodeEvent;
-import com.imperial.heap3d.implementations.events.ProcessEvent;
-import com.imperial.heap3d.implementations.events.ProcessEventType;
 import com.imperial.heap3d.implementations.layout.animation.Animation;
 import com.imperial.heap3d.implementations.layout.animation.IAnimation;
 import com.imperial.heap3d.implementations.layout.animation.NullAnimation;
-import com.imperial.heap3d.implementations.layout.animation.SelectedAnimation;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.utilities.NodesComparator;
@@ -38,9 +34,7 @@ public class HeapGraph {
 
     public HeapGraph(IRenderEngine renderEngine, EventBus eventBus) {
         _renderEngine = renderEngine;
-        _renderEngine.clear3DSpace();
         _eventBus = eventBus;
-        _eventBus.register(this);
     }
 
     private void resetStack() {
@@ -75,46 +69,10 @@ public class HeapGraph {
             animation.finalise();
             animation = new Animation(oldHeapNodes, allHeapNodes.values().stream().collect(Collectors.toSet()));
         }
-        selectionMethod();
     }
 
-//    public Set<Node> getCurrentNodes() {
-//        return Collections.unmodifiableSet(allHeapNodes);
-//        return null;
-//    }
-
-    // TODO -- TO BE MOVED OUTSIDE OF THIS CLASS
-    private Shape lastSelectedShape = null;
-    private SelectedAnimation selectedAnimation;
-
-    private void selectionMethod() {
-        Shape selected = _renderEngine.getSelectedShape();
-
-        if (selectedAnimation != null && selected != null) {
-            selectedAnimation.step();
-        } else if (selectedAnimation != null) {
-            selectedAnimation.finish();
-            selectedAnimation = null;
-        }
-
-        if (selected != null && selected != lastSelectedShape) {
-            lastSelectedShape = selected;
-
-            for (Node node : allHeapNodes.values()) {
-                if (node.getGeometry() == selected) {
-                    if (selectedAnimation != null) {
-                        selectedAnimation.finish();
-                        selectedAnimation = null;
-                    }
-
-                    selectedAnimation = new SelectedAnimation(node);
-
-                    String message = String.format("Selected Node: %s \nchildren: %s \nprimitives: %s", node.getName(), node.getReferences(), node.getPrimitives());
-                    _eventBus.post(new ProcessEvent(ProcessEventType.SELECT, message));
-                    break;
-                }
-            }
-        }
+    public Collection<Node> getCurrentNodes() {
+        return allHeapNodes.values();
     }
 
     private void addLevel(StackNode stackNode) {
@@ -203,6 +161,7 @@ public class HeapGraph {
             List<Node> references = n.getReferences();
             for (Node child : references) {
                 if (allHeapNodes.containsKey(child)) {
+                    System.out.println(String.format("child:%s, in set:%s", child, allHeapNodes.get(child)));
                     child = allHeapNodes.get(child);
                     interLevelGraph.addEdge(new HeapEdge(), n, child);
                 } else {
@@ -253,7 +212,6 @@ public class HeapGraph {
     }
 
     public void dispose() {
-        _eventBus.unregister(this);
         _renderEngine.clear3DSpace();
     }
 }

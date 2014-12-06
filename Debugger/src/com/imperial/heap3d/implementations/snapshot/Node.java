@@ -42,7 +42,6 @@ public abstract class Node {
 
     //region Geometry
     public void buildGeometry(float x, float y, float z, float scale) {
-        System.out.println("Building cube: "+this.getName());
         this.geometry = new Cube(0, 0, 0, 0, 0, 0, scale, colour);
     }
 
@@ -54,9 +53,8 @@ public abstract class Node {
         if (geometry != null)
         {
             float x = level.getX(this);
-            float y = level.getY(this);
+            float y = level.getY();
             float z = level.getZ(this);
-            //System.out.println(String.format("Updating to: %f %f %f", x,y,z));
             geometry.setPosition(x, y, z);
         }
         else
