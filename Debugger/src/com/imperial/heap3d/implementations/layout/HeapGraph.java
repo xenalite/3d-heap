@@ -21,7 +21,7 @@ public class HeapGraph {
 
     private Collection<StackNode> _stackNodes = new ArrayList<>();
     private Collection<StackNode> _nodesToBe = null;
-    private Map<Node, Node> allHeapNodes = new HashMap<>();
+    private Set<Node> allHeapNodes = new HashSet<>();
     private GraphImpl<Node, HeapEdge> interLevelGraph = new GraphImpl<>();
 
     private IAnimation animation = new NullAnimation();
@@ -59,15 +59,15 @@ public class HeapGraph {
 
         boolean newNodes = receiveNodes();
         if (newNodes) {
-            Set<Node> oldHeapNodes = allHeapNodes.values().stream().collect(Collectors.toSet());
+            Set<Node> oldHeapNodes = allHeapNodes.stream().collect(Collectors.toSet());
             resetStack();
             animation.finalise();
-            animation = new Animation(oldHeapNodes, allHeapNodes.values().stream().collect(Collectors.toSet()));
+            animation = new Animation(oldHeapNodes, allHeapNodes.stream().collect(Collectors.toSet()));
         }
     }
 
     public Collection<Node> getCurrentNodes() {
-        return allHeapNodes.values();
+        return allHeapNodes;
     }
 
     private void addLevel(StackNode stackNode) {
@@ -141,7 +141,7 @@ public class HeapGraph {
 
         for (Node node : level.getVertices()) {
             for (Node child : node.getReferences()) {
-                assert allHeapNodes.containsKey(child);
+                assert allHeapNodes.contains(child);
                 if (child.getLevel() == node.getLevel()) {
                     level.addEdge(new HeapEdge(), node, child);
                 }
@@ -150,14 +150,12 @@ public class HeapGraph {
     }
 
     private void buildNodes(Node n, HeapGraphLevel level) {
-        if (!allHeapNodes.containsKey(n)) {
-            allHeapNodes.put(n, n);
+        if (!allHeapNodes.contains(n)) {
+            allHeapNodes.add(n);
             level.buildNode(n, _renderEngine);
             List<Node> references = n.getReferences();
             for (Node child : references) {
-                if (allHeapNodes.containsKey(child)) {
-                    System.out.println(String.format("child:%s, in set:%s", child, allHeapNodes.get(child)));
-                    child = allHeapNodes.get(child);
+                if (allHeapNodes.contains(child)) {
                     interLevelGraph.addEdge(new HeapEdge(), n, child);
                 } else {
                     buildNodes(child, level);
