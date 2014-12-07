@@ -8,6 +8,7 @@ import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class HeapGraphLevel {
@@ -18,6 +19,7 @@ public class HeapGraphLevel {
 	private Layout<Node, HeapEdge> _layout;
 	public static float levelOffset = 10f;
 	private StackNode root;
+	private boolean updated = false;
 
 	public HeapGraphLevel(int id) {
 		_id = id;
@@ -39,6 +41,25 @@ public class HeapGraphLevel {
 			return true;
 		}
 		return false;
+	}
+
+	public void runLayout()
+	{
+		if(getRoot() != null)
+		{
+			_layout.layout(getRoot());
+			updated = true;
+		}
+	}
+
+	public Iterable<Node> getPositionsToUpdate()
+	{
+		if(updated)
+		{
+			updated = false;
+			return getVertices();
+		}
+		return new ArrayList<>();
 	}
 
 	public float getX(Node n) {
