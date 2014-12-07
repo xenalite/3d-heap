@@ -1,106 +1,98 @@
 package com.imperial.heap3d.implementations.layout;
 
-import com.heap3d.layout.*;
+import com.heap3d.layout.FRLayout;
+import com.heap3d.layout.Graph;
+import com.heap3d.layout.GraphImpl;
+import com.heap3d.layout.Layout;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 
 import java.awt.*;
+import java.util.Collection;
 
-public class HeapGraphLevel extends GraphImpl<Node, HeapEdge> {
+public class HeapGraphLevel {
 
-	int id;
-	Layout<Node, HeapEdge> layout;
+	private final static float SPACING = 10f;
+	private int _id;
+	private Graph<Node, HeapEdge> _graph;
+	private Layout<Node, HeapEdge> _layout;
 	public static float levelOffset = 10f;
+	private StackNode root;
+
+	public HeapGraphLevel(int id) {
+		_id = id;
+		_graph = new GraphImpl<>();
+		_layout = new FRLayout<>(_graph, 0.9f, 0.01f);
+		_layout.setSize(new Dimension(200, 200));
+	}
 
 	public StackNode getRoot() {
 		return root;
 	}
 
-	protected StackNode root;
-
-	public HeapGraphLevel(int id) {
-		this.id = id;
-		this.layout = new FRLayout<>(this,0.9f, 0.01f);
-		layout.setSize(new Dimension(200,200));
-	}
-
-	@Override
 	public boolean addVertex(Node vertex) {
-		if (vertex instanceof StackNode) {
-			root = (StackNode) vertex;
-		}
-
-		boolean add = super.addVertex(vertex);
-		if(add)
-		{
+		if(_graph.addVertex(vertex)) {
 			vertex.setLevel(this);
-		}
+			if (vertex instanceof StackNode)
+				root = (StackNode) vertex;
 
-		return add;
-	}
-
-	public boolean buildNode(Node n, IRenderEngine r) {
-		if (addVertex(n)) {
-			float x = getX(n);
-			float y = getY();
-			float z = getZ(n);
-
-			n.buildGeometry(x, y, z, getScale(n));
-
-			r.addTo3DSpace(n.getGeometry());
 			return true;
-		} else
-		{
-			return false;
 		}
+		return false;
 	}
 
-	protected float spacing = 10;
 	public float getX(Node n) {
-		float x = (float)layout.transform(n).getX() ;
-		if (!isRoot(n)) {
-			if (x < 0) {
-				x -= spacing;
-			} else {
-				x += spacing;
-			}
-		}
-			return x;
+		float x = (float) _layout.transform(n).getX();
+
+		if (!isRoot(n))
+			x += (x < 0) ? -SPACING : SPACING;
+		return x;
 	}
 
 	public float getZ(Node n) {
-		float y = (float) layout.transform(n).getY() ;
-		if (!isRoot(n)) {
-			if (y < 0) {
-				y -= spacing;
-			} else {
-				y += spacing;
-			}
-		}
+		float y = (float) _layout.transform(n).getY();
+
+		if (!isRoot(n))
+			y += (y < 0) ? -SPACING : SPACING;
 		return y;
 	}
 
 	public float getY() {
-		return levelOffset * id;
+		return levelOffset * _id;
 	}
 
-	public float getScale(Node n) {
-		return isRoot(n) ? 10 : 1;
-	}
-
-	public Boolean isRoot(Node n) {
+	public boolean isRoot(Node n) {
 		return n == root;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		return this == o || !(o == null || getClass() != o.getClass())
-				&& id == ((HeapGraphLevel) o).id;
+				&& _id == ((HeapGraphLevel) o)._id;
 	}
 
 	@Override
 	public int hashCode() {
-		return id;
+		return _id;
 	}
 
+	public int getId() {
+		return _id;
+	}
+
+	public Layout<Node,HeapEdge> getLayout() {
+		return _layout;
+	}
+
+	public Iterable<Node> getVertices() {
+		return _graph.getVertices();
+	}
+
+	public void addEdge(HeapEdge heapEdge, Node node, Node child) {
+		_graph.addEdge(heapEdge, node, child);
+	}
+
+	public Collection<HeapEdge> getOutEdges(Node n) {
+		return _graph.getOutEdges(n);
+	}
 }

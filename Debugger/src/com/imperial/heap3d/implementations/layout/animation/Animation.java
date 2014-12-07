@@ -1,25 +1,23 @@
 package com.imperial.heap3d.implementations.layout.animation;
 
+import com.graphics.shapes.Shape;
 import com.imperial.heap3d.implementations.snapshot.Node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class Animation implements IAnimation {
 
 	private boolean alreadyDone;
-	private Set<Node> startingNodes;
-	private Set<Node> finishingNodes;
 	private List<AnimationEvent> deleteEvents = new ArrayList<>();
 	private List<AnimationEvent> moveEvents = new ArrayList<>();
 	private List<AnimationEvent> addEvents = new ArrayList<>();
 
-	public Animation(Set<Node> startingNodes, Set<Node> finishingNodes) {
-		this.startingNodes = startingNodes;
-		this.finishingNodes = finishingNodes;
+	public Animation(Set<Entry<Node,Shape>> startingNodes, Set<Entry<Node,Shape>> finishingNodes) {
 		alreadyDone = false;
-		createEvents();
+		createEvents(startingNodes, finishingNodes);
 	}
 
 	@Override
@@ -56,33 +54,32 @@ public class Animation implements IAnimation {
 		return true;
 	}
 
-	private void createEvents() {
-		for (Node fromNode : startingNodes) {
+	private void createEvents(Set<Entry<Node, Shape>> startingEntries, Set<Entry<Node, Shape>> finishingEntries) {
+		for (Entry<Node,Shape> fromEntry : startingEntries) {
 			boolean moveAnimation = false;
-			for (Node toNode : finishingNodes) {
-
-				if (toNode.equals(fromNode)) {
+			for (Entry<Node,Shape> toEntry : finishingEntries) {
+				if (toEntry.getKey().equals(fromEntry.getKey())) {
 					moveAnimation = true;
-					moveEvents.add(new MoveAnimation(fromNode, toNode));
+					moveEvents.add(new MoveAnimation(fromEntry.getValue(), toEntry.getValue()));
 					break;
 				}
 			}
 
 			if (!moveAnimation) {
-				deleteEvents.add(new DeleteAnimation(fromNode));
+				deleteEvents.add(new DeleteAnimation(fromEntry.getValue()));
 			}
 		}
 
-		for (Node toNode : finishingNodes) {
+		for (Entry<Node,Shape> toEntry : finishingEntries) {
 			boolean moveAnimation = false;
-			for (Node fromNode : startingNodes) {
-				if (toNode.equals(fromNode)) {
+			for (Entry<Node,Shape> fromEntry : startingEntries) {
+				if (toEntry.getKey().equals(fromEntry.getKey())) {
 					moveAnimation = true;
 				}
 			}
 
 			if (!moveAnimation) {
-				addEvents.add(new AddAnimation(toNode));
+				addEvents.add(new AddAnimation(toEntry.getValue()));
 			}
 		}
 

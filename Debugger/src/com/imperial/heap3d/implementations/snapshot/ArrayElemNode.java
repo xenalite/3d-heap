@@ -1,6 +1,6 @@
 package com.imperial.heap3d.implementations.snapshot;
 
-import com.graphics.shapes.Colour;
+import com.graphics.shapes.Shape;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,14 +17,12 @@ public class ArrayElemNode extends Node {
         super(String.format("[%d]", index), 0);
         this.value = value;
         hasReference = false;
-        this.colour = Colour.RED;
     }
 
     public ArrayElemNode(int index, Node value) {
         super(String.format("[%d]", index), 0);
         this.value = value;
         hasReference = true;
-        this.colour = Colour.RED;
     }
 
     public Object getValue(){
@@ -49,5 +47,10 @@ public class ArrayElemNode extends Node {
         if(hasReference)
             nodes.add((Node) value);
         return nodes;
+    }
+
+    @Override
+    public Shape createShape() {
+        return GeometryFactory.createCubeForArrayElemNode();
     }
 }

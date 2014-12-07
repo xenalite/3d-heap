@@ -1,8 +1,11 @@
 package com.imperial.heap3d.implementations.snapshot;
 
-import com.graphics.shapes.Colour;
+import com.graphics.shapes.Shape;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class ObjectNode extends Node {
@@ -14,7 +17,6 @@ public class ObjectNode extends Node {
         super(name, id);
         _references = new ArrayList<>();
         _primitives = new HashMap<>();
-        this.colour = Colour.ORANGE;
     }
 
     public void addPrimitive(String name, Object value) {
@@ -38,6 +40,11 @@ public class ObjectNode extends Node {
     @Override
     public List<Node> getReferences() {
         return _references;
+    }
+
+    @Override
+    public Shape createShape() {
+        return GeometryFactory.createCubeForObjectNode();
     }
 
     @Override

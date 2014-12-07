@@ -14,6 +14,7 @@ import com.imperial.heap3d.utilities.Check;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 
 import static com.imperial.heap3d.implementations.events.ProcessEventType.STARTED;
 
@@ -54,16 +55,19 @@ public class Bridge {
         if (selected != null && selected != lastSelectedShape) {
             lastSelectedShape = selected;
 
-            for (Node node : _heapGraph.getCurrentNodes()) {
-                if (node.getGeometry() == selected) {
+            for (Entry<Node,Shape> entry : _heapGraph.getCurrentNodes()) {
+                Node node = entry.getKey();
+                Shape s = entry.getValue();
+                if (s == selected) {
                     if (selectedAnimation != null) {
                         selectedAnimation.finish();
                         selectedAnimation = null;
                     }
 
-                    selectedAnimation = new SelectedAnimation(node);
+                    selectedAnimation = new SelectedAnimation(s);
 
-                    String message = String.format("Selected Node: %s \nchildren: %s \nprimitives: %s", node.getName(), node.getReferences(), node.getPrimitives());
+                    String message = String.format("Selected Node: %s \nchildren: %s \nprimitives: %s",
+                            node.getName(), node.getReferences(), node.getPrimitives());
                     _eventBus.post(new ProcessEvent(ProcessEventType.SELECT, message));
                     break;
                 }

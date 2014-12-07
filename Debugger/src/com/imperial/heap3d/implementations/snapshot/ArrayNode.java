@@ -1,6 +1,6 @@
 package com.imperial.heap3d.implementations.snapshot;
 
-import com.graphics.shapes.Colour;
+import com.graphics.shapes.Shape;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -13,7 +13,6 @@ public class ArrayNode extends Node {
     public ArrayNode(String name, long id) {
         super(name, id);
         this._elements = new ArrayList<>();
-        this.colour = Colour.YELLOW;
     }
 
     public void addElement(Node element) { _elements.add(element); }
@@ -29,6 +28,11 @@ public class ArrayNode extends Node {
     @Override
     public List<Node> getReferences() {
         return _elements;
+    }
+
+    @Override
+    public Shape createShape() {
+        return GeometryFactory.createCubeForArrayNode();
     }
 
     @Override

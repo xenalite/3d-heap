@@ -1,7 +1,7 @@
 package com.imperial.heap3d.implementations.layout.animation;
 
 import com.graphics.entities.Entity;
-import com.imperial.heap3d.implementations.snapshot.Node;
+import com.graphics.shapes.Shape;
 
 public class SelectedAnimation extends AnimationEvent {
 
@@ -10,9 +10,9 @@ public class SelectedAnimation extends AnimationEvent {
 	private float startingScale, incrementScale, bound;
 	private Entity entity;
 
-	public SelectedAnimation(Node selectedNode) {
+	public SelectedAnimation(Shape shape) {
 		super(30);
-		entity = selectedNode.getGeometry().getEntity();
+		entity = shape.getEntity();
 		startingScale = entity.getScale();
 		bound = (GROW_RANGE * startingScale);
 		incrementScale = bound / maxIterations;

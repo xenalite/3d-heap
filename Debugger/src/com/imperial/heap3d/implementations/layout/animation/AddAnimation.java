@@ -1,7 +1,7 @@
 package com.imperial.heap3d.implementations.layout.animation;
 
 import com.graphics.entities.Entity;
-import com.imperial.heap3d.implementations.snapshot.Node;
+import com.graphics.shapes.Shape;
 
 public class AddAnimation extends AnimationEvent {
 
@@ -9,9 +9,9 @@ public class AddAnimation extends AnimationEvent {
 	private float finalScale;
 	private Entity entity;
 
-	public AddAnimation(Node newNode) {
-		entity = newNode.getGeometry().getEntity();
-		finalScale = newNode.getGeometry().getEntity().getScale();
+	public AddAnimation(Shape newShape) {
+		entity = newShape.getEntity();
+		finalScale = entity.getScale();
 		increment = finalScale / maxIterations;
 		entity.setScale(0);
 	}

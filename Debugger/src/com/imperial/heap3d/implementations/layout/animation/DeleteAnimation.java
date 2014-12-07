@@ -1,16 +1,16 @@
 package com.imperial.heap3d.implementations.layout.animation;
 
 import com.graphics.entities.Entity;
-import com.imperial.heap3d.implementations.snapshot.Node;
+import com.graphics.shapes.Shape;
 
 public class DeleteAnimation extends AnimationEvent {
 
 	private Entity entity;
 	private float decrementScale;
 
-	public DeleteAnimation(Node nodeToDelete) {
-		entity = nodeToDelete.getGeometry().getEntity();
-		decrementScale = -nodeToDelete.getGeometry().getEntity().getScale() / maxIterations;
+	public DeleteAnimation(Shape shapeToDelete) {
+		entity = shapeToDelete.getEntity();
+		decrementScale = -shapeToDelete.getEntity().getScale() / maxIterations;
 	}
 
 	@Override

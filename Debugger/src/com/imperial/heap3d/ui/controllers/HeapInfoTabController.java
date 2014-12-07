@@ -1,5 +1,6 @@
 package com.imperial.heap3d.ui.controllers;
 
+import com.graphics.shapes.Colour;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.viewmodels.HeapInfoTabViewModel;
 import com.imperial.heap3d.utilities.ColorConverter;
@@ -50,7 +51,9 @@ public class HeapInfoTabController implements Initializable {
                     } else {
 
                         if(item != null) {
-                            anotherLabel.setTextFill(ColorConverter.convertToPaint(item.getColour()));
+                            // TODO -- this is silly, but will need to send more information. perhaps entry(node,shape)
+                            anotherLabel.setTextFill(ColorConverter.convertToPaint(Colour.RED));
+//                                    item.getColour()));
                         }
                             setGraphic(hbox);
 

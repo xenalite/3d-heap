@@ -1,6 +1,6 @@
 package com.imperial.heap3d.implementations.snapshot;
 
-import com.graphics.shapes.Colour;
+import com.graphics.shapes.Shape;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +12,6 @@ public class StringNode extends Node {
     public StringNode(String name, long id, String str) {
         super(name, id);
         this.str = str;
-        this.colour = Colour.AQUA;
     }
     
     public String getString(){
@@ -27,6 +26,11 @@ public class StringNode extends Node {
     @Override
     public List<Node> getReferences() {
         return new LinkedList<>();
+    }
+
+    @Override
+    public Shape createShape() {
+        return GeometryFactory.createCubeForStackNode();
     }
 
     @Override

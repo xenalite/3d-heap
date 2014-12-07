@@ -1,7 +1,6 @@
 package com.imperial.heap3d.implementations.layout.animation;
 
 import com.graphics.shapes.Shape;
-import com.imperial.heap3d.implementations.snapshot.Node;
 import org.lwjgl.util.vector.Vector3f;
 
 public class MoveAnimation extends AnimationEvent {
@@ -10,10 +9,9 @@ public class MoveAnimation extends AnimationEvent {
 	private Vector3f finalPosition;
 	private Shape shape;
 
-	public MoveAnimation(Node startNode, Node endNode) {
-		shape = endNode.getGeometry();
-		Shape oldShape = startNode.getGeometry();
-		float[] oldPos = oldShape.getPosition();
+	public MoveAnimation(Shape startShape, Shape endShape) {
+		shape = endShape;
+		float[] oldPos = startShape.getPosition();
 		float[] newPos = shape.getPosition();
 		incrementX = (newPos[0] - oldPos[0]) / maxIterations;
 		incrementY = (newPos[1] - oldPos[1]) / maxIterations;
