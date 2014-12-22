@@ -99,6 +99,16 @@ public class HeapGraph {
             Shape s = nodeToShape.get(node);
             s.setPosition(level.getX(node), level.getY(), level.getZ(node));
         }
+        else {
+            HeapGraphLevel level = node.getLevel();
+            Shape s = node.createShape();
+            nodeToShape.put(node, s);
+            _renderEngine.addTo3DSpace(s);
+            level.runLayout();
+            s.setPosition(level.getX(node), level.getY(), level.getZ(node));
+
+//            buildNodes(node, levels.get(currentLevel));
+        }
     }
 
     private void updateCurrentLevel(StackNode stackNode) {
@@ -184,9 +194,9 @@ public class HeapGraph {
     }
 
     private void removeNode(Node n, HeapGraphLevel levelGraph) {
-        removeEdges(levelGraph.getOutEdges(n));
-        removeEdges(interLevelGraph.getOutEdges(n));
-        removeEdges(interLevelGraph.getInEdges(n));
+        removeEdgesFrom3DSpace(levelGraph.getOutEdges(n));
+        removeEdgesFrom3DSpace(interLevelGraph.getOutEdges(n));
+        removeEdgesFrom3DSpace(interLevelGraph.getInEdges(n));
         Collection<HeapEdge> inEdges = interLevelGraph.getInEdges(n);
         if(inEdges == null || inEdges.size() == 0) {
             _renderEngine.removeFrom3DSpace(nodeToShape.get(n));
@@ -195,10 +205,10 @@ public class HeapGraph {
         } else {
             HeapEdge edge = inEdges.iterator().next();
             Node parent = interLevelGraph.getOpposite(n,edge);
-            assert parent.getLevel() != n.getLevel();
+//            assert parent.getLevel() != n.getLevel();
 
             parent.getLevel().addVertex(n);
-            n.getLevel().runLayout();
+//            n.getLevel().runLayout();
         }
 
         Shape s = nodeToShape.get(n);
@@ -212,7 +222,7 @@ public class HeapGraph {
         level.getPositionsToUpdate().forEach(this::updatePosition);
     }
 
-    private void removeEdges(Collection<HeapEdge> edges) {
+    private void removeEdgesFrom3DSpace(Collection<HeapEdge> edges) {
         if (edges != null)
             for (HeapEdge edge : edges)
                 _renderEngine.removeFrom3DSpace(edge.getLine());

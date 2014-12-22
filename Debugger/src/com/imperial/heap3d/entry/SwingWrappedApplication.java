@@ -110,18 +110,18 @@ public class SwingWrappedApplication {
         RenderEngineAdapter renderEngine = new RenderEngineAdapter(canvas);
         HeapGraph heapGraph = new HeapGraph(renderEngine);
 
-        final Shape[] logo = new Shape[1];
+//        final Shape[] logo = new Shape[1];
         List<Runnable> beforeCommands = new ArrayList<>();
         beforeCommands.add(() -> {
-            logo[0] = renderEngine.createShapeFromModel("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
-            renderEngine.addTo3DSpace(logo[0]);
+//            logo[0] = renderEngine.createShapeFromModel("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
+//            renderEngine.addTo3DSpace(logo[0]);
 
             renderEngine.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
         });
         renderEngine.before(beforeCommands);
 
         List<Runnable> duringCommands = new ArrayList<>();
-        duringCommands.add(() -> logo[0].getEntity().increaseRotation(0, 1, 0));
+//        duringCommands.add(() -> logo[0].getEntity().increaseRotation(0, 1, 0));
         duringCommands.add(heapGraph::inLoop);
         renderEngine.during(duringCommands);
 
