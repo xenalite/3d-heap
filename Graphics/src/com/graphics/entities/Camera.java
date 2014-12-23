@@ -13,7 +13,6 @@ public class Camera {
 	private static float MOUSE_SENSITIVITY = 0.05f;
 	
 	private static int MOUSE_LEFT = 0;
-	private static int MOUSE_RIGHT = 1;
 	
 	public Camera() {
 	}
@@ -44,12 +43,14 @@ public class Camera {
         // Backwards
         if(Keyboard.isKeyDown(Keyboard.KEY_S)){
         	position.x += total * (float)Math.sin(Math.toRadians(yaw+180));
+        	position.y += total * (float)Math.tan(Math.toRadians(pitch+180));
 			position.z += total * (float)Math.cos(Math.toRadians(yaw));
         }
         
         // Forwards
         if(Keyboard.isKeyDown(Keyboard.KEY_W)){
         	position.x -= total * (float)Math.sin(Math.toRadians(yaw+180));
+        	position.y -= total * (float)Math.tan(Math.toRadians(pitch+180));
 		    position.z -= total * (float)Math.cos(Math.toRadians(yaw));
         }
         
@@ -65,12 +66,6 @@ public class Camera {
         	position.z -= total * (float)Math.cos(Math.toRadians(yaw-90));
         }
         
-        
-		if(Keyboard.isKeyDown(Keyboard.KEY_UP))
-			position.y += total;
-		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))
-			position.y -= total;
-		
 		if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
 			Mouse.setGrabbed(false);
 		

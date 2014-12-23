@@ -44,14 +44,6 @@ public class Bridge {
 
     private void selectionMethod() {
         Shape selected = _renderEngine.getSelectedShape();
-/*
-        if (selectedAnimation != null && selected != null) {
-            selectedAnimation.step();
-        } else if (selectedAnimation != null) {
-            selectedAnimation.finish();
-            selectedAnimation = null;
-        }
-*/
         
         if (selected != null && selected != lastSelectedShape) {
             lastSelectedShape = selected;
