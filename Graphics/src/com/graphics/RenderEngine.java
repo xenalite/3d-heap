@@ -199,6 +199,12 @@ public abstract class RenderEngine implements Runnable {
 			return;
 		camera.setPosition(new Vector3f(x, y, z));
 	}
+	
+	protected void setCameraPositionSmooth(float x, float y, float z) {
+		if (camera == null)
+			return;
+		camera.setPositionSmooth(new Vector3f(x, y, z));
+	}
 
 	protected void moveCameraPosition(float dx, float dy, float dz) {
 		if (camera == null)
