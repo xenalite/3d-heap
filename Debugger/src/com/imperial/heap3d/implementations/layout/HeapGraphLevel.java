@@ -17,7 +17,7 @@ public class HeapGraphLevel {
 	private int _id;
 	private Graph<Node, HeapEdge> _graph;
 	private Layout<Node, HeapEdge> _layout;
-	public static float levelOffset = 10f;
+	public static float levelOffset = 5f;
 	private StackNode root;
 	private boolean updated = false;
 

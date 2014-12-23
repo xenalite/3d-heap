@@ -3,6 +3,8 @@ package com.perf;
 import com.graphics.RenderEngine;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Cube;
+import com.graphics.shapes.Line;
+import com.graphics.shapes.Pyramid;
 import com.graphics.text.Text3D;
 
 /**
@@ -26,26 +28,56 @@ public class SimpleTest extends RenderEngine {
         super("Simple Test", 1280, 720, false);
         super.setBackgroundColour(0.5f, 0.5f, 0.5f, 1f);
     }
-
+    
     @Override
     protected void beforeLoop() {
         Colour col1 = new Colour(1, 0, 0);
-setRayPickDebugLines(true);
-        Cube c1 = new Cube(0, 0, 110, 0, 0, 0, 1, col1);
-        Cube c2 = new Cube(0, 0, 90, 0, 0, 0, 1.5f, Colour.AQUA);
+        setRayPickDebugLines(true);
+        
+        float x = 10;
+        float y = 10;
+        float z = -10;
+        
+        float rotx = 0f;//(float) Math.toDegrees((float) Math.atan2( y, z ));
+        float roty = (float) Math.toDegrees(Math.atan2( x * Math.cos(rotx), z ));
+        float rotz = (float) Math.toDegrees(Math.atan2( Math.cos(rotx), Math.sin(rotx) * Math.sin(roty) ));
+        
+        rotx = (float) Math.atan2( y, z );
+        if (z >= 0) {
+           roty = (float) -Math.atan2( x * Math.cos(rotx), z );
+        }else{
+           roty = (float) Math.atan2( x * Math.cos(rotx), -z );
+        }
+        
+        System.out.println(rotx);
+        System.out.println(roty);
+        System.out.println(rotz);
+        /*
+        if (z >= 0) {
+            roty = -(float) Math.toDegrees(Math.atan2( x * Math.cos(rotx), z ));
+         }else{
+            roty = (float) Math.toDegrees(Math.atan2( x * Math.cos(rotx), -z ));
+         }
+       */
+        
+        Pyramid c1 = new Pyramid(x, y, z, rotx, roty, rotz, 1f, col1);
+        Line l1 = new Line(0, 0, 0, x, y, z, Colour.GREEN);
+        Cube c2 = new Cube(0, 1, 110, 0, 0, 0, 1, Colour.AQUA);
         addShapeTo3DSpace(c1);
         addShapeTo3DSpace(c2);
+        addShapeTo3DSpace(l1);
+        /*
         text = getText3D();
         try {
-			text.print(10, 10, 0, 45, 45, 0, 1, Colour.GREEN, "ABCDEFGHIJKLMNOPQRSTUVWXYZ_$abcdefghijklmnopqrstuvwxyz");
-		} catch (Exception e) {
+        	text.print(10, 10, 0, 45, 45, 0, 1, Colour.GREEN, "ABCDEFGHIJKLMNOPQRSTUVWXYZ_$abcdefghijklmnopqrstuvwxyz");
+        }catch (Exception e) {
 			e.printStackTrace();
 		}
+		*/
     }
 
     @Override
     protected void inLoop() {
-
     }
 
     @Override
