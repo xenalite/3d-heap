@@ -9,6 +9,7 @@ import com.imperial.heap3d.implementations.layout.animation.NullAnimation;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.utilities.NodesComparator;
+import com.imperial.heap3d.utilities.Pair;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -53,44 +54,6 @@ public class HeapGraph {
         }
     }
 
-    public void inLoop() {
-        if (animation.executeStepAndCheckIfDone()) {
-            buildEdges();
-            animation = new NullAnimation();
-        }
-
-        boolean newNodes = receiveNodes();
-        if (newNodes) {
-            Set<Entry<Node, Shape>> oldNodes = new HashSet<>(nodeToShape.entrySet());
-            resetStack();
-            animation.finalise();
-            animation = new Animation(oldNodes, nodeToShape.entrySet());
-        }
-    }
-
-    public Set<Entry<Node, Shape>> getCurrentNodes() {
-        return nodeToShape.entrySet();
-    }
-
-    private void addLevel(StackNode stackNode) {
-        HeapGraphLevel levelGraph = new HeapGraphLevel(currentLevel);
-        levels.add(levelGraph.getId(), levelGraph);
-
-        if (!stackNode.hasReference()) {
-            if (levelGraph.addVertex(stackNode)) {
-                initialiseNewShape(stackNode);
-            }
-            levelGraph.runLayout();
-            updatePositions(levelGraph);
-            currentLevel++;
-        } else {
-            buildGraph(stackNode, levelGraph);
-            levelGraph.runLayout();
-            updatePositions(levelGraph);
-            currentLevel++;
-        }
-    }
-
     private void updatePosition(Node node) {
         if (nodeToShape.containsKey(node)) {
             HeapGraphLevel level = node.getLevel();
@@ -114,16 +77,34 @@ public class HeapGraph {
                 if (!stackNode.hasReference()) {
                     currentLevel++;
                 } else {
-                    // TODO -- copy the colour of the old node.
-                    // TODO -- reserve removing a level only to actual removals
                     removeLevel(levelGraph);
                     addLevel(stackNode);
                 }
             }
         } else {
-            // TODO -- same as above.
-            removeLevel(levelGraph);
+            Pair<Node,HeapGraphLevel> pair = removeLevel(levelGraph);
+            removeNodeFromGraphAnd3DSpace(pair.first);
             addLevel(stackNode);
+        }
+    }
+
+    //region add
+    private void addLevel(StackNode stackNode) {
+        HeapGraphLevel levelGraph = new HeapGraphLevel(currentLevel);
+        levels.add(levelGraph.getId(), levelGraph);
+
+        if (!stackNode.hasReference()) {
+            if (levelGraph.addVertex(stackNode)) {
+                initialiseNewShape(stackNode);
+            }
+            levelGraph.runLayout();
+            updatePositions(levelGraph);
+            currentLevel++;
+        } else {
+            buildGraph(stackNode, levelGraph);
+            levelGraph.runLayout();
+            updatePositions(levelGraph);
+            currentLevel++;
         }
     }
 
@@ -180,49 +161,24 @@ public class HeapGraph {
                 buildNewNodes(child, level);
         }
     }
+    //endregion
 
-    private void removeLevel(HeapGraphLevel levelGraph) {
-        Node nodeToSave = null;
-        HeapGraphLevel levelToSave = null;
+    //region remove
+    private Pair<Node,HeapGraphLevel> removeLevel(HeapGraphLevel levelGraph) {
+        Pair<Node, HeapGraphLevel> pair = null;
         for (Node node : levelGraph.getVertices()) {
             removeLinesFrom3DSpace(node.getLevel().getOutEdges(node));
             removeLinesFrom3DSpace(interLevelGraph.getOutEdges(node));
             removeLinesFrom3DSpace(interLevelGraph.getInEdges(node));
 
             Collection<HeapEdge> inEdges = interLevelGraph.getInEdges(node);
-            if(isEmpty(inEdges)) {
+            if (isEmpty(inEdges))
                 removeNodeFromGraphAnd3DSpace(node);
-            } else {
-                nodeToSave = node;
-                levelToSave = interLevelGraph.getOpposite(node, inEdges.iterator().next()).getLevel();
-            }
-        }
-
-        if(nodeToSave != null && levelToSave != null) {
-            if(levelToSave.addVertex(nodeToSave)) {
-                attachToNew(nodeToSave, levelToSave);
-            }
-            for (Node node : levelToSave.getVertices()) {
-                final HeapGraphLevel finalLevelToSave = levelToSave;
-                node.getReferences().stream()
-                        .filter(child -> child.getLevel() == node.getLevel())
-                        .forEach(child -> finalLevelToSave.addEdge(new HeapEdge(), node, child));
-            }
-            levelToSave.runLayout();
-            updatePositions(levelToSave);
+            else
+                pair = Pair.create(node, interLevelGraph.getOpposite(node, inEdges.iterator().next()).getLevel());
         }
         levels.remove(levelGraph.getId());
-    }
-
-    private void attachToNew(Node node, HeapGraphLevel level) {
-        for (Node child : node.getReferences()) {
-            if (level.addVertex(child)) {
-                Shape s = child.createShape();
-                nodeToShape.put(child, s);
-                _renderEngine.addTo3DSpace(s);
-                attachToNew(child, level);
-            } else throw new IllegalStateException("add vertex in attach to new");
-        }
+        return pair;
     }
 
     private void removeNodeFromGraphAnd3DSpace(Node node) {
@@ -244,6 +200,26 @@ public class HeapGraph {
         if (edges != null)
             for (HeapEdge edge : edges)
                 _renderEngine.removeFrom3DSpace(edge.getLine());
+    }
+    //endregion
+
+    public void inLoop() {
+        if (animation.executeStepAndCheckIfDone()) {
+            buildEdges();
+            animation = new NullAnimation();
+        }
+
+        boolean newNodes = receiveNodes();
+        if (newNodes) {
+            Set<Entry<Node, Shape>> oldNodes = new HashSet<>(nodeToShape.entrySet());
+            resetStack();
+            animation.finalise();
+            animation = new Animation(oldNodes, nodeToShape.entrySet());
+        }
+    }
+
+    public Set<Entry<Node, Shape>> getCurrentNodes() {
+        return nodeToShape.entrySet();
     }
 
     public void giveNodes(Collection<StackNode> nodesToBe) {

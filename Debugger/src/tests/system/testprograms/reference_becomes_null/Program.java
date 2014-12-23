@@ -17,7 +17,7 @@ public class Program {
 
         TreeNode a = new TreeNode(new TreeNode(), new TreeNode());
         TreeNode b = a;
-        a.left.left = new TreeNode();
+        a = a.left;
     }
 
     public static TreeNode buildTree() {
