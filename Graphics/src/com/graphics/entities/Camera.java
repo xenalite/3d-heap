@@ -70,10 +70,6 @@ public class Camera {
 			position.y += total;
 		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))
 			position.y -= total;
-		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT))
-			roll --;
-		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
-			roll ++;
 		
 		if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
 			Mouse.setGrabbed(false);

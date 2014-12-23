@@ -10,8 +10,8 @@ import com.imperial.heap3d.utilities.ColorConverter;
  */
 public class GeometryFactory {
 
-    private final static float STACK_NODE_SCALE = 10f;
-    private final static float HEAP_NODE_SCALE = 1f;
+    private final static float STACK_NODE_SCALE = 5f;
+    private final static float HEAP_NODE_SCALE = 0.5f;
 
     public static Shape createCubeForStackNode() {
         return new Cube(0, 0, 0, 0, 0, 0, STACK_NODE_SCALE, ColorConverter.randomColour());

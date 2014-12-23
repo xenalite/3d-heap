@@ -88,7 +88,6 @@ public abstract class ShaderProgram {
 	private static int loadShader(String file, int type){
 		StringBuilder shaderSource = new StringBuilder();
 		try{
-			//TODO change to be more generic
 			InputStreamReader r = new InputStreamReader(ShaderProgram.class.getClassLoader().getResourceAsStream(file));
 			BufferedReader reader = new BufferedReader(r);//new FileReader("res/"+file));//r);
 			String line;
