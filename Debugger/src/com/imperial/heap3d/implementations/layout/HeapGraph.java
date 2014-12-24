@@ -226,8 +226,10 @@ public class HeapGraph {
 
     private void removeEdges(Collection<HeapEdge> edges) {
         if (edges != null)
-            for (HeapEdge edge : edges)
+            for (HeapEdge edge : edges){
                 _renderEngine.removeFrom3DSpace(edge.getLine());
+                _renderEngine.removeFrom3DSpace(edge.getArrow());
+            }
     }
 
     public void giveNodes(Collection<StackNode> nodesToBe) {
