@@ -1,6 +1,7 @@
 package com.imperial.heap3d.implementations.layout;
 
 import com.graphics.shapes.Colour;
+import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
 import com.heap3d.layout.GraphImpl;
 import com.imperial.heap3d.implementations.layout.animation.Animation;
@@ -227,7 +228,8 @@ public class HeapGraph {
     private void removeEdges(Collection<HeapEdge> edges) {
         if (edges != null)
             for (HeapEdge edge : edges){
-                _renderEngine.removeFrom3DSpace(edge.getLine());
+            	for(Line l : edge.getLines())
+            		_renderEngine.removeFrom3DSpace(l);
                 _renderEngine.removeFrom3DSpace(edge.getArrow());
             }
     }
