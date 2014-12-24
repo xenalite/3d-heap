@@ -61,12 +61,17 @@ public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
     }
     
     @Override
-    public void printTo3DSpace(float x, float y, float z, float rx, float ry, float rz, float scale, Colour c, String msg){
+    public void printTo3DSpace(float x, float y, float z, float rx, float ry, float rz, float scale, String msg){
     	 try {
-			super.getText3D().print(x, y, x, rx, ry, rz, scale, c, msg);
+			super.getText3D(Colour.WHITE).print(x, y, z, rx, ry, rz, scale, msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+    }
+    
+    @Override
+    public void removeText(){
+    	super.getText3D(Colour.WHITE).clearText();
     }
     //endregion
 

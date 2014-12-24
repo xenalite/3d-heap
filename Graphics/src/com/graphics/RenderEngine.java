@@ -151,7 +151,7 @@ public abstract class RenderEngine implements Runnable {
 		return s;
 	}
 
-	protected void removeShapeFrom3DSpace(Shape e) {
+	public void removeShapeFrom3DSpace(Shape e) {
 		shapes.remove(e);
 	}
 
@@ -217,9 +217,9 @@ public abstract class RenderEngine implements Runnable {
 		debugLines = flag;
 	}
 	
-	protected Text3D getText3D(){
+	protected Text3D getText3D(Colour colour){
 		if(text3d == null)
-			text3d = new Text3D(Loader.getInstance(), this);
+			text3d = new Text3D(Loader.getInstance(), this, colour);
 		return text3d;
 	}
 }

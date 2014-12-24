@@ -1,7 +1,10 @@
 package com.graphics.text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import com.graphics.RenderEngine;
 import com.graphics.models.Loader;
 import com.graphics.models.RawModel;
@@ -20,11 +23,15 @@ public class Text3D {
 	
 	private Map<Character, RawModel> asciiToModel;
 	private RenderEngine re;
+	private Colour colour;
+	private List<Model> models;
 	
-	public Text3D(Loader loader, RenderEngine re){
+	public Text3D(Loader loader, RenderEngine re, Colour c){
 		this.re = re;
 		asciiToModel = new HashMap<Character, RawModel>();
+		this.colour = c;
 		initModels(loader);
+		models = new ArrayList<Model>();
 	}
 
 	// TODO models need to be generated
@@ -32,18 +39,18 @@ public class Text3D {
 		
 		String prefix = "letters/";
 		
-		asciiToModel.put((char)ASCII_DOLLAR, OBJLoader.loadObjModel(true, prefix + "special/dollar.obj", loader, Colour.AQUA));
-		asciiToModel.put((char)ASCII_UNDERSCORE, OBJLoader.loadObjModel(true, prefix + "special/underscore.obj", loader, Colour.AQUA));
+		asciiToModel.put((char)ASCII_DOLLAR, OBJLoader.loadObjModel(true, prefix + "special/dollar.obj", loader, colour));
+		asciiToModel.put((char)ASCII_UNDERSCORE, OBJLoader.loadObjModel(true, prefix + "special/underscore.obj", loader, colour));
 		
 		for(int i = ASCII_LOWER_A; i <= ASCII_LOWER_Z; i++)
-			asciiToModel.put((char)i, OBJLoader.loadObjModel(true, prefix + "lower/" + (char)i + ".obj", loader, Colour.AQUA));
+			asciiToModel.put((char)i, OBJLoader.loadObjModel(true, prefix + "lower/" + (char)i + ".obj", loader, colour));
 		
 		for(int i = ASCII_UPPER_A; i <= ASCII_UPPER_Z; i++)
-			asciiToModel.put((char)i, OBJLoader.loadObjModel(true, prefix + "upper/" + (char)i+".obj", loader, Colour.AQUA));
+			asciiToModel.put((char)i, OBJLoader.loadObjModel(true, prefix + "upper/" + (char)i+".obj", loader, colour));
 		
 	}
 	
-	public void print(float x, float y, float z, float rotX, float rotY, float rotZ, float scale, Colour col, String message) throws Exception{
+	public void print(float x, float y, float z, float rotX, float rotY, float rotZ, float scale, String message) throws Exception{
 		
 		char[] chars = message.toCharArray();
 		
@@ -54,10 +61,17 @@ public class Text3D {
 			if(model == null)
 				throw new Exception("Invalid char: " + c);
 			
-			Model l = new Model(x, y, z, rotX, rotY, rotZ, scale, col, model);
+			Model l = new Model(x, y, z, rotX, rotY, rotZ, scale, colour, model);
+			models.add(l);
 			re.addShapeTo3DSpace(l);
 			x+=3.8*scale;
 		}
+	}
+	
+	public void clearText(){
+		for(Model m : models)
+			re.removeShapeFrom3DSpace(m);
+		models.clear();
 	}
 	
 }
