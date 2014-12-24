@@ -3,6 +3,7 @@ package com.imperial.heap3d.implementations.layout;
 import com.graphics.RenderEngine;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
+import com.graphics.text.Text3D;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -52,6 +53,20 @@ public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
     @Override
     public void setBackgroundColour(float a, float b, float c, float d) {
         super.setBackgroundColour(a, b, c, d);
+    }
+    
+    @Override
+    public void setCameraPositionSmooth(float x, float y, float z){
+    	super.setCameraPositionSmooth(x, y, z);
+    }
+    
+    @Override
+    public void printTo3DSpace(float x, float y, float z, float rx, float ry, float rz, float scale, Colour c, String msg){
+    	 try {
+			super.getText3D().print(x, y, x, rx, ry, rz, scale, c, msg);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
     //endregion
 

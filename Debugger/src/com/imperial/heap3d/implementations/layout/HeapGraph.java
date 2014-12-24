@@ -56,6 +56,15 @@ public class HeapGraph {
     public void inLoop() {
         if (animation.executeStepAndCheckIfDone()) {
             buildEdges();
+            Set<Entry<Node, Shape>> nodes = nodeToShape.entrySet();
+            for(Entry<Node, Shape> e : nodes){
+            	Node n = e.getKey();
+            	Shape s = e.getValue();
+            	float[] pos = s.getPosition();
+                float[] rot = s.getRotation();
+                System.out.println(pos[0]+", "+pos[1]+", "+pos[2]);
+                _renderEngine.printTo3DSpace(pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], 1f, Colour.GREEN, n.getName());
+            }
             animation = new NullAnimation();
         }
 
