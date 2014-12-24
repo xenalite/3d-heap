@@ -66,14 +66,14 @@ public class SimpleTest extends RenderEngine {
         addShapeTo3DSpace(c1);
         addShapeTo3DSpace(c2);
         addShapeTo3DSpace(l1);
-        /*
-        text = getText3D();
+        
+        text = getText3D(Colour.GREEN);
         try {
-        	text.print(10, 10, 0, 45, 45, 0, 1, Colour.GREEN, "ABCDEFGHIJKLMNOPQRSTUVWXYZ_$abcdefghijklmnopqrstuvwxyz");
+        	text.print(0, 0, 0, 0, 0, 0, 1, "a");
         }catch (Exception e) {
 			e.printStackTrace();
 		}
-		*/
+		
     }
 
     @Override

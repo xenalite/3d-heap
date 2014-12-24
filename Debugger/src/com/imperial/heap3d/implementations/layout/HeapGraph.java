@@ -37,6 +37,7 @@ public class HeapGraph {
 
     private void resetStack() {
         currentLevel = 0;
+        _renderEngine.removeText();
         for (StackNode stackNode : _stackNodes) {
             if (currentLevel < levels.size()) {
                 updateCurrentLevel(stackNode);
@@ -62,8 +63,10 @@ public class HeapGraph {
             	Shape s = e.getValue();
             	float[] pos = s.getPosition();
                 float[] rot = s.getRotation();
-                System.out.println(pos[0]+", "+pos[1]+", "+pos[2]);
-                _renderEngine.printTo3DSpace(pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], 1f, Colour.GREEN, n.getName());
+                if(n instanceof StackNode)
+                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+3, rot[0], rot[1], rot[2], 0.2f, n.getName());
+                else
+                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+0.4f, rot[0], rot[1], rot[2], 0.05f, n.getName());
             }
             animation = new NullAnimation();
         }
