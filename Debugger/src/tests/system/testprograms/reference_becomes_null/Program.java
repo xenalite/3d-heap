@@ -9,18 +9,8 @@ import tests.system.testprograms.utilities.TreeNode;
 public class Program {
 
     public static void main(String[] args) {
-//        TreeNode a = null;
-//        TreeNode b = new TreeNode(buildTree(), buildTree());
-//        TreeNode c = buildTree();
-//        a = c;
-//        c = new TreeNode(c, new TreeNode(null, c));
-
         TreeNode a = new TreeNode(new TreeNode(), new TreeNode());
-        TreeNode b = a;
-        a = a.left;
-    }
-
-    public static TreeNode buildTree() {
-        return new TreeNode(new TreeNode(new TreeNode(), new TreeNode()), new TreeNode(new TreeNode(), new TreeNode()));
+        TreeNode b = a.left;
+        a = new TreeNode(a, new TreeNode(a, null));
     }
 }
