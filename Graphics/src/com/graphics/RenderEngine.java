@@ -151,7 +151,7 @@ public abstract class RenderEngine implements Runnable {
 		return s;
 	}
 
-	protected void removeShapeFrom3DSpace(Shape e) {
+	public void removeShapeFrom3DSpace(Shape e) {
 		shapes.remove(e);
 	}
 
@@ -199,6 +199,12 @@ public abstract class RenderEngine implements Runnable {
 			return;
 		camera.setPosition(new Vector3f(x, y, z));
 	}
+	
+	protected void setCameraPositionSmooth(float x, float y, float z) {
+		if (camera == null)
+			return;
+		camera.setPositionSmooth(new Vector3f(x, y, z));
+	}
 
 	protected void moveCameraPosition(float dx, float dy, float dz) {
 		if (camera == null)
@@ -211,9 +217,9 @@ public abstract class RenderEngine implements Runnable {
 		debugLines = flag;
 	}
 	
-	protected Text3D getText3D(){
+	protected Text3D getText3D(Colour colour){
 		if(text3d == null)
-			text3d = new Text3D(Loader.getInstance(), this);
+			text3d = new Text3D(Loader.getInstance(), this, colour);
 		return text3d;
 	}
 }

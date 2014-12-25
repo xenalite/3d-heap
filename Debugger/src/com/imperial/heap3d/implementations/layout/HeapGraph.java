@@ -1,6 +1,7 @@
 package com.imperial.heap3d.implementations.layout;
 
 import com.graphics.shapes.Colour;
+import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
 import com.heap3d.layout.GraphImpl;
 import com.imperial.heap3d.implementations.layout.animation.Animation;
@@ -38,6 +39,7 @@ public class HeapGraph {
 
     private void resetStack() {
         int currentLevel = 0;
+        _renderEngine.removeText();
         for (StackNode stackNode : _stackNodes) {
             if (currentLevel < _levels.size())
                 updateLevel(stackNode, currentLevel);
@@ -51,6 +53,32 @@ public class HeapGraph {
                 HeapGraphLevel level = _levels.get(i);
                 removeLevel(level);
             }
+        }
+    }
+
+    public void inLoop() {
+        if (animation.executeStepAndCheckIfDone()) {
+            buildEdges();
+            Set<Entry<Node, Shape>> nodes = nodeToShape.entrySet();
+            for(Entry<Node, Shape> e : nodes){
+            	Node n = e.getKey();
+            	Shape s = e.getValue();
+            	float[] pos = s.getPosition();
+                float[] rot = s.getRotation();
+                if(n instanceof StackNode)
+                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+3, rot[0], rot[1], rot[2], 0.2f, n.getName());
+                else
+                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+0.4f, rot[0], rot[1], rot[2], 0.05f, n.getName());
+            }
+            animation = new NullAnimation();
+        }
+
+        boolean newNodes = receiveNodes();
+        if (newNodes) {
+            Set<Entry<Node, Shape>> oldNodes = new HashSet<>(nodeToShape.entrySet());
+            resetStack();
+            animation.finalise();
+            animation = new Animation(oldNodes, nodeToShape.entrySet());
         }
     }
 
@@ -200,25 +228,13 @@ public class HeapGraph {
 
     private void removeLinesFrom3DSpace(Collection<HeapEdge> edges) {
         if (edges != null)
-            for (HeapEdge edge : edges)
-                _renderEngine.removeFrom3DSpace(edge.getLine());
+            for (HeapEdge edge : edges){
+            	for(Line l : edge.getLines())
+            		_renderEngine.removeFrom3DSpace(l);
+                _renderEngine.removeFrom3DSpace(edge.getArrow());
+            }
     }
     //endregion
-
-    public void inLoop() {
-        if (animation.executeStepAndCheckIfDone()) {
-            buildEdges();
-            animation = new NullAnimation();
-        }
-
-        boolean newNodes = receiveNodes();
-        if (newNodes) {
-            Set<Entry<Node, Shape>> oldNodes = new HashSet<>(nodeToShape.entrySet());
-            resetStack();
-            animation.finalise();
-            animation = new Animation(oldNodes, nodeToShape.entrySet());
-        }
-    }
 
     public Set<Entry<Node, Shape>> getCurrentNodes() {
         return nodeToShape.entrySet();
