@@ -1,6 +1,7 @@
 package com.imperial.heap3d.implementations.snapshot;
 
 import com.graphics.shapes.Shape;
+import com.imperial.heap3d.utilities.GeometryUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ public class ObjectNode extends Node {
 
     @Override
     public Shape createShape() {
-        return GeometryFactory.createCubeForObjectNode();
+        return GeometryUtils.createCubeForObjectNode();
     }
 
     @Override

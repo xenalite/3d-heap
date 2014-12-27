@@ -1,8 +1,6 @@
 package com.imperial.heap3d.entry;
 
 import com.google.common.eventbus.EventBus;
-import com.graphics.shapes.Colour;
-import com.graphics.shapes.Shape;
 import com.imperial.heap3d.implementations.factories.ControllerFactory;
 import com.imperial.heap3d.implementations.factories.ProcessFactory;
 import com.imperial.heap3d.implementations.factories.ThreadBuilder;

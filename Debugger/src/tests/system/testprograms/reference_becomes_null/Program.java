@@ -1,6 +1,9 @@
 package tests.system.testprograms.reference_becomes_null;
 
-import tests.system.testprograms.utilities.TreeNode;
+import tests.system.testprograms.utilities.ListNode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by oskar on 06/12/14.
@@ -9,8 +12,13 @@ import tests.system.testprograms.utilities.TreeNode;
 public class Program {
 
     public static void main(String[] args) {
-        TreeNode a = new TreeNode(new TreeNode(), new TreeNode());
-        TreeNode b = a.left;
-        a = new TreeNode(a, new TreeNode(a, null));
+        List<ListNode> list = new ArrayList<>();
+        createList(list);
+    }
+
+    private static void createList(List<ListNode> list) {
+        for(int i = 0; i < 10; ++i) {
+            list.add(new ListNode());
+        }
     }
 }
