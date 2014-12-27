@@ -47,4 +47,12 @@ public class NodesEquality {
         assertFalse(n1.equals(n2));
         assertFalse(n2.equals(n1));
     }
+
+    @Test
+    public void null_DoesNotEqual() {
+        ObjectNode n1 = new ObjectNode("this", 1);
+        StackNode n2 = null;
+
+        assertFalse(n1.equals(n2));
+    }
 }
