@@ -1,8 +1,6 @@
 package com.heap3d.layout;
 
-import edu.uci.ics.jung.graph.*;
-import edu.uci.ics.jung.graph.Graph;
-
+import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
 import java.awt.*;
 
 public class FRLayout<V,E> extends JungLayout<V,E> {
@@ -12,6 +10,7 @@ public class FRLayout<V,E> extends JungLayout<V,E> {
     public FRLayout(Graph<V,E> graph)
     {
         sl = new edu.uci.ics.jung.algorithms.layout.FRLayout(graph);
+        sl.setInitializer(new RandomLocationTransformer(new Dimension(1000, 1000), 0));
         this.layout = sl;
         setSize(new Dimension(1000,1000));
     }
@@ -19,6 +18,7 @@ public class FRLayout<V,E> extends JungLayout<V,E> {
     public FRLayout(Graph<V,E> graph, float attraction, float repulsion)
     {
         sl = new edu.uci.ics.jung.algorithms.layout.FRLayout(graph);
+        sl.setInitializer(new RandomLocationTransformer(new Dimension(1000, 1000), 0));
         sl.setAttractionMultiplier(attraction);
         sl.setRepulsionMultiplier(repulsion);
         this.layout = sl;

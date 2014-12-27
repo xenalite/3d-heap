@@ -1,15 +1,39 @@
 package com.heap3d.layout;
 
+import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
 import java.awt.*;
 
 public class SpringLayout <V,E> extends JungLayout<V,E> {
 
     edu.uci.ics.jung.algorithms.layout.SpringLayout sl;
-    public SpringLayout(edu.uci.ics.jung.graph.Graph<V,E> graph)
+    public SpringLayout(Graph<V,E> graph)
     {
-        sl = new edu.uci.ics.jung.algorithms.layout.SpringLayout<V,E>(graph);
+        this(graph, 0.7f, 100, 1/3);
+    }
+
+    /***
+     *
+     * @param graph
+     * @param stretch default value is 0.7 Values should be positive.
+     *                value less than 1 cause high degree nodes to move less than low degree ones
+     *                values greater than 1 cause high degree nodes to move more than low degree ones
+     * @param repulsionRange default value is 100
+     *                  The repulsion range of a node
+     *                  Outside the range, nodes don't repel eachother
+     * @param force   how strongly an edge wants to be its default length
+     *                Default: 1/3
+     *                0 no attempt to conform to default lengths
+     *                negative use at own risk
+     */
+    public SpringLayout(Graph<V,E> graph, float stretch, int repulsionRange, float force)
+    {
+        sl = new edu.uci.ics.jung.algorithms.layout.SpringLayout(graph);
+        sl.setInitializer(new RandomLocationTransformer(new Dimension(1000, 1000), 0));
+        sl.setStretch(stretch);
+        sl.setForceMultiplier(force);
+        sl.setRepulsionRange(repulsionRange);
         this.layout = sl;
-        setSize(new Dimension(1000,1000));
+        setSize(new Dimension(1000, 1000));
     }
 
 

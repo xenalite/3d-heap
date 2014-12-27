@@ -23,9 +23,8 @@ public class LayoutTest {
         return Arrays.asList(
                 new Object[]{FRLayout.class},
                 new Object[]{SpringLayout.class},
-                new Object[]{KKLayout.class}
-//                ,
-//                new Object[]{ISOLayout.class},
+                new Object[]{KKLayout.class},
+                new Object[]{ISOLayout.class}
 //                new Object[]{CircularLayout.class}
         );
     }
@@ -93,7 +92,6 @@ public class LayoutTest {
         LayoutNode a = new LayoutNode("root", 10, 10, 10);
         graph.addVertex(a);
 
-//        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
         Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
 
         layout.layout(a);
@@ -109,12 +107,10 @@ public class LayoutTest {
         LayoutNode a = new LayoutNode("root", 10, 10, 10);
         graph.addVertex(a);
 
-//        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
         Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
 
         layout.layout(a);
         layout.setSize(new Dimension(500,500));
-        //layout.layout();
 
         Point2D transform = layout.transform(a);
         assertEquals(0.0f, transform.getX(), 0.0f);
@@ -127,12 +123,11 @@ public class LayoutTest {
         LayoutNode a = new LayoutNode("root", 10, 10, 10);
         graph.addVertex(a);
 
-//        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
         Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
 
         layout.layout(a);
         layout.setSize(new Dimension(500,500));
-        layout.layout();
+        layout.layout(a);
 
         Point2D transform = layout.transform(a);
         assertEquals(0.0f, transform.getX(), 0.0f);
@@ -142,6 +137,10 @@ public class LayoutTest {
     @Test
     public void testLayoutReSizingMultipleNodes() throws Exception {
 
+        //this test isnt appropriate for ISOM
+        if(layoutClass == ISOLayout.class)
+            return;
+
         GraphImpl<LayoutNode, String> graph = new GraphImpl<LayoutNode, String>();
         LayoutNode a = new LayoutNode("root", 10, 10, 10);
         LayoutNode b = new LayoutNode("low",0,0,0);
@@ -150,7 +149,6 @@ public class LayoutTest {
         graph.addVertex(b);
         graph.addVertex(c);
 
-//        Layout<LayoutNode, String> layout = new FRLayout<LayoutNode, String>(graph);
         Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
 
         layout.setLocation(a, new Point2D.Double(10,10));
@@ -176,6 +174,56 @@ public class LayoutTest {
 
 
 
+    }
+
+    @Test
+    public void testLayoutInitializerDeterministic() throws Exception {
+
+        GraphImpl<LayoutNode, String> graph = new GraphImpl<LayoutNode, String>();
+        LayoutNode a = new LayoutNode("root", 10, 10, 10);
+        LayoutNode b = new LayoutNode("low",0,0,0);
+        LayoutNode c = new LayoutNode("high", 1000,1000,1000);
+        graph.addVertex(a);
+        graph.addVertex(b);
+        graph.addVertex(c);
+
+        Layout<LayoutNode, String> layouta = factory.getLayout(layoutClass, graph);
+        initializeLocations(a,b,c,layouta);
+        Layout<LayoutNode, String> layoutb = factory.getLayout(layoutClass, graph);
+        initializeLocations(a,b,c,layoutb);
+        Layout<LayoutNode, String> layoutc = factory.getLayout(layoutClass, graph);
+        initializeLocations(a,b,c,layoutc);
+        Layout<LayoutNode, String> layoutd = factory.getLayout(layoutClass, graph);
+        initializeLocations(a,b,c,layoutd);
+
+        testLocations(a,b,c,layouta);
+        testLocations(a,b,c,layoutb);
+        testLocations(a,b,c,layoutc);
+        testLocations(a,b,c,layoutd);
+
+    }
+
+    protected void initializeLocations(LayoutNode a, LayoutNode b, LayoutNode c, Layout<LayoutNode,String> layout)
+    {
+        layout.setLocation(a, new Point2D.Double(10,10));
+        layout.setLocation(b, new Point2D.Double(0,0));
+        layout.setLocation(c, new Point2D.Double(1000, 1000));
+    }
+
+    protected void testLocations(LayoutNode a, LayoutNode b, LayoutNode c, Layout<LayoutNode,String> layout)
+    {
+        Point2D aTransform = layout.transform(a);
+        assertEquals(10, aTransform.getX(), 0.0f);
+        assertEquals(10, aTransform.getY(), 0.0f);
+
+        Point2D bTransform = layout.transform(b);
+        assertEquals(0, bTransform.getX(), 0.0f);
+        assertEquals(0, bTransform.getY(), 0.0f);
+
+        Point2D cTransform = layout.transform(c);
+        System.out.println(cTransform);
+        assertEquals(1000, cTransform.getX(), 0.0f);
+        assertEquals(1000, cTransform.getY(), 0.0f);
     }
 
 }
