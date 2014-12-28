@@ -139,14 +139,14 @@ public class HeapGraph {
                 Collection<HeapEdge> outEdges = levelGraph.getLayout().getGraph().getOutEdges(n);
                 for (HeapEdge edge : outEdges) {
                     Node child = levelGraph.getLayout().getGraph().getOpposite(n, edge);
-                    edge.connect(nodeToShape.get(n), nodeToShape.get(child), Colour.YELLOW, _renderEngine);
+                    edge.connect(nodeToShape.get(n), nodeToShape.get(child), Colour.WHITE, _renderEngine);
                 }
                 Collection<HeapEdge> edges = interLevelGraph.getOutEdges(n);
                 if (edges != null) {
                     for (HeapEdge edge : edges) {
                         Node from = interLevelGraph.getSource(edge);
                         Node to = interLevelGraph.getDest(edge);
-                        edge.connect(nodeToShape.get(from), nodeToShape.get(to), Colour.YELLOW, _renderEngine);
+                        edge.connect(nodeToShape.get(from), nodeToShape.get(to), Colour.WHITE, _renderEngine);
                     }
                 }
             }

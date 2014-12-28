@@ -18,16 +18,14 @@ public class HeapEdge {
 
     public void connect(Shape from, Shape to, Colour color, IRenderEngine renderEngine) {
         if (lines != null)
-            for (Line l : lines)
-                renderEngine.removeFrom3DSpace(l);
+            lines.forEach(renderEngine::removeFrom3DSpace);
         else
-            lines = new ArrayList<Line>();
+            lines = new ArrayList<>();
 
         float[] fromPos = from.getPosition();
         float[] toPos = to.getPosition();
-        float dxOffset = 0;
-        float dyOffset = 0;
-        float dzOffset = 0;
+        Vector3f fromVector = new Vector3f(fromPos[0], fromPos[1], fromPos[2]);
+        Vector3f toVector = new Vector3f(toPos[0], toPos[1], toPos[2]);
 
         if (from == to) {
             float offset = 2f;
@@ -39,25 +37,17 @@ public class HeapEdge {
             lines.add(line2);
             lines.add(line3);
             lines.add(line4);
-            dxOffset = 0.15f;
         } else {
             Line line = new Line((Cube) from, (Cube) to, color);
             lines.add(line);
-            dxOffset = (fromPos[0] - toPos[0]) / 100;
-            dyOffset = (fromPos[1] - toPos[1]) / 100;
-            dzOffset = (fromPos[2] - toPos[2]) / 100;
         }
+        Vector3f intersection = GeometryUtils.getIntersectionPoint(fromVector, toVector, GeometryUtils.HEAP_NODE_SCALE);
+        Vector3f rotation = GeometryUtils.getPyramidOrientation(fromVector, toVector);
 
-        //TODO rotation
-        float rotX = 0f;
-        float rotY = 0f;
-        float rotZ = 0f;
-        Vector3f intersection = GeometryUtils.getIntersectionPoint(new Vector3f(fromPos[0], fromPos[1], fromPos[2]),
-                new Vector3f(toPos[0], toPos[1], toPos[2]), 0.5F);
-        arrow = new Pyramid(intersection.x, intersection.y, intersection.z, rotX, rotY, rotZ, 0.1f, color);
+        arrow = new Pyramid(intersection.x, intersection.y, intersection.z, 0,0,0, 0.1f, color);
+        arrow.setRotation(rotation.x, rotation.y, rotation.z);
 
-        for (Line l : lines)
-            renderEngine.addTo3DSpace(l);
+        lines.forEach(renderEngine::addTo3DSpace);
         renderEngine.addTo3DSpace(arrow);
     }
 

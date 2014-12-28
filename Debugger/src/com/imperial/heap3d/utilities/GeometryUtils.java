@@ -5,18 +5,28 @@ import com.graphics.shapes.Cube;
 import com.graphics.shapes.Shape;
 import org.lwjgl.util.vector.Vector3f;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.toRadians;
+import static java.lang.Math.*;
 
 /**
  * Created by oskar on 27/12/14.
  */
 public class GeometryUtils {
 
+    public static Vector3f add(Vector3f p, Vector3f q) {
+        return new Vector3f(p.x + q.x, p.y + q.y, p.z + q.z);
+    }
+
+    public static Vector3f subtract(Vector3f p, Vector3f q) {
+        return new Vector3f(p.x - q.x, p.y - q.y, p.z - q.z);
+    }
+
+    public static Vector3f multiplyScalar(Vector3f p, float s) {
+        return new Vector3f(s * p.x, s * p.y, s * p.z);
+    }
+
     //region Factory Methods
-    private static final float STACK_NODE_SCALE = 5f;
-    private static final float HEAP_NODE_SCALE = 0.5f;
+    public static final float STACK_NODE_SCALE = 5f;
+    public static final float HEAP_NODE_SCALE = 0.5f;
 
     public static Shape createCubeForStackNode() {
         return new Cube(0, 0, 0, 0, 0, 0, STACK_NODE_SCALE, ColorConverter.randomColour());
@@ -39,14 +49,21 @@ public class GeometryUtils {
     }
     //endregion
 
-    private static final float CUBE_WIDTH = 0.5F;
+    //region Orientation Utils
+    public static Vector3f getPyramidOrientation(Vector3f from, Vector3f to) {
+        Vector3f subtractedVector = GeometryUtils.subtract(to, from);
+        Vector3f XZVector = new Vector3f(subtractedVector.x,0,subtractedVector.z);
+        Vector3f normalY = new Vector3f(0,1,0);
+        Vector3f normalZ = new Vector3f(0,0,1);
 
-    /**
-     * Returns a 2-element array for co-ordinates (dx,dz) representing the
-     * point on the square where the line between 2 nodes will intersect.
-     * (x1,z1) is the position of the FROM-node. (x2,z2) is the TO-node.
-     * This only works for nodes on the same y-level.
-     */
+        float rotY = (float) Math.toDegrees(Vector3f.angle(subtractedVector, normalY));
+        float rotZ = (float) Math.toDegrees(Vector3f.angle(XZVector, normalZ));
+        rotZ = (to.x < from.x) ? 90 - rotZ : rotZ + 90;
+        return new Vector3f(0, rotZ, rotY);
+    }
+    //endregion
+
+    //region Intersection Utils
     public static float[] getIntersectionPoint(float x1, float z1, float x2, float z2, float scale) {
         float D = (float) Math.sqrt(Math.pow(z2 - z1, 2) + Math.pow(x2 - x1, 2));
         float angleRad = (float) Math.acos((x2 - x1) / D);
@@ -60,17 +77,7 @@ public class GeometryUtils {
         return new float[]{dx, dz};
     }
 
-    public static Vector3f add(Vector3f p, Vector3f q) {
-        return new Vector3f(p.x + q.x, p.y + q.y, p.z + q.z);
-    }
-
-    public static Vector3f subtract(Vector3f p, Vector3f q) {
-        return new Vector3f(p.x - q.x, p.y - q.y, p.z - q.z);
-    }
-
-    public static Vector3f multiplyScalar(Vector3f p, float s) {
-        return new Vector3f(s * p.x, s * p.y, s * p.z);
-    }
+    private static final float CUBE_WIDTH = 0.5F;
 
     public static Vector3f getIntersectionPoint(Vector3f from, Vector3f to, float scale) {
         float D = scale * CUBE_WIDTH;
@@ -122,4 +129,5 @@ public class GeometryUtils {
                     || (getIntersection(L1.z - B2.z, L2.z - B2.z, L1, L2) && intersects(B1, B2, 3));
         }
     }
+    //endregion
 }
