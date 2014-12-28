@@ -31,7 +31,7 @@ public class StringNode extends Node {
 
     @Override
     public Shape createShape() {
-        return GeometryUtils.createCubeForStackNode();
+        return GeometryUtils.createCubeForStringNode();
     }
 
     @Override
