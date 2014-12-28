@@ -95,9 +95,9 @@ public class GeometryUtils {
         }
 
         private boolean intersects(Vector3f B1, Vector3f B2, int Axis) {
-            return Axis == 1 && intersection.z > B1.z && intersection.z < B2.z && intersection.y > B1.y && intersection.y < B2.y ||
-                    Axis == 2 && intersection.z > B1.z && intersection.z < B2.z && intersection.x > B1.x && intersection.x < B2.x ||
-                    Axis == 3 && intersection.x > B1.x && intersection.x < B2.x && intersection.y > B1.y && intersection.y < B2.y;
+            return Axis == 1 && intersection.z >= B1.z && intersection.z <= B2.z && intersection.y >= B1.y && intersection.y <= B2.y ||
+                    Axis == 2 && intersection.z >= B1.z && intersection.z <= B2.z && intersection.x >= B1.x && intersection.x <= B2.x ||
+                    Axis == 3 && intersection.x >= B1.x && intersection.x <= B2.x && intersection.y >= B1.y && intersection.y <= B2.y;
         }
 
         public boolean getIntersectionPoint(Vector3f B1, Vector3f B2, Vector3f L1, Vector3f L2) {
