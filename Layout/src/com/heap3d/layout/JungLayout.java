@@ -70,7 +70,13 @@ public abstract class JungLayout<V,E> implements Layout<V,E>, IterativeContext{
      */
     @Override
     public void setSize(Dimension d) {
-        layout.setSize(d);
+        Dimension size = layout.getSize();
+        if(size == null)
+        {
+            layout.setSize(d);
+        } else if(size != null && size.getHeight() != d.getHeight() && size.getWidth() != d.getWidth()){
+            layout.setSize(d);
+        }
     }
 
     /**
