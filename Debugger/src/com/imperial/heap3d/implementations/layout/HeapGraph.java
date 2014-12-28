@@ -229,8 +229,15 @@ public class HeapGraph {
     private void removeLinesFrom3DSpace(Collection<HeapEdge> edges) {
         if (edges != null)
             for (HeapEdge edge : edges){
-            	for(Line l : edge.getLines())
-            		_renderEngine.removeFrom3DSpace(l);
+
+                List<Line> lines = edge.getLines();
+                if(lines != null) {
+                    for (Line l : lines)
+                        _renderEngine.removeFrom3DSpace(l);
+                } else
+                {
+                    // The lines weren't drawn -> usually means program stepped before finishing the last animations
+                }
                 _renderEngine.removeFrom3DSpace(edge.getArrow());
             }
     }
