@@ -76,8 +76,23 @@ public class SimpleTest extends RenderEngine {
 		
     }
 
+    int count = 0;
+    
     @Override
     protected void inLoop() {
+    	
+    	if (count == 0 || count == 2000){
+    		super.setCameraPositionSmooth(0, 0, 0);
+    		
+    	}
+    	
+    	if (count == 1000 || count == 3000){
+    		super.setCameraPositionSmooth(0, 0, 200);
+    		
+    	}
+    		
+    		System.out.println(count);
+    		count ++;
     }
 
     @Override
