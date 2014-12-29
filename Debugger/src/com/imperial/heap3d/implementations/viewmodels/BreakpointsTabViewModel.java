@@ -4,7 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.imperial.heap3d.implementations.events.*;
 import com.imperial.heap3d.utilities.Check;
-import com.imperial.heap3d.utilities.ConvenienceConstants;
+import com.imperial.heap3d.utilities.PathUtils;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -49,8 +49,8 @@ public class BreakpointsTabViewModel {
         _cachedElements = new ArrayList<>();
 
         // ---- This is for convenience only. ----
-        _breakpointClass.set(ConvenienceConstants.TEST_PROGRAM_CLASS_NAME);
-        _breakpointMethod.set(ConvenienceConstants.TEST_PROGRAM_BREAKPOINT_METHOD_NAME);
+        _breakpointClass.set(PathUtils.TEST_PROGRAM_CLASS_NAME);
+        _breakpointMethod.set(PathUtils.TEST_PROGRAM_BREAKPOINT_METHOD_NAME);
         addBreakpointAction();
     }
 
