@@ -2,6 +2,7 @@ package com.imperial.heap3d.implementations.snapshot;
 
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.utilities.GeometryUtils;
+import com.imperial.heap3d.utilities.Pair;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -9,26 +10,25 @@ import java.util.List;
 
 public class ArrayNode extends Node {
 
-    private List<Node> _elements;
+    private List<Pair<Node,String>> _references;
 
-    public ArrayNode(String name, long id) {
-        super(name, id);
-        this._elements = new ArrayList<>();
+    public ArrayNode(long id) {
+        super(id);
+        this._references = new ArrayList<>();
     }
 
-    public void addElement(Node element) { _elements.add(element); }
+    public void addElement(Node element, String index) { _references.add(Pair.create(element, index)); }
 
     @Override
     public List<Object> getPrimitives() {
-        // TODO -- technically not the length of the array
         List<Object> primitives = new LinkedList<>();
-        primitives.add(_elements.size());
+        primitives.add(_references.size());
         return primitives;
     }
 
     @Override
-    public List<Node> getReferences() {
-        return _elements;
+    public List<Pair<Node, String>> getReferences() {
+        return _references;
     }
 
     @Override

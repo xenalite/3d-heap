@@ -15,13 +15,13 @@ public class ArrayElemNode extends Node {
     private boolean hasReference;
 
     public ArrayElemNode(int index, Object value) {
-        super(String.format("[%d]", index), 0);
+        super(0);
         this.value = value;
         hasReference = false;
     }
 
     public ArrayElemNode(int index, Node value) {
-        super(String.format("[%d]", index), 0);
+        super(0);
         this.value = value;
         hasReference = true;
     }
