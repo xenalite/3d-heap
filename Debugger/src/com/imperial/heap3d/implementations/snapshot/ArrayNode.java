@@ -3,33 +3,41 @@ package com.imperial.heap3d.implementations.snapshot;
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.utilities.GeometryUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ArrayNode extends Node {
+    private List<Node> _references;
+    private Map<Integer, Object> _primitives;
 
-    private List<Node> _elements;
 
     public ArrayNode(String name, long id) {
         super(name, id);
-        this._elements = new ArrayList<>();
+        _references = new ArrayList<>();
+        _primitives = new HashMap<>();
     }
 
-    public void addElement(Node element) { _elements.add(element); }
+    public void addPrimitive(int index, Object value) {
+        _primitives.put(index, value);
+    }
 
     @Override
-    public List<Object> getPrimitives() {
-        // TODO -- technically not the length of the array
-        List<Object> primitives = new LinkedList<>();
-        primitives.add(_elements.size());
-        return primitives;
+    public Object getPrimitives() {
+        String res = "";
+        for(Map.Entry e : _primitives.entrySet()){
+            res += ("[" + e.getKey() + "] = " + e.getValue()+"\n");
+        }
+        return res;
+    }
+
+    public void addReference(Node node) {
+        _references.add(node);
     }
 
     @Override
     public List<Node> getReferences() {
-        return _elements;
+        return _references;
     }
+
 
     @Override
     public Shape createShape() {
