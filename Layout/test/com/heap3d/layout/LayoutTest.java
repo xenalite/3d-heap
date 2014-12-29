@@ -24,7 +24,8 @@ public class LayoutTest {
                 new Object[]{FRLayout.class},
                 new Object[]{SpringLayout.class},
                 new Object[]{KKLayout.class},
-                new Object[]{ISOLayout.class}
+                new Object[]{ISOLayout.class},
+                new Object[]{CompoundLayout.class}
 //                new Object[]{CircularLayout.class}
         );
     }
@@ -48,6 +49,13 @@ public class LayoutTest {
             }else if(layoutClass == KKLayout.class)
             {
                 return new KKLayout<V, E>(graph);
+            } else if(layoutClass == CompoundLayout.class)
+            {
+                FRLayout<V,E> frLayout = new FRLayout<V, E>(graph);
+                CompoundLayout<V, E> compoundLayout = new CompoundLayout<V, E>(frLayout);
+                compoundLayout.add(new FRLayout<V, E>(graph));
+                compoundLayout.add(new SpringLayout<V, E>(graph));
+                return compoundLayout;
             } else
             {
                 return null;
