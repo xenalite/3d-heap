@@ -23,7 +23,7 @@ import static com.imperial.heap3d.implementations.events.ProcessEventType.STARTE
  */
 public class Bridge {
 
-    private final IRenderEngine _renderEngine;
+    public static IRenderEngine _renderEngine = null;
     private final EventBus _eventBus;
     private HeapGraph _heapGraph;
 

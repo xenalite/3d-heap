@@ -69,15 +69,30 @@ public class SimpleTest extends RenderEngine {
         
         text = getText3D(Colour.GREEN);
         try {
-        	text.print(0, 0, 0, 0, 0, 0, 1, "a");
+        	text.print(0, 0, 0, 0, 0, 0, 1, "[1234567890]");
         }catch (Exception e) {
 			e.printStackTrace();
 		}
 		
     }
 
+    int count = 0;
+    
     @Override
     protected void inLoop() {
+    	
+    	if (count == 0 || count == 2000){
+    		super.setCameraPositionSmooth(0, 0, 0);
+    		
+    	}
+    	
+    	if (count == 1000 || count == 3000){
+    		super.setCameraPositionSmooth(0, 0, 200);
+    		
+    	}
+    		
+    		System.out.println(count);
+    		count ++;
     }
 
     @Override

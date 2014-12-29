@@ -1,13 +1,21 @@
 package com.imperial.heap3d.ui.controllers;
 
 import com.graphics.shapes.Colour;
+import com.imperial.heap3d.implementations.layout.Bridge;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.viewmodels.HeapInfoTabViewModel;
 import com.imperial.heap3d.utilities.ColorConverter;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+
+
+
+
 
 
 import java.net.URL;
@@ -35,6 +43,25 @@ public class HeapInfoTabController implements Initializable {
         infoText.textProperty().bind(_viewModel.HeapInfoProperty());
         treeView.rootProperty().bindBidirectional(_viewModel.TreeViewProperty());
         //This sets the color of the treeNode
+        
+        treeView.getSelectionModel().selectedItemProperty().addListener( new ChangeListener<Object>() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue,
+                    Object newValue) {
+
+                TreeItem<Node> selectedItem = (TreeItem<Node>) newValue;
+                
+                if(selectedItem != null && selectedItem.getValue() != null){
+                	System.out.println("Selected Text : " + selectedItem.getValue().getName());
+                	Node n = selectedItem.getValue();
+                	Bridge._renderEngine.setCameraPositionSmooth(n.getLevel().getX(n), n.getLevel().getY(), n.getLevel().getZ(n)+10);
+                }
+                
+            }
+
+          });
+        
         treeView.setCellFactory(treeView -> {
             final Label label = new Label();
             final Label anotherLabel = new Label("\u25A0"); //this is a box in unicode
