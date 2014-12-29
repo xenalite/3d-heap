@@ -28,8 +28,8 @@ public class Bridge {
     private HeapGraph _heapGraph;
 
     public Bridge(IRenderEngine adapter, EventBus eventBus) {
-        _renderEngine = Check.NotNull(adapter, "adapter");
-        _eventBus = Check.NotNull(eventBus, "eventBus");
+        _renderEngine = Check.notNull(adapter, "adapter");
+        _eventBus = Check.notNull(eventBus, "eventBus");
         _eventBus.register(this);
         // TODO - Dependency Injection
         _heapGraph = new HeapGraph(_renderEngine);
@@ -81,7 +81,7 @@ public class Bridge {
     }
 
     public void giveNodes(Collection<StackNode> stackNodes) {
-        stackNodes = Check.NotNull(stackNodes, "stackNodes");
+        stackNodes = Check.notNull(stackNodes, "stackNodes");
         _heapGraph.giveNodes(stackNodes);
         _eventBus.post(new NodeEvent(stackNodes));
     }

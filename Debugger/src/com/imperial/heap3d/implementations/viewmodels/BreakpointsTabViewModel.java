@@ -37,7 +37,7 @@ public class BreakpointsTabViewModel {
     private boolean _cacheEnabled;
 
     public BreakpointsTabViewModel(EventBus eventBus) {
-        _eventBus = Check.NotNull(eventBus, "eventBus");
+        _eventBus = Check.notNull(eventBus, "eventBus");
         _eventBus.register(this);
         _cacheEnabled = true;
         _breakpointClass = new SimpleStringProperty(this, "", "");

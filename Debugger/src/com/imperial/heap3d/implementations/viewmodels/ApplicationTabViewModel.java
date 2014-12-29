@@ -45,8 +45,8 @@ public class ApplicationTabViewModel {
     private StringProperty _debuggerConsole;
 
     public ApplicationTabViewModel(EventBus eventBus, ProcessFactory processFactory) {
-        _processFactory = Check.NotNull(processFactory, "processFactory");
-        _eventBus = Check.NotNull(eventBus, "eventBus");
+        _processFactory = Check.notNull(processFactory, "processFactory");
+        _eventBus = Check.notNull(eventBus, "eventBus");
         _eventBus.register(this);
 
         _startActionCommand = new RelayCommand(this::startAction);

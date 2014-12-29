@@ -17,7 +17,7 @@ public class StepManager implements IStepManager {
     private ThreadReference _threadReference;
 
     public StepManager(IVirtualMachine virtualMachine) {
-        _virtualMachine = Check.NotNull(virtualMachine, "virtualMachine");
+        _virtualMachine = Check.notNull(virtualMachine, "virtualMachine");
     }
 
     @Override
@@ -47,7 +47,7 @@ public class StepManager implements IStepManager {
 
     @Override
     public void notifyPausedAtLocation(LocatableEvent event) {
-        event = Check.NotNull(event, "event");
+        event = Check.notNull(event, "event");
         _threadReference = event.thread();
     }
 }

@@ -27,8 +27,8 @@ public class BreakpointManager implements IBreakpointManager {
     private IEventRequestManager _eventRequestManager;
 
     public BreakpointManager(IVirtualMachine virtualMachine) {
-        _virtualMachine = Check.NotNull(virtualMachine, "virtualMachine");
-        _eventRequestManager = Check.NotNull(_virtualMachine.getEventRequestManager(), "eventRequestManager");
+        _virtualMachine = Check.notNull(virtualMachine, "virtualMachine");
+        _eventRequestManager = Check.notNull(_virtualMachine.getEventRequestManager(), "eventRequestManager");
         _breakpointsToBeRequested = new HashMap<>();
         _cachedBreakpointRequests = new HashMap<>();
         _cachedWatchpointRequests = new HashMap<>();

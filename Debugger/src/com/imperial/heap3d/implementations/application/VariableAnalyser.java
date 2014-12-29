@@ -20,13 +20,13 @@ public class VariableAnalyser implements IVariableAnalyser {
     private final Bridge _bridge;
 
     public VariableAnalyser(INodeBuilder nodeBuilder, Bridge bridge) {
-        _nodeBuilder = Check.NotNull(nodeBuilder, "nodeBuilder");
-        _bridge = Check.NotNull(bridge, "bridge");
+        _nodeBuilder = Check.notNull(nodeBuilder, "nodeBuilder");
+        _bridge = Check.notNull(bridge, "bridge");
     }
 
     @Override
     public void analyseVariables(LocatableEvent event) {
-        event = Check.NotNull(event, "event");
+        event = Check.notNull(event, "event");
         try {
             StackFrame stackFrame = event.thread().frame(0);
             Collection<StackNode> stackNodes = _nodeBuilder.build(stackFrame);

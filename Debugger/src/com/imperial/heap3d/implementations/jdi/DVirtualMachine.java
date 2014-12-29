@@ -27,9 +27,9 @@ public class DVirtualMachine implements IVirtualMachine {
     private ProcessState _processState;
 
     public DVirtualMachine(VirtualMachine jdiVirtualMachine, EventBus processStateEventBus) {
-        _jdiVirtualMachine = Check.NotNull(jdiVirtualMachine, "jdiVirtualMachine");
+        _jdiVirtualMachine = Check.notNull(jdiVirtualMachine, "jdiVirtualMachine");
         _eventRequestManager = new DEventRequestManager(_jdiVirtualMachine.eventRequestManager());
-        _processStateEventBus = Check.NotNull(processStateEventBus, "processStateEventBus");
+        _processStateEventBus = Check.notNull(processStateEventBus, "processStateEventBus");
         _processStateEventBus.register(this);
         _processState = RUNNING;
     }
@@ -80,7 +80,7 @@ public class DVirtualMachine implements IVirtualMachine {
 
     @Override
     public List<ReferenceType> classesByName(String className) {
-        className = Check.NotNull(className, "className");
+        className = Check.notNull(className, "className");
         return _jdiVirtualMachine.classesByName(className);
     }
 }
