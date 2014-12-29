@@ -10,7 +10,7 @@ public class Program {
 
     public static void main(String[] args) {
         TreeNode a = new TreeNode(new TreeNode(), new TreeNode());
-        TreeNode b = a.left;
-        a = new TreeNode(a, new TreeNode(a, null));
+        TreeNode b = new TreeNode(a, a.left);
+        TreeNode c = new TreeNode(new TreeNode(new TreeNode(), new TreeNode()), new TreeNode(new TreeNode(), new TreeNode()));
     }
 }

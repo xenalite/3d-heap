@@ -3,6 +3,7 @@ package com.imperial.heap3d.implementations.factories;
 import com.imperial.heap3d.implementations.snapshot.*;
 import com.imperial.heap3d.interfaces.factories.INodeBuilder;
 import com.sun.jdi.*;
+import com.sun.tools.jdi.ArrayReferenceImpl;
 
 import java.util.*;
 
@@ -38,16 +39,15 @@ public class NodeBuilder implements INodeBuilder {
 
             if (value == null || value instanceof PrimitiveValue) {
                 stackNodes.add(new StackNode(name, value));
-            } else {
-                stackNodes.add(new StackNode(name, drillDown(name, value)));
+            } else if(value instanceof ObjectReference){
+                stackNodes.add(new StackNode(name, drillDown(name, (ObjectReference)value)));
             }
         }
         _uniqueNodes.clear();
         return stackNodes;
     }
 
-    private Node drillDown(String name, Value value) {
-        ObjectReference reference = (ObjectReference) value;
+    private Node drillDown(String name, ObjectReference reference) {
         long id = reference.uniqueID();
         if (_uniqueNodes.containsKey(id))
             return _uniqueNodes.get(id);
@@ -59,7 +59,7 @@ public class NodeBuilder implements INodeBuilder {
             _uniqueNodes.put(id, arrayNode);
             int index = 0;
             for (Value arrayValue : arrayReference.getValues()) {
-                arrayNode.addElement(createArrayElemNode(name, arrayValue, index));
+                addValueToArrayNode(arrayNode, name, arrayValue, index);
                 ++index;
             }
             return arrayNode;
@@ -73,24 +73,26 @@ public class NodeBuilder implements INodeBuilder {
             for (Field field : reference.referenceType().fields()) {
                 String fieldName = field.name();
                 Value fieldValue = reference.getValue(field);
-                addValueToObjectNode(objectNode, fieldName, fieldValue);
+                if(!field.isStatic())
+                    addValueToObjectNode(objectNode, fieldName, fieldValue);
             }
             return objectNode;
         }
         return node;
     }
 
-    private Node createArrayElemNode(String name, Value value, int index) {
+    private void addValueToArrayNode(ArrayNode node, String name, Value value, int index) {
         if (value == null || value instanceof PrimitiveValue) {
-            return new ArrayElemNode(index, value);
+            node.addPrimitive(index, value);
+        } else if(value instanceof ObjectReference) {
+            node.addReference(drillDown(name + "[" + index + "]", (ObjectReference) value) );
         }
-        return drillDown(name + "[" + index + "]", value);
     }
 
     private void addValueToObjectNode(ObjectNode node, String name, Value value) {
         if (value == null || value instanceof PrimitiveValue)
             node.addPrimitive(name, value);
-        else
-            node.addReference(drillDown(name, value));
+        else if(value instanceof ObjectReference)
+            node.addReference(drillDown(name, (ObjectReference)value));
     }
 }

@@ -15,11 +15,10 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 public class HeapGraph {
 
-    private List<HeapGraphLevel> _levels = new LinkedList<>();
+    private List<HeapGraphLevel> _levels = new ArrayList<>();
     private GraphImpl<Node, HeapEdge> interLevelGraph = new GraphImpl<>();
 
     private Collection<StackNode> _stackNodes = new ArrayList<>();
@@ -31,7 +30,6 @@ public class HeapGraph {
 
     private final IRenderEngine _renderEngine;
     private final Lock LOCK = new ReentrantReadWriteLock().writeLock();
-    private List<HeapGraphLevel> levelsToUpdate = new ArrayList<>();
 
     public HeapGraph(IRenderEngine renderEngine) {
         _renderEngine = renderEngine;
@@ -93,34 +91,31 @@ public class HeapGraph {
 
     private void updateLevel(StackNode stackNode, int level) {
         NodesComparator comparator = new NodesComparator();
-
         HeapGraphLevel levelGraph = _levels.get(level);
         StackNode oldStackNode = levelGraph.getRoot();
 
         if (oldStackNode.equals(stackNode)) {
             if (comparator.compare(oldStackNode, stackNode)) {
                 updatePositions(levelGraph);
-            } else {
-                if (stackNode.hasReference()) {
-                    levelsToUpdate = removeLevel(levelGraph);
-                    addLevel(stackNode, level);
-
-                    for(HeapGraphLevel levelToUpdate : levelsToUpdate) {
-                        StackNode root = levelToUpdate.getRoot();
-                        removeLevel(levelToUpdate);
-                        addLevel(root, levelToUpdate.getId());
-                    }
-                }
+            } else if (stackNode.hasReference()) {
+                remakeLevel(stackNode, level);
             }
-        } else {
-            levelsToUpdate = removeLevel(levelGraph);
-            addLevel(stackNode, level);
+        } else
+            remakeLevel(stackNode, level);
+    }
 
-            for(HeapGraphLevel levelToUpdate : levelsToUpdate) {
-                StackNode root = levelToUpdate.getRoot();
-                removeLevel(levelToUpdate);
-                addLevel(root, levelToUpdate.getId());
-            }
+    private void remakeLevel(StackNode stackNode, int level) {
+        HeapGraphLevel levelGraph = _levels.get(level);
+        List<HeapGraphLevel> levelsToUpdate = removeLevel(levelGraph);
+        addLevel(stackNode, level);
+        updateLevelsAfterChange(levelsToUpdate);
+    }
+
+    private void updateLevelsAfterChange(List<HeapGraphLevel> levels) {
+        for(HeapGraphLevel levelToUpdate : levels) {
+            StackNode root = levelToUpdate.getRoot();
+            removeLevel(levelToUpdate);
+            addLevel(root, levelToUpdate.getId());
         }
     }
 
@@ -144,14 +139,14 @@ public class HeapGraph {
                 Collection<HeapEdge> outEdges = levelGraph.getLayout().getGraph().getOutEdges(n);
                 for (HeapEdge edge : outEdges) {
                     Node child = levelGraph.getLayout().getGraph().getOpposite(n, edge);
-                    edge.connect(nodeToShape.get(n), nodeToShape.get(child), new Colour(1, 1, 1), _renderEngine);
+                    edge.connect(nodeToShape.get(n), nodeToShape.get(child), Colour.WHITE, _renderEngine);
                 }
                 Collection<HeapEdge> edges = interLevelGraph.getOutEdges(n);
                 if (edges != null) {
                     for (HeapEdge edge : edges) {
                         Node from = interLevelGraph.getSource(edge);
                         Node to = interLevelGraph.getDest(edge);
-                        edge.connect(nodeToShape.get(from), nodeToShape.get(to), new Colour(1, 1, 1), _renderEngine);
+                        edge.connect(nodeToShape.get(from), nodeToShape.get(to), Colour.WHITE, _renderEngine);
                     }
                 }
             }
@@ -229,8 +224,15 @@ public class HeapGraph {
     private void removeLinesFrom3DSpace(Collection<HeapEdge> edges) {
         if (edges != null)
             for (HeapEdge edge : edges){
-            	for(Line l : edge.getLines())
-            		_renderEngine.removeFrom3DSpace(l);
+
+                List<Line> lines = edge.getLines();
+                if(lines != null) {
+                    for (Line l : lines)
+                        _renderEngine.removeFrom3DSpace(l);
+                } else
+                {
+                    // The lines weren't drawn -> usually means program stepped before finishing the last animations
+                }
                 _renderEngine.removeFrom3DSpace(edge.getArrow());
             }
     }

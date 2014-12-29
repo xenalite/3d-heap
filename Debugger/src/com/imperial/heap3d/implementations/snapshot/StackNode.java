@@ -1,6 +1,7 @@
 package com.imperial.heap3d.implementations.snapshot;
 
 import com.graphics.shapes.Shape;
+import com.imperial.heap3d.utilities.GeometryUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class StackNode extends Node {
 
     @Override
     public Shape createShape() {
-        return GeometryFactory.createCubeForStackNode();
+        return GeometryUtils.createCubeForStackNode();
     }
 
     @Override

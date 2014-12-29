@@ -44,6 +44,9 @@ public class HeapGraphLevel {
 	{
 		if(getRoot() != null)
 		{
+			int count = _graph.getVertexCount();
+			int size = (int)(50 * Math.sqrt(count));
+			_layout.setSize(new Dimension(size,size));
 			_layout.layout(getRoot());
 			updated = true;
 		}
