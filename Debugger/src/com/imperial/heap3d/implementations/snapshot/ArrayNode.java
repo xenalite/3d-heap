@@ -3,12 +3,12 @@ package com.imperial.heap3d.implementations.snapshot;
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.utilities.GeometryUtils;
 import com.imperial.heap3d.utilities.Pair;
+import com.sun.jdi.Value;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ArrayNode extends Node {
+    private Map<Integer, Object> _primitives;
 
     private List<Pair<Node,String>> _references;
 
@@ -41,4 +41,11 @@ public class ArrayNode extends Node {
         return this == o || o instanceof ArrayNode && getId() == ((Node) o).getId();
     }
 
+    public void addReference(Node first, String second) {
+        _references.add(Pair.create(first, second));
+    }
+
+    public void addPrimitive(int index, Value value) {
+        // TODO
+    }
 }

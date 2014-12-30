@@ -10,6 +10,7 @@ import com.imperial.heap3d.implementations.layout.animation.NullAnimation;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.utilities.NodesComparator;
+import com.imperial.heap3d.utilities.Pair;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -63,10 +64,11 @@ public class HeapGraph {
             	Shape s = e.getValue();
             	float[] pos = s.getPosition();
                 float[] rot = s.getRotation();
-                if(n instanceof StackNode)
-                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+3, rot[0], rot[1], rot[2], 0.2f, n.getName());
-                else
-                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+0.4f, rot[0], rot[1], rot[2], 0.05f, n.getName());
+                //TODO
+//                if(n instanceof StackNode)
+//                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+3, rot[0], rot[1], rot[2], 0.2f, n.getName());
+//                else
+//                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+0.4f, rot[0], rot[1], rot[2], 0.05f, n.getName());
             }
             animation = new NullAnimation();
         }
@@ -158,8 +160,8 @@ public class HeapGraph {
 
         for (Node node : level.getVertices()) {
             node.getReferences().stream()
-                    .filter(child -> child.getLevel() == node.getLevel())
-                    .forEach(child -> level.addEdge(new HeapEdge(), node, child));
+                    .filter(child -> child.first.getLevel() == node.getLevel())
+                    .forEach(child -> level.addEdge(new HeapEdge(), node, child.first));
         }
     }
 
@@ -179,11 +181,11 @@ public class HeapGraph {
         initialiseNewShape(node);
         updatePosition(node);
 
-        for (Node child : node.getReferences()) {
-            if (nodeToShape.containsKey(child))
-                interLevelGraph.addEdge(new HeapEdge(), node, child);
+        for (Pair<Node, String> child : node.getReferences()) {
+            if (nodeToShape.containsKey(child.first))
+                interLevelGraph.addEdge(new HeapEdge(), node, child.first);
             else
-                buildNodes(child, level);
+                buildNodes(child.first, level);
         }
     }
     //endregion

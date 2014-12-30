@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.imperial.heap3d.implementations.events.*;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
+import com.imperial.heap3d.utilities.Pair;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,11 +15,12 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HeapInfoTabViewModel {
 
     private EventBus _eventBus;
-
+    private SimpleObjectProperty<TreeItem<Node>> _selectedItem;
 
     public StringProperty HeapInfoProperty() {
         return _HeapInfo;
@@ -60,7 +62,6 @@ public class HeapInfoTabViewModel {
             System.out.println(e);
         }
     }
-
 
     @Subscribe
     public void handleNodeEvent(NodeEvent ne) {
@@ -112,13 +113,11 @@ public class HeapInfoTabViewModel {
             private ObservableList<TreeItem<Node>> buildChildren(TreeItem<Node> TreeItem) {
                 Node node = TreeItem.getValue();
                 if (node != null) {
-                    List<Node> references = node.getReferences();
+                    List<Pair<Node, String>> references = node.getReferences();
                     if (references != null && !references.isEmpty()) {
                         ObservableList<TreeItem<Node>> children = FXCollections.observableArrayList();
 
-                        for (Node child : references) {
-                            children.add(createNode(child));
-                        }
+                        children.addAll(references.stream().map(child -> createNode(child.first)).collect(Collectors.toList()));
 
                         return children;
                     }
@@ -130,4 +129,7 @@ public class HeapInfoTabViewModel {
     }
 
 
+    public SimpleObjectProperty<TreeItem<Node>> getSelectedItemProperty() {
+        return _selectedItem;
+    }
 }

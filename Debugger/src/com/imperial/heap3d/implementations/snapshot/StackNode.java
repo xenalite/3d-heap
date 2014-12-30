@@ -6,45 +6,45 @@ import com.imperial.heap3d.utilities.Pair;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class StackNode extends Node {
 
-    private Object value;
-    private boolean hasReference;
+    private String _name;
+    private Object _value;
+    private boolean _hasReference;
 
     public StackNode(String name, Object value) {
-        super(name, value == null ? 0 : value.hashCode());
-        this.value = value;
-        hasReference = false;
+        super(value == null ? 0 : value.hashCode());
+        _value = value;
+        _name = name;
+        _hasReference = false;
     }
 
-    public StackNode(String name, Node value) {
-        super(name, value.getId());
-        this.value = value;
-        hasReference = true;
-    }
-    
-    public Object getValue(){
-    	return value;
+    public StackNode(String name, Pair<Node,String> value) {
+        super(value.first.getId());
+        _value = value;
+        _name = name;
+        _hasReference = true;
     }
     
     public boolean hasReference(){
-    	return hasReference;
+    	return _hasReference;
     }
     
     @Override
     public List<Object> getPrimitives() {
         List<Object> primitives = new LinkedList<>();
-        if(!hasReference)
-            primitives.add(value);
+        if(!_hasReference)
+            primitives.add(_value);
         return primitives;
     }
 
     @Override
     public List<Pair<Node, String>> getReferences() {
-        List<Node> nodes = new LinkedList<>();
-        if(hasReference) {
-            nodes.add((Node) value);
+        List<Pair<Node, String>> nodes = new LinkedList<>();
+        if(_hasReference) {
+            nodes.add((Pair<Node,String>) _value);
         }
         return nodes;
     }
@@ -58,11 +58,15 @@ public class StackNode extends Node {
     public boolean equals(Object o) {
         return this == o || o instanceof StackNode &&
                 getId() == ((StackNode) o).getId() &&
-                getName().equals(((StackNode) o).getName());
+                Objects.equals(getName(), ((StackNode) o).getName());
     }
 
     @Override
     public int hashCode() {
         return super.hashCode() ^ getName().hashCode();
+    }
+
+    public String getName() {
+        return _name;
     }
 }

@@ -2,6 +2,7 @@ package com.imperial.heap3d.implementations.snapshot;
 
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.utilities.GeometryUtils;
+import com.imperial.heap3d.utilities.Pair;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,8 +11,8 @@ public class StringNode extends Node {
 
     private String str;
 
-    public StringNode(String name, long id, String str) {
-        super(name, id);
+    public StringNode(long id, String str) {
+        super(id);
         this.str = str;
     }
     
@@ -25,7 +26,7 @@ public class StringNode extends Node {
     }
 
     @Override
-    public List<Node> getReferences() {
+    public List<Pair<Node, String>> getReferences() {
         return new LinkedList<>();
     }
 

@@ -13,8 +13,6 @@ import javafx.scene.layout.HBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-
-
 public class HeapInfoTabController implements Initializable {
 
     @FXML
@@ -34,6 +32,7 @@ public class HeapInfoTabController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         infoText.textProperty().bind(_viewModel.HeapInfoProperty());
         treeView.rootProperty().bindBidirectional(_viewModel.TreeViewProperty());
+
         //This sets the color of the treeNode
         treeView.setCellFactory(treeView -> {
             final Label label = new Label();
@@ -61,8 +60,9 @@ public class HeapInfoTabController implements Initializable {
                 }
             };
             cell.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            // TODO -- fix names
             cell.itemProperty().addListener((obs, oldItem, newItem) ->
-                    label.setText(newItem != null ? newItem.getName()+": "+String.valueOf(newItem) : ""));
+                    label.setText(newItem != null ? newItem.toString()+": "+String.valueOf(newItem) : ""));
             return cell ;
         });
     }
