@@ -2,6 +2,7 @@ package com.imperial.heap3d.implementations.snapshot;
 
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.utilities.GeometryUtils;
+import com.imperial.heap3d.utilities.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,11 +12,11 @@ import java.util.Map.Entry;
 
 public class ObjectNode extends Node {
 
-    private List<Node> _references;
+    private List<Pair<Node,String>> _references;
     private Map<String, Object> _primitives;
 
-    public ObjectNode(String name, long id) {
-        super(name, id);
+    public ObjectNode(long id) {
+        super(id);
         _references = new ArrayList<>();
         _primitives = new HashMap<>();
     }
@@ -24,8 +25,8 @@ public class ObjectNode extends Node {
         _primitives.put(name, value);
     }
 
-    public ObjectNode addReference(Node node) {
-        _references.add(node);
+    public ObjectNode addReference(Node node, String name) {
+        _references.add(Pair.create(node, name));
         return this;
     }
 
@@ -39,7 +40,7 @@ public class ObjectNode extends Node {
     }
 
     @Override
-    public List<Node> getReferences() {
+    public List<Pair<Node, String>> getReferences() {
         return _references;
     }
 

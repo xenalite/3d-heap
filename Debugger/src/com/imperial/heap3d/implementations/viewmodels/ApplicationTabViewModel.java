@@ -2,7 +2,7 @@ package com.imperial.heap3d.implementations.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.imperial.heap3d.utilities.ConvenienceConstants;
+import com.imperial.heap3d.utilities.PathUtils;
 import com.imperial.heap3d.implementations.application.ControlEventHandler;
 import com.imperial.heap3d.implementations.events.ControlEventFactory;
 import com.imperial.heap3d.implementations.events.ProcessEvent;
@@ -45,8 +45,8 @@ public class ApplicationTabViewModel {
     private StringProperty _debuggerConsole;
 
     public ApplicationTabViewModel(EventBus eventBus, ProcessFactory processFactory) {
-        _processFactory = Check.NotNull(processFactory, "processFactory");
-        _eventBus = Check.NotNull(eventBus, "eventBus");
+        _processFactory = Check.notNull(processFactory, "processFactory");
+        _eventBus = Check.notNull(eventBus, "eventBus");
         _eventBus.register(this);
 
         _startActionCommand = new RelayCommand(this::startAction);
@@ -57,8 +57,8 @@ public class ApplicationTabViewModel {
         _stepOverActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPOVER)));
         _stepIntoActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPINTO)));
         _stepOutActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPOUT)));
-        _className = new SimpleStringProperty(this, "", ConvenienceConstants.TEST_PROGRAM_CLASS_NAME);
-        _classPath = new SimpleStringProperty(this, "", ConvenienceConstants.TEST_PROGRAM_CLASSPATH);
+        _className = new SimpleStringProperty(this, "", PathUtils.TEST_PROGRAM_CLASS_NAME);
+        _classPath = new SimpleStringProperty(this, "", PathUtils.TEST_PROGRAM_CLASSPATH);
         _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + "/bin/java");
         _processConsole = new SimpleStringProperty("this", "", "");
         _debugeeInput = new SimpleStringProperty("this", "", "");

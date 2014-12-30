@@ -2,22 +2,17 @@ package com.imperial.heap3d.implementations.snapshot;
 
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.implementations.layout.HeapGraphLevel;
+import com.imperial.heap3d.utilities.Pair;
 
 import java.util.List;
 
 public abstract class Node {
 
-    private String name;
     private long id;
     private HeapGraphLevel level;
 
-    public Node(String name, long id) {
-        this.name = name;
+    public Node(long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public long getId() { return id; }
@@ -31,7 +26,7 @@ public abstract class Node {
 
     public abstract Object getPrimitives();
 
-    public abstract List<Node> getReferences();
+    public abstract List<Pair<Node,String>> getReferences();
 
     public abstract Shape createShape();
 

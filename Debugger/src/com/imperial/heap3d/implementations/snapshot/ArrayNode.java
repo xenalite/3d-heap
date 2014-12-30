@@ -2,42 +2,34 @@ package com.imperial.heap3d.implementations.snapshot;
 
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.utilities.GeometryUtils;
+import com.imperial.heap3d.utilities.Pair;
+import com.sun.jdi.Value;
 
 import java.util.*;
 
 public class ArrayNode extends Node {
-    private List<Node> _references;
     private Map<Integer, Object> _primitives;
 
+    private List<Pair<Node,String>> _references;
 
-    public ArrayNode(String name, long id) {
-        super(name, id);
-        _references = new ArrayList<>();
-        _primitives = new HashMap<>();
+    public ArrayNode(long id) {
+        super(id);
+        this._references = new ArrayList<>();
     }
 
-    public void addPrimitive(int index, Object value) {
-        _primitives.put(index, value);
+    public void addElement(Node element, String index) { _references.add(Pair.create(element, index)); }
+
+    @Override
+    public List<Object> getPrimitives() {
+        List<Object> primitives = new LinkedList<>();
+        primitives.add(_references.size());
+        return primitives;
     }
 
     @Override
-    public Object getPrimitives() {
-        String res = "";
-        for(Map.Entry e : _primitives.entrySet()){
-            res += ("[" + e.getKey() + "] = " + e.getValue()+"\n");
-        }
-        return res;
-    }
-
-    public void addReference(Node node) {
-        _references.add(node);
-    }
-
-    @Override
-    public List<Node> getReferences() {
+    public List<Pair<Node, String>> getReferences() {
         return _references;
     }
-
 
     @Override
     public Shape createShape() {
@@ -49,4 +41,11 @@ public class ArrayNode extends Node {
         return this == o || o instanceof ArrayNode && getId() == ((Node) o).getId();
     }
 
+    public void addReference(Node first, String second) {
+        _references.add(Pair.create(first, second));
+    }
+
+    public void addPrimitive(int index, Value value) {
+        // TODO
+    }
 }

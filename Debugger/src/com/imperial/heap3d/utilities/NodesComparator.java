@@ -22,18 +22,18 @@ public class NodesComparator {
         if (seenIds.contains(n1))
             return true;
 
-        List<Node> ln1 = n1.getReferences();
-        List<Node> ln2 = n2.getReferences();
+        List<Pair<Node, String>> ln1 = n1.getReferences();
+        List<Pair<Node, String>> ln2 = n2.getReferences();
         if (ln1.size() != ln2.size())
             return false;
 
-        Iterator<Node> it1 = ln1.iterator();
-        Iterator<Node> it2 = ln2.iterator();
+        Iterator<Pair<Node, String>> it1 = ln1.iterator();
+        Iterator<Pair<Node, String>> it2 = ln2.iterator();
         seenIds.add(n1);
 
         while (it1.hasNext()) {
-            Node c1 = it1.next();
-            Node c2 = it2.next();
+            Node c1 = it1.next().first;
+            Node c2 = it2.next().first;
             if(!compare(c1, c2, seenIds))
                 return false;
         }

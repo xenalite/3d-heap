@@ -1,5 +1,7 @@
 package com.imperial.heap3d.utilities;
 
+import com.imperial.heap3d.implementations.layout.HeapGraphLevel;
+
 /**
  * Created by oskar on 23/12/14.
  */

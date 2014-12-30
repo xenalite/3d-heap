@@ -29,11 +29,11 @@ public class ControlEventHandler {
                                IBreakpointManager breakpointManager, IStepManager stepManager) {
         _controlEventQueue = new ConcurrentLinkedDeque<>();
 
-        _dprocess = Check.NotNull(debuggedProcess, "debuggedProcess");
-        _breakpointManager = Check.NotNull(breakpointManager, "breakpointManager");
-        _stepManager = Check.NotNull(stepManager, "stepManager");
-        _virtualMachine = Check.NotNull(virtualMachine, "virtualMachine");
-        _eventBus = Check.NotNull(eventBus, "eventBus");
+        _dprocess = Check.notNull(debuggedProcess, "debuggedProcess");
+        _breakpointManager = Check.notNull(breakpointManager, "breakpointManager");
+        _stepManager = Check.notNull(stepManager, "stepManager");
+        _virtualMachine = Check.notNull(virtualMachine, "virtualMachine");
+        _eventBus = Check.notNull(eventBus, "eventBus");
         _eventBus.register(this);
         _eventBus.post(new ProcessEvent(ProcessEventType.STARTED));
     }

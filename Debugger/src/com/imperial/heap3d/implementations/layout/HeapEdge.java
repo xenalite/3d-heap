@@ -17,9 +17,10 @@ public class HeapEdge {
     private Pyramid arrow;
 
     public void connect(Shape from, Shape to, Colour color, IRenderEngine renderEngine) {
-        if (lines != null)
+        if (lines != null) {
             lines.forEach(renderEngine::removeFrom3DSpace);
-        else
+            renderEngine.removeFrom3DSpace(arrow);
+        } else
             lines = new ArrayList<>();
 
         float[] fromPos = from.getPosition();
@@ -44,18 +45,25 @@ public class HeapEdge {
         Vector3f intersection = GeometryUtils.getIntersectionPoint(fromVector, toVector, GeometryUtils.HEAP_NODE_SCALE);
         Vector3f rotation = GeometryUtils.getPyramidOrientation(fromVector, toVector);
 
-        arrow = new Pyramid(intersection.x, intersection.y, intersection.z, 0,0,0, 0.1f, color);
+        arrow = new Pyramid(intersection.x, intersection.y, intersection.z, 0, 0, 0, 0.1f, color);
         arrow.setRotation(rotation.x, rotation.y, rotation.z);
 
         lines.forEach(renderEngine::addTo3DSpace);
         renderEngine.addTo3DSpace(arrow);
     }
 
-    public List<Line> getLines(){
+    public void removeShapes(IRenderEngine renderEngine) {
+        if(lines != null) {
+            lines.forEach(renderEngine::removeFrom3DSpace);
+            renderEngine.removeFrom3DSpace(arrow);
+        }
+    }
+
+    public List<Line> getLines() {
         return lines;
     }
-    
-    public Pyramid getArrow(){
+
+    public Pyramid getArrow() {
         return arrow;
     }
 }

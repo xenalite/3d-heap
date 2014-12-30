@@ -23,13 +23,13 @@ public class ProcessFactory {
     private IRenderEngine _renderEngine;
 
     public ProcessFactory(IVirtualMachineProvider vmProvider, EventBus eventBus, IRenderEngine renderEngine) {
-        _vmProvider = Check.NotNull(vmProvider, "vmProvider");
-        _eventBus = Check.NotNull(eventBus, "eventBus");
-        _renderEngine = Check.NotNull(renderEngine, "renderEngine");
+        _vmProvider = Check.notNull(vmProvider, "vmProvider");
+        _eventBus = Check.notNull(eventBus, "eventBus");
+        _renderEngine = Check.notNull(renderEngine, "renderEngine");
     }
 
     public ControlEventHandler buildComponents(StartDefinition startDefinition) {
-        Check.NotNull(startDefinition, "startDefinition");
+        Check.notNull(startDefinition, "startDefinition");
 
         int port = getRandomPort();
         EventBus processStateEventBus = new EventBus();
