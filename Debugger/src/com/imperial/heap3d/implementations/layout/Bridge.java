@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.graphics.shapes.Shape;
 import com.imperial.heap3d.implementations.events.NodeEvent;
+import com.imperial.heap3d.implementations.events.NodeSelectionEvent;
 import com.imperial.heap3d.implementations.events.ProcessEvent;
 import com.imperial.heap3d.implementations.events.ProcessEventType;
 import com.imperial.heap3d.implementations.layout.animation.SelectedAnimation;
@@ -23,7 +24,7 @@ import static com.imperial.heap3d.implementations.events.ProcessEventType.STARTE
  */
 public class Bridge {
 
-    public static IRenderEngine _renderEngine = null;
+    public static IRenderEngine _renderEngine;
     private final EventBus _eventBus;
     private HeapGraph _heapGraph;
 
@@ -31,7 +32,6 @@ public class Bridge {
         _renderEngine = Check.notNull(adapter, "adapter");
         _eventBus = Check.notNull(eventBus, "eventBus");
         _eventBus.register(this);
-        // TODO - Dependency Injection
         _heapGraph = new HeapGraph(_renderEngine);
         List<Runnable> commands = new ArrayList<>();
         commands.add(_heapGraph::inLoop);
@@ -62,6 +62,7 @@ public class Bridge {
                     String message = String.format("Selected Node: %s \nchildren: %s \nprimitives: %s",
                             node.getName(), node.getReferences(), node.getPrimitives());
                     _eventBus.post(new ProcessEvent(ProcessEventType.SELECT, message));
+                    _eventBus.post(new NodeSelectionEvent(node));
                     break;
                 }
             }
