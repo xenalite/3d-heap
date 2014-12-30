@@ -4,7 +4,10 @@ import com.heap3d.layout.*;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 
+import javax.vecmath.Vector2f;
+import javax.vecmath.Vector3f;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -62,24 +65,21 @@ public class HeapGraphLevel {
 		return new ArrayList<>();
 	}
 
-	public float getX(Node n) {
+	public Vector3f getPosition(Node n)
+	{
 		float x = (float) _layout.transform(n).getX();
+		float y = levelOffset * _id;
+		float z = (float) _layout.transform(n).getY();
 
-		if (!isRoot(n))
-			x += (x < 0) ? -SPACING : SPACING;
-		return x;
-	}
+		Vector3f pos = new Vector3f(x,y,z);
 
-	public float getZ(Node n) {
-		float y = (float) _layout.transform(n).getY();
-
-		if (!isRoot(n))
-			y += (y < 0) ? -SPACING : SPACING;
-		return y;
-	}
-
-	public float getY() {
-		return levelOffset * _id;
+		Vector3f dir = new Vector3f(x,0,z);
+		if(dir.length() == 0)
+			return pos;
+		dir.normalize();
+		dir.scale(SPACING);
+		pos.add(dir);
+		return pos;
 	}
 
 	public boolean isRoot(Node n) {
