@@ -49,7 +49,7 @@ public class HeapEdge {
         } else {
             Line line = new Line((Cube) from, (Cube) to, color);
             lines.add(line);
-            renderEngine.printTo3DSpace(midVector.x, midVector.y, midVector.z, 0,0,0,0.05F, _name);
+            renderEngine.printTo3DSpace(midVector.x, midVector.y, midVector.z, 0,0,0,0.05F, (_name.length() > 7 ? _name.substring(0,6) + "..." : _name));
         }
         Vector3f intersection = getIntersectionPoint(fromVector, toVector, GeometryUtils.HEAP_NODE_SCALE);
         Vector3f rotation = getPyramidOrientation(fromVector, toVector);
@@ -59,13 +59,6 @@ public class HeapEdge {
 
         lines.forEach(renderEngine::addTo3DSpace);
         renderEngine.addTo3DSpace(arrow);
-    }
-
-    public void removeShapes(IRenderEngine renderEngine) {
-        if(lines != null) {
-            lines.forEach(renderEngine::removeFrom3DSpace);
-            renderEngine.removeFrom3DSpace(arrow);
-        }
     }
 
     public List<Line> getLines() {
