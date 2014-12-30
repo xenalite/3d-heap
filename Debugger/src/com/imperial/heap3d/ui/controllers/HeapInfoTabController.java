@@ -50,8 +50,8 @@ public class HeapInfoTabController implements Initializable {
                 TreeItem<Node> selectedItem = (TreeItem<Node>) newValue;
                 
                 if(selectedItem != null && selectedItem.getValue() != null){
-                	System.out.println("Selected Text : " + selectedItem.getValue().getName());
-                	Node n = selectedItem.getValue();
+                    Node n = selectedItem.getValue();
+                    System.out.println("Selected Text : " + n.getName());
                 	Bridge._renderEngine.setCameraPositionSmooth(n.getLevel().getX(n), n.getLevel().getY(), n.getLevel().getZ(n)+10);
                 }
             }
