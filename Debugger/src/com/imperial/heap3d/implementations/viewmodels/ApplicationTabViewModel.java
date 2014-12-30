@@ -111,7 +111,7 @@ public class ApplicationTabViewModel {
         _resumeActionCommand.canExecute().set(true);
 
         ControlEventHandler controlEventHandler = _processFactory.buildComponents(
-                new StartDefinition(_javaPath.get(), _className.get(), _classPath.get()));
+                new StartDefinition(_javaPath.get(), _className.get(), _classPath.get(), _arguments.get()));
 
         ExecutorService service = ThreadBuilder.createService("control-event-handler");
         service.submit(() -> {

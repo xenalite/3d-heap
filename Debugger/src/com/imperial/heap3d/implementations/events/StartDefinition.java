@@ -15,17 +15,19 @@ public class StartDefinition {
     private final String javaPath;
     private final String className;
     private final String classpath;
+    private final String classArgs;
 
-    public StartDefinition(String javaPath, String className, String classpath) {
+    public StartDefinition(String javaPath, String className, String classpath, String classArgs) {
         this.javaPath = javaPath;
         this.className = className;
         this.classpath = classpath;
+        this.classArgs = classArgs;
     }
 
     public Process buildProcess(int port, EventBus eventBus) throws IOException {
         final String format = "-agentlib:jdwp=transport=dt_socket,address=%d,server=n,suspend=y";
         String debugArgument = String.format(format, port);
-        ProcessBuilder pb = new ProcessBuilder(javaPath, debugArgument, "-cp", classpath, className);
+        ProcessBuilder pb = new ProcessBuilder(javaPath, debugArgument, "-cp", classpath, className, classArgs);
         Process p = pb.start();
 
         ExecutorService service = ThreadBuilder.createService("stream-listener");
