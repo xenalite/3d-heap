@@ -34,6 +34,11 @@ public class HeapInfoTabViewModel {
         return _TreeView;
     }
 
+    private SimpleObjectProperty<TreeItem<Node>> _selectedNode;
+
+    public SimpleObjectProperty<TreeItem<Node>> selectedNodeProperty() {
+        return _selectedNode;
+    }
 
     public HeapInfoTabViewModel(EventBus eventBus) {
         if (eventBus == null)
@@ -43,8 +48,13 @@ public class HeapInfoTabViewModel {
 
         _HeapInfo = new SimpleStringProperty(this, "", "Data from the ViewModel");
         _TreeView = new SimpleObjectProperty<>(this, "", new TreeItem<>());
+        _selectedNode = new SimpleObjectProperty<>(new TreeItem<>());
     }
 
+    @Subscribe
+    public void handleNodeSelectionEvent(NodeSelectionEvent event) {
+        _selectedNode = new SimpleObjectProperty<>(new TreeItem<>(event.getNode()));
+    }
 
     @Subscribe
     public void handleControlEvent(ProcessEvent pe) {

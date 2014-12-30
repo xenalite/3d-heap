@@ -32,12 +32,12 @@ public class DebuggedProcess implements IDebuggedProcess {
     public DebuggedProcess(Process process, IBreakpointManager breakpointManager, IStepManager stepManager,
                            IVariableAnalyser variableAnalyser, EventBus generalEventBus, EventBus processStateEventBus) {
         _state = RUNNING;
-        _variableAnalyser = Check.NotNull(variableAnalyser, "variableAnalyser");
-        _process = Check.NotNull(process, "process");
-        _breakpointManager = Check.NotNull(breakpointManager, "breakpointManager");
-        _stepManager = Check.NotNull(stepManager, "stepManager");
-        _generalEventBus = Check.NotNull(generalEventBus, "generalEventBus");
-        _processStateEventBus = Check.NotNull(processStateEventBus, "processStateEventBus");
+        _variableAnalyser = Check.notNull(variableAnalyser, "variableAnalyser");
+        _process = Check.notNull(process, "process");
+        _breakpointManager = Check.notNull(breakpointManager, "breakpointManager");
+        _stepManager = Check.notNull(stepManager, "stepManager");
+        _generalEventBus = Check.notNull(generalEventBus, "generalEventBus");
+        _processStateEventBus = Check.notNull(processStateEventBus, "processStateEventBus");
         _processStateEventBus.register(this);
     }
 

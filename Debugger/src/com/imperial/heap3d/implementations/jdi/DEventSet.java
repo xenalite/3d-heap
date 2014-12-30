@@ -15,7 +15,7 @@ public class DEventSet implements IEventSet {
     private final EventSet _eventSet;
 
     public DEventSet(EventSet eventSet) {
-        _eventSet = Check.NotNull(eventSet, "eventSet");
+        _eventSet = Check.notNull(eventSet, "eventSet");
     }
 
     @Override

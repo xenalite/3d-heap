@@ -1,6 +1,6 @@
 package tests.system.testprograms.binary_tree;
 
-import tests.system.testprograms.utilities.TreeNode;;
+import tests.system.testprograms.utilities.TreeNode;
 
 /**
  * Created by oskar on 21/11/14.

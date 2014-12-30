@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Vector3f;
 public class Camera {
 
 	private Vector3f position = new Vector3f(0, 0, 120);
-	private float incX, incY, incZ, timeStep;
+	private float incX, incY, incZ, timeStep, incPitch, incYaw;
 	private float pitch, yaw, roll;
 	
 	private static final float SPEED = 0.2f;
@@ -26,6 +26,8 @@ public class Camera {
 			position.x += incX;
 			position.y += incY;
 			position.z += incZ;
+			yaw -= incYaw;
+			pitch -= incPitch;
 			timeStep++;
 			if(timeStep >= MOVE_TIME)
 				smoothMove = false;
@@ -96,9 +98,12 @@ public class Camera {
 	}
 	
 	public void setPositionSmooth(Vector3f pos){
+		timeStep = 0f;
 		incX = (pos.x - position.x)/MOVE_TIME;
 		incY = (pos.y - position.y)/MOVE_TIME;
 		incZ = (pos.z - position.z)/MOVE_TIME;
+		incPitch = pitch/MOVE_TIME;
+		incYaw = yaw/MOVE_TIME;
 		smoothMove = true;
 	}
 	
