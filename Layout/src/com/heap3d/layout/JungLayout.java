@@ -166,18 +166,16 @@ public abstract class JungLayout<V,E> implements Layout<V,E>, IterativeContext{
     protected abstract void run();
 
     /**
-     * Advances one step.
-     */
-    @Override
-    public void step() {
-
-    }
-
-    /**
      * Returns true if this iterative process is finished, and false otherwise.
      */
     @Override
     public boolean done() {
         return false;
+    }
+
+    @Override
+    public void step() {
+        if(layout instanceof IterativeContext)
+            ((IterativeContext)layout).step();
     }
 }

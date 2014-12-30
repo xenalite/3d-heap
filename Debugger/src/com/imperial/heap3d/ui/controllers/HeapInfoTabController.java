@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
+import javax.vecmath.Vector3f;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -48,8 +49,9 @@ public class HeapInfoTabController implements Initializable {
                 TreeItem<Node> selectedItem = (TreeItem<Node>) newValue;
                 
                 if(selectedItem != null && selectedItem.getValue() != null){
-                    Node n = selectedItem.getValue();
-                	Bridge._renderEngine.setCameraPositionSmooth(n.getLevel().getX(n), n.getLevel().getY(), n.getLevel().getZ(n)+10);
+                	Node n = selectedItem.getValue();
+                    Vector3f position = n.getLevel().getPosition(n);
+                	Bridge._renderEngine.setCameraPositionSmooth(position.x, position.y, position.z+10);
                 }
             }
           });

@@ -12,6 +12,7 @@ import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.utilities.NodesComparator;
 import com.imperial.heap3d.utilities.Pair;
 
+import javax.vecmath.Vector3f;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
@@ -88,7 +89,8 @@ public class HeapGraph {
 
         HeapGraphLevel level = node.getLevel();
         Shape s = nodeToShape.get(node);
-        s.setPosition(level.getX(node), level.getY(), level.getZ(node));
+        Vector3f position = level.getPosition(node);
+        s.setPosition(position.x, position.y, position.z);
     }
 
     private void updateLevel(StackNode stackNode, int level) {
