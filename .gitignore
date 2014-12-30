@@ -14,9 +14,6 @@ build
 */screenshots/*
 */systemreports/*
 
-# Local constants
-**/PathUtils.java
-
 # Eclipse files
 .classpath
 .project
