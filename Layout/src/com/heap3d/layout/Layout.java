@@ -1,7 +1,8 @@
 package com.heap3d.layout;
 
+
 public interface Layout<V,E> extends edu.uci.ics.jung.algorithms.layout.Layout<V,E> {
 
     public void layout();
-    public void layout(V rootVertex);
+    public void setRootVertex(V rootVertex);
 }

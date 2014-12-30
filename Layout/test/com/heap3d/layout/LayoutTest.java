@@ -1,6 +1,5 @@
 package com.heap3d.layout;
 
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,9 +23,8 @@ public class LayoutTest {
                 new Object[]{FRLayout.class},
                 new Object[]{SpringLayout.class},
                 new Object[]{KKLayout.class},
-                new Object[]{ISOLayout.class},
-                new Object[]{CompoundLayout.class}
-//                new Object[]{CircularLayout.class}
+                new Object[]{ISOLayout.class}
+                //new Object[]{CompoundLayout.class}
         );
     }
 
@@ -102,7 +100,8 @@ public class LayoutTest {
 
         Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
 
-        layout.layout(a);
+        layout.setRootVertex(a);
+        layout.layout();
 
         Point2D transform = layout.transform(a);
         assertEquals(0.0f, transform.getX(), 0.0f);
@@ -117,7 +116,8 @@ public class LayoutTest {
 
         Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
 
-        layout.layout(a);
+        layout.setRootVertex(a);
+        layout.layout();
         layout.setSize(new Dimension(500,500));
 
         Point2D transform = layout.transform(a);
@@ -133,9 +133,10 @@ public class LayoutTest {
 
         Layout<LayoutNode, String> layout = factory.getLayout(layoutClass, graph);
 
-        layout.layout(a);
+        layout.setRootVertex(a);
+        layout.layout();
         layout.setSize(new Dimension(500,500));
-        layout.layout(a);
+        layout.layout();
 
         Point2D transform = layout.transform(a);
         assertEquals(0.0f, transform.getX(), 0.0f);
