@@ -11,10 +11,17 @@ import com.graphics.shapes.Shape;
 import com.imperial.heap3d.utilities.GeometryUtils;
 import org.lwjgl.util.vector.Vector3f;
 
+import static com.imperial.heap3d.utilities.GeometryUtils.*;
+
 public class HeapEdge {
 
+    private String _name;
     private List<Line> lines;
     private Pyramid arrow;
+
+    public HeapEdge(String name) {
+        _name = name;
+    }
 
     public void connect(Shape from, Shape to, Colour color, IRenderEngine renderEngine) {
         if (lines != null) {
@@ -27,6 +34,7 @@ public class HeapEdge {
         float[] toPos = to.getPosition();
         Vector3f fromVector = new Vector3f(fromPos[0], fromPos[1], fromPos[2]);
         Vector3f toVector = new Vector3f(toPos[0], toPos[1], toPos[2]);
+        Vector3f midVector = new Vector3f((fromVector.x + toVector.x)/2, 0.02F + (fromVector.y + toVector.y)/2, (fromVector.z + toVector.z)/2);
 
         if (from == to) {
             float offset = 2f;
@@ -41,9 +49,10 @@ public class HeapEdge {
         } else {
             Line line = new Line((Cube) from, (Cube) to, color);
             lines.add(line);
+            renderEngine.printTo3DSpace(midVector.x, midVector.y, midVector.z, 0,0,0,0.05F, _name);
         }
-        Vector3f intersection = GeometryUtils.getIntersectionPoint(fromVector, toVector, GeometryUtils.HEAP_NODE_SCALE);
-        Vector3f rotation = GeometryUtils.getPyramidOrientation(fromVector, toVector);
+        Vector3f intersection = getIntersectionPoint(fromVector, toVector, GeometryUtils.HEAP_NODE_SCALE);
+        Vector3f rotation = getPyramidOrientation(fromVector, toVector);
 
         arrow = new Pyramid(intersection.x, intersection.y, intersection.z, 0, 0, 0, 0.1f, color);
         arrow.setRotation(rotation.x, rotation.y, rotation.z);

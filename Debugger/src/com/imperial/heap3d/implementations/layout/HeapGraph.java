@@ -161,7 +161,7 @@ public class HeapGraph {
         for (Node node : level.getVertices()) {
             node.getReferences().stream()
                     .filter(child -> child.first.getLevel() == node.getLevel())
-                    .forEach(child -> level.addEdge(new HeapEdge(), node, child.first));
+                    .forEach(child -> level.addEdge(new HeapEdge(child.second), node, child.first));
         }
     }
 
@@ -183,7 +183,7 @@ public class HeapGraph {
 
         for (Pair<Node, String> child : node.getReferences()) {
             if (nodeToShape.containsKey(child.first))
-                interLevelGraph.addEdge(new HeapEdge(), node, child.first);
+                interLevelGraph.addEdge(new HeapEdge(child.second), node, child.first);
             else
                 buildNodes(child.first, level);
         }
