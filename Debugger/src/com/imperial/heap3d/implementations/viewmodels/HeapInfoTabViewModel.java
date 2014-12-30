@@ -7,6 +7,7 @@ import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.utilities.Pair;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -20,7 +21,8 @@ import java.util.stream.Collectors;
 public class HeapInfoTabViewModel {
 
     private EventBus _eventBus;
-    private SimpleObjectProperty<TreeItem<Node>> _selectedItem;
+
+    private ObjectProperty<TreeItem<Node>> _selectedItem;
 
     public StringProperty HeapInfoProperty() {
         return _HeapInfo;
@@ -138,8 +140,7 @@ public class HeapInfoTabViewModel {
         };
     }
 
-
-    public SimpleObjectProperty<TreeItem<Node>> getSelectedItemProperty() {
+    public ObjectProperty<TreeItem<Node>> getSelectedItemProperty() {
         return _selectedItem;
     }
 }

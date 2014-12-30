@@ -8,8 +8,10 @@ import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Stack;
 
 public class HeapGraphLevel {
 
@@ -25,7 +27,6 @@ public class HeapGraphLevel {
 		_id = id;
 		_graph = new GraphImpl<>();
 		_layout = new FRLayout<>(_graph, 0.9f, 0.01f);
-		_layout.setSize(new Dimension(200, 200));
 	}
 
 	public StackNode getRoot() {
@@ -35,8 +36,10 @@ public class HeapGraphLevel {
 	public boolean addVertex(Node vertex) {
 		if(_graph.addVertex(vertex)) {
 			vertex.setLevel(this);
-			if (vertex instanceof StackNode)
+			if (vertex instanceof StackNode) {
 				root = (StackNode) vertex;
+				_layout.setRootVertex(root);
+			}
 
 			return true;
 		}
@@ -50,7 +53,7 @@ public class HeapGraphLevel {
 			int count = _graph.getVertexCount();
 			int size = (int)(50 * Math.sqrt(count));
 			_layout.setSize(new Dimension(size,size));
-			_layout.layout(getRoot());
+			_layout.layout();
 			updated = true;
 		}
 	}

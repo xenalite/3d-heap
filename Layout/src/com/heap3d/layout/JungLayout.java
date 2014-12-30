@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 public abstract class JungLayout<V,E> implements Layout<V,E>, IterativeContext{
 
     protected AbstractLayout layout;
+    protected V root = null;
 
     public JungLayout()
     {
@@ -126,41 +127,45 @@ public abstract class JungLayout<V,E> implements Layout<V,E>, IterativeContext{
     }
 
 
-    public void layout() {
-        layout(null);
-    }
-
-    public void layout(V root)
+    @Override
+    public void layout()
     {
         //Initialize the graph
-        //Actually not sure if this is correct
         initialize();
-        //Freeze the root node at 0,0
-        if(root != null)
-        {
-            if(getGraph().containsVertex(root))
-            {
-                setLocation(root, new Point2D.Double(0,0));
-                lock(root, true);
-            }
-        }
-
         //run the layout
         run();
     }
 
+    public void setRootVertex(V rootVertex)
+    {
+        root = rootVertex;
+    }
+
+
     protected Point2D convertToCoord(Point2D location)
     {
-        double midx = getSize().width/2.0;
-        double midy = getSize().height/2.0;
-        return new Point2D.Double(location.getX()+midx, location.getY()+midy);
+        if(root == null) {
+            double midx = getSize().width / 2.0;
+            double midy = getSize().height / 2.0;
+            return new Point2D.Double(location.getX() + midx, location.getY() + midy);
+        } else
+        {
+            Point2D rootposition = layout.transform(root);
+            return new Point2D.Double(location.getX() + rootposition.getX(), location.getY() + rootposition.getY());
+        }
     }
 
     protected Point2D convertFromCoord(Point2D location)
     {
-        double midx = getSize().width/2.0;
-        double midy = getSize().height/2.0;
-        return new Point2D.Double(location.getX()-midx, location.getY()-midy);
+        if(root == null) {
+            double midx = getSize().width / 2.0;
+            double midy = getSize().height / 2.0;
+            return new Point2D.Double(location.getX() - midx, location.getY() - midy);
+        } else
+        {
+            Point2D rootposition = layout.transform(root);
+            return new Point2D.Double(location.getX() - rootposition.getX(), location.getY() - rootposition.getY());
+        }
     }
 
     protected abstract void run();

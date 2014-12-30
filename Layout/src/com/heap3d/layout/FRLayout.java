@@ -34,4 +34,14 @@ public class FRLayout<V,E> extends JungLayout<V,E> {
             i++;
         }
     }
+
+    public void setRepulsionMultiplier(double repulsionMultiplier)
+    {
+        sl.setRepulsionMultiplier(repulsionMultiplier);
+    }
+
+    public void setAttractionMultiplier(double attractionMultiplier)
+    {
+        sl.setAttractionMultiplier(attractionMultiplier);
+    }
 }

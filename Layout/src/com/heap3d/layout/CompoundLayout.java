@@ -2,6 +2,7 @@ package com.heap3d.layout;
 
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import org.apache.commons.collections15.Transformer;
+import sun.security.provider.certpath.Vertex;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -197,18 +198,15 @@ public class CompoundLayout<V,E> implements Layout<V,E>, IterativeContext  {
      */
     @Override
     public Point2D transform(V v) {
-        boolean wasInSublayout = false;
+        if(delegate.getGraph().containsVertex(v)){
+            return delegate.transform(v);
+        }
         for(edu.uci.ics.jung.algorithms.layout.Layout<V,E> layout : layouts) {
             if(layout.getGraph().getVertices().contains(v)) {
-                wasInSublayout = true;
                 return layout.transform(v);
             }
         }
-        if(wasInSublayout == false) {
-            return delegate.transform(v);
-        }
-        return null;
-
+        return delegate.transform(v);
     }
 
     /**
@@ -240,6 +238,10 @@ public class CompoundLayout<V,E> implements Layout<V,E>, IterativeContext  {
                 IterativeContext context = (IterativeContext)layout;
                 if(context.done() == false) {
                     context.step();
+                    for(V vertex : layout.getGraph().getVertices())
+                    {
+                        delegate.setLocation(vertex, layout.transform(vertex));
+                    }
                 }
             }
         }
@@ -251,25 +253,17 @@ public class CompoundLayout<V,E> implements Layout<V,E>, IterativeContext  {
         }
     }
 
+
     @Override
-    public void layout() {
-        layout(null);
+    public void setRootVertex(V rootVertex) {
+
     }
 
     @Override
-    public void layout(V root) {
+    public void layout() {
         //Initialize the graph
         //Actually not sure if this is correct
         initialize();
-        //Freeze the root node at 0,0
-        if(root != null)
-        {
-            if(getGraph().containsVertex(root))
-            {
-                setLocation(root, new Point2D.Double(0,0));
-                lock(root, true);
-            }
-        }
 
         //run the layout
         run();
