@@ -13,11 +13,11 @@ public class Pyramid extends Shape {
 
 	private static final float[] vertices = new float[]{
 
-		-0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, 0.5f,
-		-0.5f, -0.5f, 0.5f,
-		0, 1f, 0
+		-0.5f, -1.5f, -0.5f,
+		0.5f, -1.5f, -0.5f,
+		0.5f, -1.5f, 0.5f,
+		-0.5f, -1.5f, 0.5f,
+		0, 0, 0
 
 	};
 
