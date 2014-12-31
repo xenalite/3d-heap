@@ -24,6 +24,9 @@ public class Text3D {
 	private static final int ASCII_NUMBER_9 = 57;
 	private static final int ASCII_RIGHT_SQUARE_BRACKET = 93;
 	private static final int ASCII_LEFT_SQUARE_BRACKET = 91;
+	private static final int ASCII_RIGHT_CURLY_BRACKET = 125;
+	private static final int ASCII_LEFT_CURLY_BRACKET = 123;
+	private static final int ASCII_DOT = 46;
 	
 	private Map<Character, RawModel> asciiToModel;
 	private RenderEngine re;
@@ -47,7 +50,10 @@ public class Text3D {
 		asciiToModel.put((char)ASCII_UNDERSCORE, OBJLoader.loadObjModel(true, prefix + "special/underscore.obj", loader, colour));
 		asciiToModel.put((char)ASCII_LEFT_SQUARE_BRACKET, OBJLoader.loadObjModel(true, prefix + "special/left_square_bracket.obj", loader, colour));
 		asciiToModel.put((char)ASCII_RIGHT_SQUARE_BRACKET, OBJLoader.loadObjModel(true, prefix + "special/right_square_bracket.obj", loader, colour));
-		
+		asciiToModel.put((char)ASCII_LEFT_CURLY_BRACKET, OBJLoader.loadObjModel(true, prefix + "special/left_curly_bracket.obj", loader, colour));
+		asciiToModel.put((char)ASCII_RIGHT_CURLY_BRACKET, OBJLoader.loadObjModel(true, prefix + "special/right_curly_bracket.obj", loader, colour));
+		asciiToModel.put((char)ASCII_DOT, OBJLoader.loadObjModel(true, prefix + "special/dot.obj", loader, colour));
+	
 		for(int i = ASCII_LOWER_A; i <= ASCII_LOWER_Z; i++)
 			asciiToModel.put((char)i, OBJLoader.loadObjModel(true, prefix + "lower/" + (char)i + ".obj", loader, colour));
 		

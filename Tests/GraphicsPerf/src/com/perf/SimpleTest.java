@@ -69,7 +69,7 @@ public class SimpleTest extends RenderEngine {
         
         text = getText3D(Colour.GREEN);
         try {
-        	text.print(0, 0, 0, 0, 0, 0, 1, "[1234567890]");
+        	text.print(0, 0, 0, 0, 0, 0, 1, "{...}");
         }catch (Exception e) {
 			e.printStackTrace();
 		}
