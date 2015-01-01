@@ -47,6 +47,10 @@ public class GeometryUtils {
     public static Shape createCubeForArrayElemNode() {
         return new Cube(0, 0, 0, 0, 0, 0, HEAP_NODE_SCALE, Colour.RED);
     }
+
+    public static Shape createCubeForStaticStackNode() {
+        return new Cube(0, 0, 0, 0, 0, 0, HEAP_NODE_SCALE, Colour.WHITE);
+    }
     //endregion
 
     //region Orientation Utils

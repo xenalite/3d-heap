@@ -14,6 +14,11 @@ public class StackNode extends Node {
     private Object _value;
     private boolean _hasReference;
 
+    public StackNode(String name, long id) {
+        super(id);
+        _name = name;
+    }
+
     public StackNode(String name, Object value) {
         super(value == null ? 0 : value.hashCode());
         _value = value;

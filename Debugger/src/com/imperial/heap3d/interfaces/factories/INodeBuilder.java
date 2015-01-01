@@ -1,5 +1,6 @@
 package com.imperial.heap3d.interfaces.factories;
 
+import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.sun.jdi.StackFrame;
 
