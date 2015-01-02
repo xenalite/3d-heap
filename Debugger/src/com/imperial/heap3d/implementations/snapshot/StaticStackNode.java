@@ -40,6 +40,11 @@ public class StaticStackNode extends StackNode {
     }
 
     @Override
+    public boolean hasReference() {
+        return getReferences().size() > 0;
+    }
+
+    @Override
     public List<Pair<Node, String>> getReferences() {
         return _references;
     }
