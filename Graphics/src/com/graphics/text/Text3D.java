@@ -73,8 +73,14 @@ public class Text3D {
 			
 			RawModel model = asciiToModel.get(c);
 			
-			if(model == null)
+			if(model == null){
+				if(c == ' '){
+					x+=3.8*scale;
+					continue;
+				}
 				throw new Exception("Invalid char: " + c);
+			}
+				
 			
 			Model l = new Model(x, y, z, rotX, rotY, rotZ, scale, colour, model);
 			models.add(l);

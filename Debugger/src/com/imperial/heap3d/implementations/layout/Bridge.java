@@ -41,7 +41,9 @@ public class Bridge {
 
     private Shape lastSelectedShape = null;
     private SelectedAnimation selectedAnimation;
-
+    private InsideObject io;
+    private Node selectedNode;
+    
     private void selectionMethod() {
         Shape selected = _renderEngine.getSelectedShape();
         
@@ -55,22 +57,46 @@ public class Bridge {
                     if (selectedAnimation != null) {
                         selectedAnimation.finish();
                         selectedAnimation = null;
+                        selectedNode = null;
                     }
 
                     selectedAnimation = new SelectedAnimation(s);
+                    selectedNode = node;
 
                     // TODO -- node name
                     String message = String.format("Selected Node: %s \nchildren: %s \nprimitives: %s",
                             node.toString(), node.getReferences(), node.getPrimitives());
                     _eventBus.post(new ProcessEvent(ProcessEventType.SELECT, message));
                     _eventBus.post(new NodeSelectionEvent(node));
-                    break;
                 }
             }
         }
         
-        if(selectedAnimation != null)
+        if(selectedAnimation != null){
+        	
         	selectedAnimation.step();
+        	
+        	boolean doubleClick = _renderEngine.isDoubleClick();
+        	
+        	if(io != null){
+        		io.enter();
+        	}
+        	
+        	if(doubleClick){
+        		if(io == null){
+        			if(selected == null) return;
+        			float[] pos = selected.getPosition();
+        			_renderEngine.setCameraPositionSmooth(pos[0], pos[1], pos[2]);
+        			io = new InsideObject(_renderEngine, selected, _renderEngine.getCameraPos(), selectedNode.getPrimitiveSet());
+        		}else{
+        			_renderEngine.setBackgroundColour(0,0,0, 1);
+        			_renderEngine.clear3DSpace();
+        			_renderEngine.switchActiveLayer(0);
+        			io.exit();
+        			io = null;
+        		}
+        	}
+        }
     }
 
     @Subscribe

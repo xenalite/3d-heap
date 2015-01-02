@@ -6,6 +6,7 @@ import com.imperial.heap3d.utilities.Pair;
 import com.sun.jdi.Value;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 public class ArrayNode extends Node {
     private Map<Integer, Object> _primitives;
@@ -48,4 +49,9 @@ public class ArrayNode extends Node {
     public void addPrimitive(int index, Value value) {
         // TODO
     }
+
+	@Override
+	public Set<Entry<String, Object>> getPrimitiveSet() {
+		return null;
+	}
 }

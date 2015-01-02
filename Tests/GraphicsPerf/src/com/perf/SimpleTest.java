@@ -73,14 +73,15 @@ public class SimpleTest extends RenderEngine {
         }catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+        
     }
 
     int count = 0;
     
     @Override
     protected void inLoop() {
-    	
+    	if(super.isDoubleClick())
+    		System.out.println("hello");
     	if (count == 0 || count == 2000){
     		super.setCameraPositionSmooth(0, 0, 0);
     		
@@ -91,7 +92,6 @@ public class SimpleTest extends RenderEngine {
     		
     	}
     		
-    		System.out.println(count);
     		count ++;
     }
 

@@ -31,8 +31,16 @@ public interface IRenderEngine {
     
     public void setCameraPositionSmooth(float x, float y, float z);
 
+    public void setCameraPosition(float x, float y, float z);
+    
 	public void printTo3DSpace(float x, float y, float z, float rx, float ry,
 			float rz, float scale, String msg);
 	
 	public void removeText();
+	
+	public float[] getCameraPos();
+	
+	public void switchActiveLayer(int layer);
+	
+	public boolean isDoubleClick();
 }

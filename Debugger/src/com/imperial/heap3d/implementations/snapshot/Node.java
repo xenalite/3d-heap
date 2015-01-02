@@ -5,6 +5,8 @@ import com.imperial.heap3d.implementations.layout.HeapGraphLevel;
 import com.imperial.heap3d.utilities.Pair;
 
 import java.util.List;
+import java.util.Set;
+import java.util.Map.Entry;
 
 public abstract class Node {
 
@@ -25,6 +27,8 @@ public abstract class Node {
     }
 
     public abstract Object getPrimitives();
+    
+    public abstract Set<Entry<String, Object>> getPrimitiveSet();
 
     public abstract List<Pair<Node,String>> getReferences();
 

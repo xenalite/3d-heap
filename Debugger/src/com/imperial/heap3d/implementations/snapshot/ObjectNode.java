@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class ObjectNode extends Node {
 
@@ -53,4 +54,9 @@ public class ObjectNode extends Node {
     public boolean equals(Object o) {
         return this == o || o instanceof ObjectNode && getId() == ((Node) o).getId();
     }
+
+	@Override
+	public Set<Entry<String, Object>> getPrimitiveSet() {
+		return _primitives.entrySet();
+	}
 }

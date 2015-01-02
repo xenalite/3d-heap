@@ -4,8 +4,11 @@ import com.graphics.shapes.Shape;
 import com.imperial.heap3d.utilities.GeometryUtils;
 import com.imperial.heap3d.utilities.Pair;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.Map.Entry;
 
 public class StringNode extends Node {
 
@@ -39,4 +42,9 @@ public class StringNode extends Node {
     public boolean equals(Object o) {
         return this == o || o instanceof StringNode && getId() == ((Node) o).getId();
     }
+
+    @Override
+	public Set<Entry<String, Object>> getPrimitiveSet() {
+		return null;
+	}
 }
