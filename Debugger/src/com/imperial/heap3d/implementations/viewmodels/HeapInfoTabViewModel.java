@@ -23,6 +23,7 @@ public class HeapInfoTabViewModel {
     private EventBus _eventBus;
 
     private ObjectProperty<TreeItem<Node>> _selectedItem;
+    private Map<Node, TreeItem<Node>> nodeToTreeItem = new HashMap<>();
 
     public StringProperty HeapInfoProperty() {
         return _HeapInfo;
@@ -50,12 +51,13 @@ public class HeapInfoTabViewModel {
 
         _HeapInfo = new SimpleStringProperty(this, "", "Data from the ViewModel");
         _TreeView = new SimpleObjectProperty<>(this, "", new TreeItem<>());
-        _selectedNode = new SimpleObjectProperty<>(new TreeItem<>());
+        _selectedNode = new SimpleObjectProperty<>(this, "", new TreeItem<>());
     }
 
     @Subscribe
     public void handleNodeSelectionEvent(NodeSelectionEvent event) {
-        _selectedNode = new SimpleObjectProperty<>(new TreeItem<>(event.getNode()));
+        System.out.println(nodeToTreeItem.containsKey(event.getNode()));
+        _selectedNode.set(nodeToTreeItem.get(event.getNode()));
     }
 
     @Subscribe
@@ -97,7 +99,7 @@ public class HeapInfoTabViewModel {
      * @return
      */
     private TreeItem<Node> createNode(final Node n) {
-        return new TreeItem<Node>(n) {
+        TreeItem<Node> treeItem = new TreeItem<Node>(n) {
             private boolean isLeaf;
             private boolean isFirstTimeChildren = true;
             private boolean isFirstTimeLeaf = true;
@@ -138,6 +140,9 @@ public class HeapInfoTabViewModel {
                 return FXCollections.emptyObservableList();
             }
         };
+
+        nodeToTreeItem.put(n, treeItem);
+        return treeItem;
     }
 
     public ObjectProperty<TreeItem<Node>> getSelectedItemProperty() {

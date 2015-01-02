@@ -89,14 +89,17 @@ public class HeapInfoTabController implements Initializable {
         });
 
         selectedNode.addListener((observable, oldValue, newValue) -> {
-
-            TreeItem<Node> selectedNodeTreeItem = (TreeItem<Node>) newValue;
-
-            if (selectedNodeTreeItem != null && selectedNodeTreeItem.getValue() != null) {
-                Node node = selectedNodeTreeItem.getValue();
-//                int selectedNodeRow = treeView.getRow(newValue);
-//                treeView.getSelectionModel().select(selectedNodeRow);
-            }
+            treeView.getSelectionModel().select(newValue);
+//            expandTreeView(newValue);
         });
+    }
+
+    private static void expandTreeView(TreeItem<Node> selectedItem) {
+        if (selectedItem != null) {
+            expandTreeView(selectedItem.getParent());
+            if (!selectedItem.isLeaf()) {
+                selectedItem.setExpanded(true);
+            }
+        }
     }
 }
