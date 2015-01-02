@@ -46,7 +46,7 @@ public class SwingWrappedApplication {
 
     private static final int MIN_FRAME_HEIGHT = 700;
     private static final int MIN_SIDEBAR_HEIGHT = MIN_FRAME_HEIGHT;
-    private static final int MIN_BOTTOM_PANEL_HEIGHT = 100;
+    private static final int MIN_BOTTOM_PANEL_HEIGHT = 150;
     private static final int MIN_CANVAS_HEIGHT = MIN_FRAME_HEIGHT - MIN_BOTTOM_PANEL_HEIGHT;
 
     private static final int MIN_FRAME_WIDTH = 1250;

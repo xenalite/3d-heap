@@ -7,12 +7,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
 
-
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.imperial.heap3d.ui.controllers.BottomPanelController">
+<VBox style="-fx-background-color: #191919;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.imperial.heap3d.ui.controllers.BottomPanelController">
    <children>
       <HBox prefWidth="200.0">
          <children>
-            <Label layoutX="10.0" layoutY="10.0" text="Key:">
+            <Label layoutX="10.0" layoutY="10.0" text="Key:" textFill="WHITE">
                <padding>
                   <Insets left="10.0" right="10.0" />
                </padding>
@@ -60,7 +59,11 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
-            <Label layoutX="10.0" layoutY="10.0" text="Controls:">
+         </children>
+      </HBox>
+      <HBox layoutX="10.0" layoutY="10.0" prefWidth="200.0">
+         <children>
+            <Label layoutX="10.0" layoutY="10.0" text="Controls:" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
@@ -68,7 +71,23 @@
                   <Insets left="10.0" right="10.0" />
                </padding>
             </Label>
-            <Label layoutX="467.0" layoutY="10.0" text="Look-Mouse Move-WASD Select-Left Click" textFill="#797979">
+            <Label layoutX="467.0" layoutY="10.0" text="Look-Mouse" textFill="#797979">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </Label>
+            <Label text="Move-WASD" textFill="#797979">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </Label>
+            <Label text="Select-Right Click" textFill="#797979">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
