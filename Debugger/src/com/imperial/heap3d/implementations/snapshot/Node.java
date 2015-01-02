@@ -28,7 +28,7 @@ public abstract class Node {
 
     public abstract Object getPrimitives();
     
-    public abstract Set<Entry<String, Object>> getPrimitiveSet();
+    public abstract Set<Entry<Object, Object>> getPrimitiveSet();
 
     public abstract List<Pair<Node,String>> getReferences();
 

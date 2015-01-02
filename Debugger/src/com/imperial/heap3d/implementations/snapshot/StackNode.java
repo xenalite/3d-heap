@@ -79,7 +79,7 @@ public class StackNode extends Node {
     }
 
     @Override
-	public Set<Entry<String, Object>> getPrimitiveSet() {
+	public Set<Entry<Object, Object>> getPrimitiveSet() {
 		return null;
 	}
 }

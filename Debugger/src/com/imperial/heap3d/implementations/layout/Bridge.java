@@ -76,22 +76,15 @@ public class Bridge {
         	
         	selectedAnimation.step();
         	
-        	boolean doubleClick = _renderEngine.isDoubleClick();
-        	
         	if(io != null){
         		io.enter();
         	}
         	
-        	if(doubleClick){
+        	if(_renderEngine.isDoubleClick()){
         		if(io == null){
         			if(selected == null) return;
-        			float[] pos = selected.getPosition();
-        			_renderEngine.setCameraPositionSmooth(pos[0], pos[1], pos[2]);
-        			io = new InsideObject(_renderEngine, selected, _renderEngine.getCameraPos(), selectedNode.getPrimitiveSet());
-        		}else{
-        			_renderEngine.setBackgroundColour(0,0,0, 1);
-        			_renderEngine.clear3DSpace();
-        			_renderEngine.switchActiveLayer(0);
+        			io = new InsideObject(_renderEngine, selected, _renderEngine.getCameraPos(), selectedNode);
+        		}else if(io.inObject()){
         			io.exit();
         			io = null;
         		}

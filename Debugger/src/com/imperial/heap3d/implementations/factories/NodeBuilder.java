@@ -70,10 +70,10 @@ public class NodeBuilder implements INodeBuilder {
                 ++index;
             }
             return Pair.create(arrayNode, name);
-        } else if (reference instanceof StringReference) {
-            StringReference stringReference = (StringReference) reference;
-            node = new StringNode(id, stringReference.toString());
-            _uniqueNodes.put(id, node);
+       // } else if (reference instanceof StringReference) {
+          //  StringReference stringReference = (StringReference) reference;
+          //  node = new StringNode(id, stringReference.toString());
+          //  _uniqueNodes.put(id, node);
         } else {
             ObjectNode objectNode = new ObjectNode(id);
             _uniqueNodes.put(id, objectNode);
@@ -88,7 +88,7 @@ public class NodeBuilder implements INodeBuilder {
             }
             return Pair.create(objectNode, name);
         }
-        return Pair.create(node, name);
+       // return Pair.create(node, name);
     }
 
     private void staticDrillDown(String name, ObjectReference reference, Field field) {
