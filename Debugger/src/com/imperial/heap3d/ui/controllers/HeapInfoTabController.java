@@ -6,8 +6,6 @@ import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.viewmodels.HeapInfoTabViewModel;
 import com.imperial.heap3d.utilities.ColorConverter;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -39,22 +37,16 @@ public class HeapInfoTabController implements Initializable {
         infoText.textProperty().bind(_viewModel.HeapInfoProperty());
         treeView.rootProperty().bindBidirectional(_viewModel.TreeViewProperty());
         selectedNode.bindBidirectional(_viewModel.selectedNodeProperty());
-        
-        treeView.getSelectionModel().selectedItemProperty().addListener( new ChangeListener<Object>() {
 
-            @Override
-            public void changed(ObservableValue observable, Object oldValue,
-                    Object newValue) {
+        treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            TreeItem<Node> selectedItem = newValue;
 
-                TreeItem<Node> selectedItem = (TreeItem<Node>) newValue;
-                
-                if(selectedItem != null && selectedItem.getValue() != null){
-                	Node n = selectedItem.getValue();
-                    Vector3f position = n.getLevel().getPosition(n);
-                	Bridge._renderEngine.setCameraPositionSmooth(position.x, position.y, position.z+10);
-                }
+            if (selectedItem != null && selectedItem.getValue() != null) {
+                Node n = selectedItem.getValue();
+                Vector3f position = n.getLevel().getPosition(n);
+                Bridge._renderEngine.setCameraPositionSmooth(position.x, position.y, position.z + 10);
             }
-          });
+        });
         
         treeView.setCellFactory(treeView -> {
             final Label label = new Label();
@@ -89,14 +81,17 @@ public class HeapInfoTabController implements Initializable {
         });
 
         selectedNode.addListener((observable, oldValue, newValue) -> {
-
-            TreeItem<Node> selectedNodeTreeItem = (TreeItem<Node>) newValue;
-
-            if (selectedNodeTreeItem != null && selectedNodeTreeItem.getValue() != null) {
-                Node node = selectedNodeTreeItem.getValue();
-//                int selectedNodeRow = treeView.getRow(newValue);
-//                treeView.getSelectionModel().select(selectedNodeRow);
-            }
+            treeView.getSelectionModel().select(newValue);
+//            expandTreeView(newValue);
         });
+    }
+
+    private static void expandTreeView(TreeItem<Node> selectedItem) {
+        if (selectedItem != null) {
+            expandTreeView(selectedItem.getParent());
+            if (!selectedItem.isLeaf()) {
+                selectedItem.setExpanded(true);
+            }
+        }
     }
 }
