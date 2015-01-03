@@ -132,6 +132,7 @@ public class HeapInfoTabViewModel {
                         ObservableList<TreeItem<Node>> children = FXCollections.observableArrayList();
 
                         children.addAll(references.stream().map(child -> createNode(child.first)).collect(Collectors.toList()));
+                        children.stream().forEach(item -> nodeToTreeItem.put(item.getValue(), item));
 
                         return children;
                     }
