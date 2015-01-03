@@ -6,15 +6,17 @@ import com.imperial.heap3d.utilities.Pair;
 import com.sun.jdi.Value;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 public class ArrayNode extends Node {
-    private Map<Integer, Object> _primitives;
+    private Map<Object, Object> _primitives;
 
     private List<Pair<Node,String>> _references;
 
     public ArrayNode(long id) {
         super(id);
         this._references = new ArrayList<>();
+        this._primitives = new HashMap<>();
     }
 
     public void addElement(Node element, String index) { _references.add(Pair.create(element, index)); }
@@ -46,6 +48,11 @@ public class ArrayNode extends Node {
     }
 
     public void addPrimitive(int index, Value value) {
-        // TODO
+    	_primitives.put(index, value);
     }
+
+	@Override
+	public Set<Entry<Object, Object>> getPrimitiveSet() {
+		return _primitives.entrySet();
+	}
 }

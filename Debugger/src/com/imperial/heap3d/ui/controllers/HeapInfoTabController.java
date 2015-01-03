@@ -5,6 +5,7 @@ import com.imperial.heap3d.implementations.layout.Bridge;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.viewmodels.HeapInfoTabViewModel;
 import com.imperial.heap3d.utilities.ColorConverter;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -81,8 +82,10 @@ public class HeapInfoTabController implements Initializable {
         });
 
         selectedNode.addListener((observable, oldValue, newValue) -> {
-            treeView.getSelectionModel().select(newValue);
-//            expandTreeView(newValue);
+            Platform.runLater(() -> {
+                treeView.getSelectionModel().select(newValue);
+                expandTreeView(newValue);
+            });
         });
     }
 

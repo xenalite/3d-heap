@@ -29,6 +29,11 @@ public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
     public void clear3DSpace() {
         clearShapesFrom3DSpace();
     }
+    
+    @Override
+    public boolean isDoubleClick(){
+    	return super.isDoubleClick();
+    }
 
     @Override
     public void addTo3DSpace(Shape shape) {
@@ -61,6 +66,16 @@ public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
     }
     
     @Override
+    public void setCameraPosition(float x, float y, float z){
+    	super.setCameraPosition(x, y, z);
+    }
+    
+    @Override
+    public float[] getCameraPos(){
+    	return super.getCameraPos();
+    }
+    
+    @Override
     public void printTo3DSpace(float x, float y, float z, float rx, float ry, float rz, float scale, String msg){
     	 try {
 			super.getText3D(Colour.WHITE).print(x, y, z, rx, ry, rz, scale, msg);
@@ -73,6 +88,12 @@ public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
     public void removeText(){
     	super.getText3D(Colour.WHITE).clearText();
     }
+    
+    @Override
+    public void switchActiveLayer(int layer){
+    	super.switchActiveLayer(layer);
+    }
+    
     //endregion
 
     //region RenderEngine-Loop

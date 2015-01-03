@@ -9,11 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class ObjectNode extends Node {
 
     private List<Pair<Node,String>> _references;
-    private Map<String, Object> _primitives;
+    private Map<Object, Object> _primitives;
 
     public ObjectNode(long id) {
         super(id);
@@ -53,4 +54,9 @@ public class ObjectNode extends Node {
     public boolean equals(Object o) {
         return this == o || o instanceof ObjectNode && getId() == ((Node) o).getId();
     }
+
+	@Override
+	public Set<Entry<Object, Object>> getPrimitiveSet() {
+		return _primitives.entrySet();
+	}
 }

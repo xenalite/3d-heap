@@ -2,12 +2,13 @@ package com.imperial.heap3d.implementations.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.imperial.heap3d.implementations.events.*;
+import com.imperial.heap3d.implementations.events.NodeEvent;
+import com.imperial.heap3d.implementations.events.NodeSelectionEvent;
+import com.imperial.heap3d.implementations.events.ProcessEvent;
 import com.imperial.heap3d.implementations.snapshot.Node;
 import com.imperial.heap3d.implementations.snapshot.StackNode;
 import com.imperial.heap3d.utilities.Pair;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -15,14 +16,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HeapInfoTabViewModel {
 
     private EventBus _eventBus;
 
-    private ObjectProperty<TreeItem<Node>> _selectedItem;
     private Map<Node, TreeItem<Node>> nodeToTreeItem = new HashMap<>();
 
     public StringProperty HeapInfoProperty() {
@@ -56,7 +58,6 @@ public class HeapInfoTabViewModel {
 
     @Subscribe
     public void handleNodeSelectionEvent(NodeSelectionEvent event) {
-        System.out.println(nodeToTreeItem.containsKey(event.getNode()));
         _selectedNode.set(nodeToTreeItem.get(event.getNode()));
     }
 
@@ -65,10 +66,7 @@ public class HeapInfoTabViewModel {
         try {
             switch (pe.type) {
                 case SELECT:
-                    Platform.runLater(() -> {
-                        _HeapInfo.set(pe.message);
-                    });
-
+                    Platform.runLater(() -> _HeapInfo.set(pe.message));
                     break;
 
             }
@@ -95,8 +93,8 @@ public class HeapInfoTabViewModel {
      * Avoids stack overflow / infinite recursion by lazy loading
      * cycles can are represented like in a normal debugger
      *
-     * @param n
-     * @return
+     * @param n The given node.
+     * @return  A TreeItem corresponding to the given StackNode.
      */
     private TreeItem<Node> createNode(final Node n) {
         TreeItem<Node> treeItem = new TreeItem<Node>(n) {
@@ -132,6 +130,7 @@ public class HeapInfoTabViewModel {
                         ObservableList<TreeItem<Node>> children = FXCollections.observableArrayList();
 
                         children.addAll(references.stream().map(child -> createNode(child.first)).collect(Collectors.toList()));
+                        children.stream().forEach(item -> nodeToTreeItem.put(item.getValue(), item));
 
                         return children;
                     }
@@ -143,9 +142,5 @@ public class HeapInfoTabViewModel {
 
         nodeToTreeItem.put(n, treeItem);
         return treeItem;
-    }
-
-    public ObjectProperty<TreeItem<Node>> getSelectedItemProperty() {
-        return _selectedItem;
     }
 }

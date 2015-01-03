@@ -4,9 +4,12 @@ import com.graphics.shapes.Shape;
 import com.imperial.heap3d.utilities.GeometryUtils;
 import com.imperial.heap3d.utilities.Pair;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.Map.Entry;
 
 public class StackNode extends Node {
 
@@ -74,4 +77,9 @@ public class StackNode extends Node {
     public String getName() {
         return _name;
     }
+
+    @Override
+	public Set<Entry<Object, Object>> getPrimitiveSet() {
+		return null;
+	}
 }

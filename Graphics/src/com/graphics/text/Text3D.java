@@ -27,6 +27,7 @@ public class Text3D {
 	private static final int ASCII_RIGHT_CURLY_BRACKET = 125;
 	private static final int ASCII_LEFT_CURLY_BRACKET = 123;
 	private static final int ASCII_DOT = 46;
+	private static final int ASCII_COLON = 58;
 	
 	private Map<Character, RawModel> asciiToModel;
 	private RenderEngine re;
@@ -53,7 +54,8 @@ public class Text3D {
 		asciiToModel.put((char)ASCII_LEFT_CURLY_BRACKET, OBJLoader.loadObjModel(true, prefix + "special/left_curly_bracket.obj", loader, colour));
 		asciiToModel.put((char)ASCII_RIGHT_CURLY_BRACKET, OBJLoader.loadObjModel(true, prefix + "special/right_curly_bracket.obj", loader, colour));
 		asciiToModel.put((char)ASCII_DOT, OBJLoader.loadObjModel(true, prefix + "special/dot.obj", loader, colour));
-	
+		asciiToModel.put((char)ASCII_COLON, OBJLoader.loadObjModel(true, prefix + "special/colon.obj", loader, colour));
+		
 		for(int i = ASCII_LOWER_A; i <= ASCII_LOWER_Z; i++)
 			asciiToModel.put((char)i, OBJLoader.loadObjModel(true, prefix + "lower/" + (char)i + ".obj", loader, colour));
 		
@@ -73,8 +75,14 @@ public class Text3D {
 			
 			RawModel model = asciiToModel.get(c);
 			
-			if(model == null)
+			if(model == null){
+				if(c == ' '){
+					x+=3.8*scale;
+					continue;
+				}
 				throw new Exception("Invalid char: " + c);
+			}
+				
 			
 			Model l = new Model(x, y, z, rotX, rotY, rotZ, scale, colour, model);
 			models.add(l);

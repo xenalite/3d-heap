@@ -4,7 +4,6 @@ import com.imperial.heap3d.implementations.snapshot.*;
 import com.imperial.heap3d.interfaces.factories.INodeBuilder;
 import com.imperial.heap3d.utilities.Pair;
 import com.sun.jdi.*;
-import com.sun.tools.jdi.ArrayReferenceImpl;
 
 import java.util.*;
 
@@ -14,7 +13,7 @@ import java.util.*;
 public class NodeBuilder implements INodeBuilder {
 
     private Map<Long, Node> _uniqueNodes = new HashMap<>();
-    private Map<String, StaticStackNode> _staticStackNodesMap = new HashMap<>();
+    private Map<String, StaticNode> _staticNodesMap = new HashMap<>();
 
     public Collection<StackNode> build(StackFrame stackFrame) {
         Collection<StackNode> stackNodes = new LinkedList<>();
@@ -46,7 +45,7 @@ public class NodeBuilder implements INodeBuilder {
             }
         }
 
-        for (StaticStackNode ssn : _staticStackNodesMap.values()) {
+        for (StaticNode ssn : _staticNodesMap.values()) {
             stackNodes.add(ssn);
         }
 
@@ -70,10 +69,14 @@ public class NodeBuilder implements INodeBuilder {
                 ++index;
             }
             return Pair.create(arrayNode, name);
-        } else if (reference instanceof StringReference) {
-            StringReference stringReference = (StringReference) reference;
-            node = new StringNode(id, stringReference.toString());
-            _uniqueNodes.put(id, node);
+
+        /* Remove StringNodes for the moment as they are not really needed.
+         * } else if (reference instanceof StringReference) {
+         * StringReference stringReference = (StringReference) reference;
+         * node = new StringNode(id, stringReference.toString());
+         * _uniqueNodes.put(id, node);
+         */
+
         } else {
             ObjectNode objectNode = new ObjectNode(id);
             _uniqueNodes.put(id, objectNode);
@@ -88,34 +91,54 @@ public class NodeBuilder implements INodeBuilder {
             }
             return Pair.create(objectNode, name);
         }
-        return Pair.create(node, name);
+        // return Pair.create(node, name);
     }
 
     private void staticDrillDown(String name, ObjectReference reference, Field field) {
         String referenceTypeName = reference.referenceType().name();
-        StaticStackNode ssn;
+        StaticNode ssn;
 
-        if (_staticStackNodesMap.containsKey(referenceTypeName)) {
-            ssn = _staticStackNodesMap.get(referenceTypeName);
+        if (_staticNodesMap.containsKey(referenceTypeName)) {
+            ssn = _staticNodesMap.get(referenceTypeName);
         } else {
-            ssn = new StaticStackNode(referenceTypeName, referenceTypeName.hashCode());
-            _staticStackNodesMap.put(referenceTypeName, ssn);
+            ssn = new StaticNode(referenceTypeName, referenceTypeName.hashCode());
+            _staticNodesMap.put(referenceTypeName, ssn);
         }
 
         ssn.addReferencingVar(name);
         Value fieldValue = reference.getValue(field);
 
-        if (fieldValue instanceof StringReference) {
-            StringReference stringReference = (StringReference) fieldValue;
-            long id = ((StringReference) fieldValue).uniqueID();
-            Node node = new StringNode(id, stringReference.toString());
-            ssn.addReference(node, field.name());
-        } else if (fieldValue instanceof ObjectReference) {
-            // TODO: handle this case.
+        if (fieldValue == null || fieldValue instanceof PrimitiveValue) {
+            ssn.addPrimitive(field.name(), fieldValue);
         } else if (fieldValue instanceof ArrayReference) {
-            // TODO: handle this case.
-        } else if (fieldValue == null || fieldValue instanceof PrimitiveValue) {
-            // TODO: handle this case.
+            ArrayReference arrayReference = (ArrayReference) fieldValue;
+            long id = arrayReference.uniqueID();
+            ArrayNode arrayNode = new ArrayNode(id);
+            ssn.addReference(arrayNode, field.name());
+            int index = 0;
+
+            for (Value arrayValue : arrayReference.getValues()) {
+                addValueToArrayNode(arrayNode, field.name(), arrayValue, index);
+                ++index;
+            }
+        } else if (fieldValue instanceof ObjectReference) {
+            ObjectReference objectReference = (ObjectReference) fieldValue;
+            long id = objectReference.uniqueID();
+            ObjectNode node = new ObjectNode(id);
+            ssn.addReference(node, field.name());
+
+            for (Field f : objectReference.referenceType().fields()) {
+                String fName = f.name();
+                Value fValue = objectReference.getValue(f);
+
+                if (f.isStatic()) {
+                    // TODO: Handle this.
+                    // drillDown(fName, objectReference);
+                    // staticDrillDown(fName, objectReference, f);
+                } else {
+                    addValueToObjectNode(node, fName, fValue);
+                }
+            }
         }
     }
 

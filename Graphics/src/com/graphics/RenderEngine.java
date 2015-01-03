@@ -21,7 +21,9 @@ import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.Canvas;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class RenderEngine implements Runnable {
 
@@ -45,6 +47,11 @@ public abstract class RenderEngine implements Runnable {
 	private Shape selectedShape;
 	
 	private Text3D text3d;
+	
+	private Map<Integer, List<Shape>> layerMap;
+	
+	private long lastClickTime = 0;
+	private boolean doubleClick;
 
 	public RenderEngine(String title, int width, int height, boolean resizable) {
 		this.title = title;
@@ -104,6 +111,14 @@ public abstract class RenderEngine implements Runnable {
 				mouseDown = false;
 
 			if(Mouse.isButtonDown(1) && !mouseDown){
+				
+				long clickTime = System.currentTimeMillis();
+				
+				//Test for double click
+				if(clickTime - lastClickTime < 500)
+					doubleClick = true;
+				
+				lastClickTime = clickTime;
 				mouseDown = true;
 				selectedShape = null;
 
@@ -213,6 +228,10 @@ public abstract class RenderEngine implements Runnable {
 		camera.setPosition(new Vector3f(oldPos.x + dx, oldPos.y + dy, oldPos.z + dz));
 	}
 	
+	protected float[] getCameraPos(){
+		return new float[]{camera.getPosition().x, camera.getPosition().y, camera.getPosition().z};
+	}
+	
 	protected void setRayPickDebugLines(boolean flag){
 		debugLines = flag;
 	}
@@ -221,5 +240,30 @@ public abstract class RenderEngine implements Runnable {
 		if(text3d == null)
 			text3d = new Text3D(Loader.getInstance(), this, colour);
 		return text3d;
+	}
+	
+	/**
+	 * Will switch to another active layer. If the layer does not exist, it will create one
+	 * @param layer
+	 */
+	protected void switchActiveLayer(int layer){
+		if(layerMap == null){
+			layerMap = new HashMap<Integer, List<Shape>>();
+			layerMap.put(0, shapes);
+		}
+		
+		if(layerMap.containsKey(layer)){
+			//Then we want to swap
+			shapes = layerMap.get(layer);
+		}else{
+			shapes = new ArrayList<Shape>();
+			layerMap.put(layer, shapes);
+		}
+	}
+	
+	protected boolean isDoubleClick(){
+		boolean temp = doubleClick;
+		doubleClick = false;
+		return temp;
 	}
 }
