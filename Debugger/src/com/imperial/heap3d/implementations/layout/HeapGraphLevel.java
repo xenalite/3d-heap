@@ -58,6 +58,17 @@ public class HeapGraphLevel {
 		}
 	}
 
+	public void updateLayout(){
+		if(getRoot() != null)
+		{
+			int count = _graph.getVertexCount();
+			int size = (int)(50 * Math.sqrt(count));
+			_layout.setSize(new Dimension(size,size));
+			updated = true;
+		}
+	}
+
+
 	public Iterable<Node> getPositionsToUpdate()
 	{
 		if(updated)
@@ -110,6 +121,9 @@ public class HeapGraphLevel {
 
 	public Iterable<Node> getVertices() {
 		return _graph.getVertices();
+	}
+	public  boolean containsVertex(Node n) {
+		return _graph.containsVertex(n);
 	}
 
 	public void addEdge(HeapEdge heapEdge, Node node, Node child) {

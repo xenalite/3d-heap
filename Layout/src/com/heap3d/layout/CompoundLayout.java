@@ -260,6 +260,17 @@ public class CompoundLayout<V,E> implements Layout<V,E>, IterativeContext  {
     }
 
     @Override
+    public void setRawPosition(V vertex, Point2D transform) {
+
+    }
+
+    @Override
+    public Point2D getRawPosition(V vertex) {
+        return null;
+    }
+
+
+    @Override
     public void layout() {
         //Initialize the graph
         //Actually not sure if this is correct
