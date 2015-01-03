@@ -9,13 +9,13 @@ import java.util.*;
 /**
  * Created by costica on 12/31/2014.
  */
-public class StaticStackNode extends StackNode {
+public class StaticNode extends StackNode {
 
     private Set<String> referencingVars;
     private List<Pair<Node,String>> _references;
     private Map<String, Object> _primitives;
 
-    public StaticStackNode(String name, long id) {
+    public StaticNode(String name, long id) {
         super(name, id);
         referencingVars = new HashSet<>();
         _references = new ArrayList<>();
@@ -34,7 +34,7 @@ public class StaticStackNode extends StackNode {
         _primitives.put(name, value);
     }
 
-    public StaticStackNode addReference(Node node, String name) {
+    public StaticNode addReference(Node node, String name) {
         _references.add(Pair.create(node, name));
         return this;
     }
