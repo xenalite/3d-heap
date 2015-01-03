@@ -56,7 +56,6 @@ public class HeapInfoTabViewModel {
 
     @Subscribe
     public void handleNodeSelectionEvent(NodeSelectionEvent event) {
-        System.out.println(nodeToTreeItem.containsKey(event.getNode()));
         _selectedNode.set(nodeToTreeItem.get(event.getNode()));
     }
 
