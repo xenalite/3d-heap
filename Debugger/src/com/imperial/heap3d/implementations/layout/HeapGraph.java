@@ -13,7 +13,10 @@ import com.imperial.heap3d.utilities.NodesComparator;
 import com.imperial.heap3d.utilities.Pair;
 
 import javax.vecmath.Vector3f;
+import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -21,6 +24,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class HeapGraph {
 
     private List<HeapGraphLevel> _levels = new ArrayList<>();
+    private List<HeapGraphLevel> _oldLevels = new ArrayList<>();
     private GraphImpl<Node, HeapEdge> interLevelGraph = new GraphImpl<>();
 
     private Collection<StackNode> _stackNodes = new ArrayList<>();
@@ -40,19 +44,20 @@ public class HeapGraph {
     private void resetStack() {
         int currentLevel = 0;
         _renderEngine.removeText();
+        //Clear everything
+        _renderEngine.clear3DSpace();
+        nodeToShape.clear();
+        _oldLevels = _levels;
+        _levels = new ArrayList<>();
+        interLevelGraph = new GraphImpl<>();
+
+
         for (StackNode stackNode : _stackNodes) {
-            if (currentLevel < _levels.size())
+            if (currentLevel < _oldLevels.size())
                 updateLevel(stackNode, currentLevel);
             else
                 addLevel(stackNode, currentLevel);
             ++currentLevel;
-        }
-
-        if (_stackNodes.size() < _levels.size()) {
-            for (int i = _levels.size() - 1; i >= currentLevel; i--) {
-                HeapGraphLevel level = _levels.get(i);
-                removeLevel(level);
-            }
         }
     }
 
@@ -95,33 +100,44 @@ public class HeapGraph {
 
     private void updateLevel(StackNode stackNode, int level) {
         NodesComparator comparator = new NodesComparator();
-        HeapGraphLevel levelGraph = _levels.get(level);
-        StackNode oldStackNode = levelGraph.getRoot();
+        HeapGraphLevel oldLevel = _oldLevels.get(level);
+        StackNode oldStackNode = oldLevel.getRoot();
 
         if (oldStackNode.equals(stackNode)) {
-            if (comparator.compare(oldStackNode, stackNode)) {
-                updatePositions(levelGraph);
-            } else if (stackNode.hasReference()) {
-                remakeLevel(stackNode, level);
+
+            HeapGraphLevel levelGraph = new HeapGraphLevel(level);
+            _levels.add(levelGraph.getId(), levelGraph);
+
+            if (!stackNode.hasReference() && levelGraph.addVertex(stackNode))
+                initialiseNewShape(stackNode);
+            else
+                buildGraph(stackNode, levelGraph);
+            //copy positions
+            boolean containsAll = true;
+            for (Node n : levelGraph.getVertices()){
+                if(oldLevel.containsVertex(n)){
+                    Point2D transform = oldLevel.getLayout().getRawPosition(n);
+                    levelGraph.getLayout().setRawPosition(n, transform);
+                } else
+                {
+                    containsAll = false;
+                }
             }
-        } else
-            remakeLevel(stackNode, level);
-    }
+            //Check if the levels are equal in every way
+            if (containsAll){
+                //equal so only need to update the layout
+                levelGraph.updateLayout();
+            } else {
+                //Not equal so run the layout
+                levelGraph.runLayout();
+            }
+            updatePositions(levelGraph);
 
-    private void remakeLevel(StackNode stackNode, int level) {
-        HeapGraphLevel levelGraph = _levels.get(level);
-        List<HeapGraphLevel> levelsToUpdate = removeLevel(levelGraph);
-        addLevel(stackNode, level);
-        updateLevelsAfterChange(levelsToUpdate);
-    }
-
-    private void updateLevelsAfterChange(List<HeapGraphLevel> levels) {
-        for(HeapGraphLevel levelToUpdate : levels) {
-            StackNode root = levelToUpdate.getRoot();
-            removeLevel(levelToUpdate);
-            addLevel(root, levelToUpdate.getId());
+        } else {
+            addLevel(stackNode, level);
         }
     }
+
 
     //region add
     private void addLevel(StackNode stackNode, int level) {

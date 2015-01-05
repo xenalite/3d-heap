@@ -126,6 +126,16 @@ public abstract class JungLayout<V,E> implements Layout<V,E>, IterativeContext{
         return convertFromCoord(layout.transform(v));
     }
 
+    @Override
+    public void setRawPosition(V vertex, Point2D transform){
+        layout.setLocation(vertex, transform);
+    }
+    @Override
+    public Point2D getRawPosition(V vertex){
+        return layout.transform(vertex);
+    }
+
+
 
     @Override
     public void layout()
