@@ -13,3 +13,6 @@ C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D
 C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\KinectHeap3D.pdb
 C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\bin\Debug\Microsoft.Kinect.dll
 C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\bin\Debug\Microsoft.Kinect.xml
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\bin\Debug\KinectHeap3D.exe.config
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Debug\KinectHeap3D.exe
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Debug\KinectHeap3D.pdb

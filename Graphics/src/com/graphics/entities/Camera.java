@@ -5,9 +5,7 @@ import org.lwjgl.util.vector.Vector3f;
 public class Camera {
 
 	private static final float MOVE_TIME = 100;
-	
 	private Vector3f position = new Vector3f(0, 0, 120);
-	
 	private boolean smoothMove;
 	private float incX, incY, incZ, timeStep, incPitch, incYaw;
 	private float pitch, yaw, roll;

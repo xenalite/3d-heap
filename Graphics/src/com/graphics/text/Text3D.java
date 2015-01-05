@@ -33,6 +33,10 @@ public class Text3D {
 	private RenderEngine re;
 	private Colour colour;
 	private List<Model> models;
+	private List<Character> needBiggerGap, needSmallerGap;
+	
+	// Magic number constants to make text look correct
+	private static final float GAP = 4f, BIGGER = 1.4f, SMALLER = 0.7f, UPPER_GAP = 5f, BRACKET_SCALE = 0.6f, EXTRA_GAP = 2f;
 	
 	public Text3D(Loader loader, RenderEngine re, Colour c){
 		this.re = re;
@@ -40,6 +44,25 @@ public class Text3D {
 		this.colour = c;
 		initModels(loader);
 		models = new ArrayList<Model>();
+		
+		needBiggerGap = new ArrayList<Character>();
+		needSmallerGap = new ArrayList<Character>();
+		
+		needSmallerGap.add('i');
+		needSmallerGap.add('f');
+		needSmallerGap.add('j');
+		needSmallerGap.add('r');
+		needSmallerGap.add('t');
+		needSmallerGap.add('l');
+		needSmallerGap.add('I');
+		needSmallerGap.add('J');
+		
+		needBiggerGap.add('m');
+		needBiggerGap.add('M');
+		needBiggerGap.add('w');
+		needBiggerGap.add('W');
+		needBiggerGap.add('[');
+		needBiggerGap.add('{');
 	}
 
 	// TODO models need to be generated
@@ -77,17 +100,29 @@ public class Text3D {
 			
 			if(model == null){
 				if(c == ' '){
-					x+=3.8*scale;
+					x+=GAP*scale;
 					continue;
 				}
 				throw new Exception("Invalid char: " + c);
 			}
 				
+			if(c == '{' || c == '[' || c == '}' || c == ']')
+				x-=GAP*BRACKET_SCALE*scale;
 			
 			Model l = new Model(x, y, z, rotX, rotY, rotZ, scale, colour, model);
 			models.add(l);
 			re.addShapeTo3DSpace(l);
-			x+=3.8*scale;
+			
+			if(c == '{' || c == '[' || c == 'W')
+				x+=GAP*EXTRA_GAP*scale;
+			else if(needBiggerGap.contains(c))
+				x+=GAP*BIGGER*scale;
+			else if(needSmallerGap.contains(c))
+				x+=GAP*SMALLER*scale*(c == 'l' ? 0.7f : 1f);
+			else if(Character.isUpperCase(c))
+				x+=UPPER_GAP*scale;
+			else
+				x+=GAP*scale;
 		}
 	}
 	

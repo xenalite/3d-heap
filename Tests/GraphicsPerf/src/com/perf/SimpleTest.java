@@ -39,14 +39,22 @@ public class SimpleTest extends RenderEngine {
         float z = -10;
         
      
-        Pyramid c1 = new Pyramid(x, y, z, 0, 0, 0, 1f, col1);
-        Line l1 = new Line(0, 0, 0, x, y, z, Colour.GREEN);
-        Cube c2 = new Cube(0, 1, 110, 0, 0, 0, 1, Colour.AQUA);
-        addShapeTo3DSpace(c1);
-        addShapeTo3DSpace(c2);
-        addShapeTo3DSpace(l1);
+    //    Pyramid c1 = new Pyramid(x, y, z, 0, 0, 0, 1f, col1);
+   //     Line l1 = new Line(0, 0, 0, x, y, z, Colour.GREEN);
+   //     Cube c2 = new Cube(0, 1, 110, 0, 0, 0, 1, Colour.AQUA);
+   //     addShapeTo3DSpace(c1);
+   //     addShapeTo3DSpace(c2);
+   //     addShapeTo3DSpace(l1);
         
-        super.enableKinectSupport(true);
+        Text3D text = super.getText3D(Colour.ORANGE);
+        try{
+        	text.print(0, 0, 0, 0, 0, 0, 1, "abcdefghijklmnopqrstuvwxyz");
+        	text.print(0, 0, 50, 0, 0, 0, 1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        	text.print(0, 0, 100, 0, 0, 0, 1, "${[}] ... 1234567890");
+        	text.print(0, 0, -50, 0, 0, 0, 1, "example{1]");
+        }catch(Exception e){
+        	e.printStackTrace();
+        }
     }
 
     
