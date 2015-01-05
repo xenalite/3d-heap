@@ -4,6 +4,9 @@ import com.graphics.entities.Camera;
 import com.graphics.entities.Light;
 import com.graphics.models.Loader;
 import com.graphics.models.RawModel;
+import com.graphics.movement.Input;
+import com.graphics.movement.KinectInput;
+import com.graphics.movement.MouseKeyboardInput;
 import com.graphics.raycasting.RayCastUtil;
 import com.graphics.rendering.MasterRenderer;
 import com.graphics.shapes.Colour;
@@ -32,7 +35,6 @@ public abstract class RenderEngine implements Runnable {
 	private long lastFps;
 	private int fpsInc, fps;
 	private List<Shape> shapes = new ArrayList<Shape>();
-	private boolean breakFromLoop;
 	private Screenshot screenshot = new Screenshot();
 
 	private String title = "";
@@ -41,6 +43,7 @@ public abstract class RenderEngine implements Runnable {
 	private final Canvas canvas;
 	private float r, g, b, a;
 	private Camera camera;
+	private Input userInput;
 
 	private boolean debugLines;
 	private boolean mouseDown;
@@ -53,6 +56,8 @@ public abstract class RenderEngine implements Runnable {
 	private long lastClickTime = 0;
 	private boolean doubleClick;
 
+	public static boolean breakFromLoop;
+	
 	public RenderEngine(String title, int width, int height, boolean resizable) {
 		this.title = title;
 		this.width = width;
@@ -79,7 +84,8 @@ public abstract class RenderEngine implements Runnable {
 
 		renderer = new MasterRenderer();
 		camera = new Camera();
-
+		userInput = new MouseKeyboardInput();
+		
 		lastFps = getTime();
 
 		beforeLoop();
@@ -94,6 +100,7 @@ public abstract class RenderEngine implements Runnable {
 			if (Keyboard.isKeyDown(Keyboard.KEY_P))
 				screenshot.capture();
 
+			userInput.move(camera);
 			camera.move();
 
 			inLoop();
@@ -180,6 +187,7 @@ public abstract class RenderEngine implements Runnable {
 
 	private void cleanUp() {
 		renderer.cleanUp();
+		userInput.cleanup();
 		DisplayManager.closeDisplay();
 	}
 
@@ -265,5 +273,16 @@ public abstract class RenderEngine implements Runnable {
 		boolean temp = doubleClick;
 		doubleClick = false;
 		return temp;
+	}
+	
+	protected void enableKinectSupport(boolean enable){
+		if(enable){
+			userInput = new KinectInput();
+			if(userInput.isEnabled())
+				return;
+			
+		}
+		userInput = new MouseKeyboardInput();
+		
 	}
 }

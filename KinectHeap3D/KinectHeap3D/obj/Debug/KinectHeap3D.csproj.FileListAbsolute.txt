@@ -1,0 +1,15 @@
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\bin\Debug\KinectHeap3D.exe.config
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\bin\Debug\KinectHeap3D.exe
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\bin\Debug\KinectHeap3D.pdb
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\KinectHeap3D.csprojResolveAssemblyReference.cache
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\MainWindow.baml
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\MainWindow.g.cs
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\App.g.cs
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\KinectHeap3D_MarkupCompile.cache
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\KinectHeap3D.g.resources
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\KinectHeap3D.Properties.Resources.resources
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\KinectHeap3D.csproj.GenerateResource.Cache
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\KinectHeap3D.exe
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\obj\Debug\KinectHeap3D.pdb
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\bin\Debug\Microsoft.Kinect.dll
+C:\Users\Stephen\Documents\Visual Studio 2013\Projects\KinectHeap3D\KinectHeap3D\bin\Debug\Microsoft.Kinect.xml

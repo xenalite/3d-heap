@@ -38,61 +38,21 @@ public class SimpleTest extends RenderEngine {
         float y = 10;
         float z = -10;
         
-        float rotx = 0f;//(float) Math.toDegrees((float) Math.atan2( y, z ));
-        float roty = (float) Math.toDegrees(Math.atan2( x * Math.cos(rotx), z ));
-        float rotz = (float) Math.toDegrees(Math.atan2( Math.cos(rotx), Math.sin(rotx) * Math.sin(roty) ));
-        
-        rotx = (float) Math.atan2( y, z );
-        if (z >= 0) {
-           roty = (float) -Math.atan2( x * Math.cos(rotx), z );
-        }else{
-           roty = (float) Math.atan2( x * Math.cos(rotx), -z );
-        }
-        
-        System.out.println(rotx);
-        System.out.println(roty);
-        System.out.println(rotz);
-        /*
-        if (z >= 0) {
-            roty = -(float) Math.toDegrees(Math.atan2( x * Math.cos(rotx), z ));
-         }else{
-            roty = (float) Math.toDegrees(Math.atan2( x * Math.cos(rotx), -z ));
-         }
-       */
-        
-        Pyramid c1 = new Pyramid(x, y, z, rotx, roty, rotz, 1f, col1);
+     
+        Pyramid c1 = new Pyramid(x, y, z, 0, 0, 0, 1f, col1);
         Line l1 = new Line(0, 0, 0, x, y, z, Colour.GREEN);
         Cube c2 = new Cube(0, 1, 110, 0, 0, 0, 1, Colour.AQUA);
         addShapeTo3DSpace(c1);
         addShapeTo3DSpace(c2);
         addShapeTo3DSpace(l1);
         
-        text = getText3D(Colour.GREEN);
-        try {
-        	text.print(0, 0, 0, 0, 0, 0, 1, "{...}");
-        }catch (Exception e) {
-			e.printStackTrace();
-		}
-        
+        super.enableKinectSupport(true);
     }
 
-    int count = 0;
     
     @Override
     protected void inLoop() {
-    	if(super.isDoubleClick())
-    		System.out.println("hello");
-    	if (count == 0 || count == 2000){
-    		super.setCameraPositionSmooth(0, 0, 0);
-    		
-    	}
     	
-    	if (count == 1000 || count == 3000){
-    		super.setCameraPositionSmooth(0, 0, 200);
-    		
-    	}
-    		
-    		count ++;
     }
 
     @Override

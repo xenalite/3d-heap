@@ -1,0 +1,36 @@
+﻿<grammar version="1.0" xml:lang="en-US" root="rootRule" tag-format="semantics/1.0-literals" xmlns="http://www.w3.org/2001/06/grammar">
+  <rule id="rootRule">
+    <one-of>
+      <item>
+        <tag>CENTER</tag>
+        <one-of>
+          <item> center </item>
+          <item> middle </item>
+          <item> reset </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>EXIT</tag>
+        <one-of>
+          <item> exit </item>
+          <item> close </item>
+          <item> shut </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>SPEED UP</tag>
+        <one-of>
+          <item> speed up </item>
+          <item> faster </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>SLOW DOWN</tag>
+        <one-of>
+          <item> slow down </item>
+          <item> slower </item>
+        </one-of>
+      </item>
+    </one-of>
+  </rule>
+</grammar>
