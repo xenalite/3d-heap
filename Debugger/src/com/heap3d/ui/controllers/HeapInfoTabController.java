@@ -3,7 +3,7 @@ package com.heap3d.ui.controllers;
 import com.graphics.shapes.Colour;
 import com.heap3d.implementations.layout.Bridge;
 import com.heap3d.implementations.snapshot.Node;
-import com.heap3d.implementations.viewmodels.HeapInfoTabViewModel;
+import com.heap3d.interfaces.viewmodels.IHeapInfoTabViewModel;
 import com.heap3d.utilities.ColorConverter;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,9 +27,9 @@ public class HeapInfoTabController implements Initializable {
     @FXML
     private SimpleObjectProperty<TreeItem<Node>> selectedNode = new SimpleObjectProperty<>();
 
-    private final HeapInfoTabViewModel _viewModel;
+    private final IHeapInfoTabViewModel _viewModel;
 
-    public HeapInfoTabController(HeapInfoTabViewModel viewModel) {
+    public HeapInfoTabController(IHeapInfoTabViewModel viewModel) {
         _viewModel = viewModel;
     }
 

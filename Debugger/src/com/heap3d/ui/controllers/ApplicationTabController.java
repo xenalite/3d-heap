@@ -1,6 +1,7 @@
 package com.heap3d.ui.controllers;
 
 import com.heap3d.implementations.viewmodels.ApplicationTabViewModel;
+import com.heap3d.interfaces.viewmodels.IApplicationTabViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -32,9 +33,9 @@ public class ApplicationTabController implements Initializable {
     @FXML
     private TextArea classNameTextArea;
 
-    private final ApplicationTabViewModel _viewModel;
+    private final IApplicationTabViewModel _viewModel;
 
-    public ApplicationTabController(ApplicationTabViewModel viewModel) {
+    public ApplicationTabController(IApplicationTabViewModel viewModel) {
         _viewModel = viewModel;
     }
 

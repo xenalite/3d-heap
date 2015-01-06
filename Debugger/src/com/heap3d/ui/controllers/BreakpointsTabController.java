@@ -1,6 +1,6 @@
 package com.heap3d.ui.controllers;
 
-import com.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
+import com.heap3d.interfaces.viewmodels.IBreakpointsTabViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
@@ -53,9 +53,9 @@ public class BreakpointsTabController implements Initializable {
         _viewModel.removeBreakpointAction(breakpointsListView.getSelectionModel().getSelectedItem());
     }
 
-    private final BreakpointsTabViewModel _viewModel;
+    private final IBreakpointsTabViewModel _viewModel;
 
-    public BreakpointsTabController(BreakpointsTabViewModel viewModel) {
+    public BreakpointsTabController(IBreakpointsTabViewModel viewModel) {
         _viewModel = viewModel;
     }
 

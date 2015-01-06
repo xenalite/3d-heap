@@ -1,19 +1,22 @@
 package com.heap3d.entry;
 
 import com.google.common.eventbus.EventBus;
-import com.graphics.RenderEngine;
 import com.heap3d.implementations.factories.ControllerFactory;
 import com.heap3d.implementations.factories.ProcessFactory;
 import com.heap3d.implementations.factories.ThreadBuilder;
 import com.heap3d.implementations.factories.VirtualMachineProvider;
 import com.heap3d.implementations.layout.HeapGraph;
-import com.heap3d.implementations.layout.IRenderEngine;
 import com.heap3d.implementations.layout.RenderEngineAdapter;
 import com.heap3d.implementations.viewmodels.ApplicationTabViewModel;
 import com.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
 import com.heap3d.implementations.viewmodels.HeapInfoTabViewModel;
-import com.heap3d.implementations.viewmodels.SidebarViewModel;
-import com.heap3d.ui.controllers.*;
+import com.heap3d.interfaces.viewmodels.IApplicationTabViewModel;
+import com.heap3d.interfaces.viewmodels.IBreakpointsTabViewModel;
+import com.heap3d.interfaces.viewmodels.IHeapInfoTabViewModel;
+import com.heap3d.ui.controllers.ApplicationTabController;
+import com.heap3d.ui.controllers.BottomPanelController;
+import com.heap3d.ui.controllers.BreakpointsTabController;
+import com.heap3d.ui.controllers.HeapInfoTabController;
 import com.heap3d.utilities.PathUtils;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -41,13 +44,11 @@ public class SwingWrappedApplication {
     private static String WINDOW_TITLE = "3D HEAP VISUALISER";
 
     private static final int MIN_FRAME_HEIGHT = 700;
-    private static final int MIN_SIDEBAR_HEIGHT = MIN_FRAME_HEIGHT;
     private static final int MIN_BOTTOM_PANEL_HEIGHT = 150;
     private static final int MIN_CANVAS_HEIGHT = MIN_FRAME_HEIGHT - MIN_BOTTOM_PANEL_HEIGHT;
 
     private static final int MIN_FRAME_WIDTH = 1250;
     private static final int MIN_SIDEBAR_WIDTH = 400;
-    private static final int MIN_BOTTOM_PANEL_WIDTH = MIN_FRAME_WIDTH - MIN_SIDEBAR_WIDTH;
     private static final int MIN_CANVAS_WIDTH = MIN_FRAME_WIDTH - MIN_SIDEBAR_WIDTH;
 
     private final MutablePicoContainer _injector = new DefaultPicoContainer(new OptInCaching());
@@ -59,36 +60,6 @@ public class SwingWrappedApplication {
     private void run() {
         registerTypes();
         SwingUtilities.invokeLater(this::initialiseFrame);
-    }
-
-    private void registerTypes() {
-        _injector.as(CACHE).addComponent(VirtualMachineProvider.class);
-        _injector.as(CACHE).addComponent(EventBus.class);
-        _injector.addComponent(ProcessFactory.class);
-
-        _injector.addComponent(ApplicationTabController.class);
-        _injector.addComponent(BreakpointsTabController.class);
-        _injector.addComponent(BottomPanelController.class);
-        _injector.addComponent(HeapInfoTabController.class);
-        _injector.addComponent(SidebarController.class);
-
-        _injector.as(CACHE).addComponent(ApplicationTabViewModel.class);
-        _injector.addComponent(BreakpointsTabViewModel.class);
-        _injector.addComponent(HeapInfoTabViewModel.class);
-        _injector.addComponent(SidebarViewModel.class);
-    }
-
-    private Scene initialiseJFXElement(String filename) {
-        try {
-            File f = new File(PathUtils.FXML_DIR + filename);
-            FXMLLoader loader = new FXMLLoader(f.toURI().toURL());
-            loader.setControllerFactory(new ControllerFactory(_injector));
-            Parent root = loader.load();
-            return new Scene(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalStateException(e);
-        }
     }
 
     private void initialiseFrame() {
@@ -142,6 +113,37 @@ public class SwingWrappedApplication {
         service.shutdown();
     }
 
+    private void registerTypes() {
+        /* Components */
+        _injector.as(CACHE).addComponent(VirtualMachineProvider.class);
+        _injector.as(CACHE).addComponent(EventBus.class);
+        _injector.addComponent(ProcessFactory.class);
+
+        /* Controllers */
+        _injector.addComponent(ApplicationTabController.class);
+        _injector.addComponent(BreakpointsTabController.class);
+        _injector.addComponent(BottomPanelController.class);
+        _injector.addComponent(HeapInfoTabController.class);
+
+        /* View Models */
+        _injector.as(CACHE).addComponent(IApplicationTabViewModel.class, ApplicationTabViewModel.class);
+        _injector.addComponent(IBreakpointsTabViewModel.class, BreakpointsTabViewModel.class);
+        _injector.addComponent(IHeapInfoTabViewModel.class, HeapInfoTabViewModel.class);
+    }
+
+    private Scene initialiseJFXElement(String filename) {
+        try {
+            File f = new File(PathUtils.FXML_DIR + filename);
+            FXMLLoader loader = new FXMLLoader(f.toURI().toURL());
+            loader.setControllerFactory(new ControllerFactory(_injector));
+            Parent root = loader.load();
+            return new Scene(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalStateException(e);
+        }
+    }
+
     private void initialiseRenderEngine(RenderEngineAdapter renderEngine) {
         HeapGraph heapGraph = new HeapGraph(renderEngine);
 
@@ -153,11 +155,12 @@ public class SwingWrappedApplication {
 
             renderEngine.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
         });
-        renderEngine.before(beforeCommands);
 
         List<Runnable> duringCommands = new ArrayList<>();
 //        duringCommands.add(() -> logo[0].getEntity().increaseRotation(0, 1, 0));
         duringCommands.add(heapGraph::inLoop);
+
+        renderEngine.before(beforeCommands);
         renderEngine.during(duringCommands);
     }
 }

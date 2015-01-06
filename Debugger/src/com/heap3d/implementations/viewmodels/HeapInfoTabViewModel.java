@@ -7,11 +7,12 @@ import com.heap3d.implementations.events.NodeSelectionEvent;
 import com.heap3d.implementations.events.ProcessEvent;
 import com.heap3d.implementations.snapshot.Node;
 import com.heap3d.implementations.snapshot.StackNode;
+import com.heap3d.interfaces.viewmodels.IHeapInfoTabViewModel;
 import com.heap3d.utilities.Pair;
 import javafx.application.Platform;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
@@ -21,26 +22,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class HeapInfoTabViewModel {
+public class HeapInfoTabViewModel implements IHeapInfoTabViewModel {
 
     private EventBus _eventBus;
 
     private Map<Node, TreeItem<Node>> nodeToTreeItem = new HashMap<>();
 
-    public StringProperty HeapInfoProperty() {
+    @Override
+    public Property<String> HeapInfoProperty() {
         return _HeapInfo;
     }
 
-    private StringProperty _HeapInfo;
+    private Property<String> _HeapInfo;
 
     private SimpleObjectProperty<TreeItem<Node>> _TreeView;
 
+    @Override
     public SimpleObjectProperty<TreeItem<Node>> TreeViewProperty() {
         return _TreeView;
     }
 
     private SimpleObjectProperty<TreeItem<Node>> _selectedNode;
 
+    @Override
     public SimpleObjectProperty<TreeItem<Node>> selectedNodeProperty() {
         return _selectedNode;
     }
@@ -56,32 +60,31 @@ public class HeapInfoTabViewModel {
         _selectedNode = new SimpleObjectProperty<>(this, "", new TreeItem<>());
     }
 
+    @Override
     @Subscribe
-    public void handleNodeSelectionEvent(NodeSelectionEvent event) {
-        _selectedNode.set(nodeToTreeItem.get(event.getNode()));
+    public void handleNodeSelectionEvent(NodeSelectionEvent nodeSelectionEvent) {
+        _selectedNode.set(nodeToTreeItem.get(nodeSelectionEvent.getNode()));
     }
 
+    @Override
     @Subscribe
-    public void handleControlEvent(ProcessEvent pe) {
-        try {
-            switch (pe.type) {
-                case SELECT:
-                    Platform.runLater(() -> _HeapInfo.set(pe.message));
-                    break;
+    public void handleControlEvent(ProcessEvent processEvent) {
+        switch (processEvent.type) {
+            case SELECT:
+                Platform.runLater(() -> _HeapInfo.setValue(processEvent.message));
+                break;
 
-            }
-        } catch (IllegalStateException e) {
-            System.out.println(e);
         }
     }
 
+    @Override
     @Subscribe
-    public void handleNodeEvent(NodeEvent ne) {
+    public void handleNodeEvent(NodeEvent nodeEvent) {
         Platform.runLater(() -> {
             TreeItem<Node> root = new TreeItem<>(null);
             root.setExpanded(true);
             ObservableList<TreeItem<Node>> children = root.getChildren();
-            for (StackNode node : ne.nodes) {
+            for (StackNode node : nodeEvent.nodes) {
                 children.add(0, createNode(node));
             }
             _TreeView.setValue(root);

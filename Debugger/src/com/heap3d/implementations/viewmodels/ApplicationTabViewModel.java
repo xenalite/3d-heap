@@ -2,6 +2,7 @@ package com.heap3d.implementations.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.heap3d.interfaces.viewmodels.IApplicationTabViewModel;
 import com.heap3d.utilities.PathUtils;
 import com.heap3d.implementations.application.ControlEventHandler;
 import com.heap3d.implementations.events.ControlEventFactory;
@@ -23,7 +24,7 @@ import static com.heap3d.implementations.events.EventType.*;
 /**
  * Created by oskar on 29/10/14.
  */
-public class ApplicationTabViewModel {
+public class ApplicationTabViewModel implements IApplicationTabViewModel {
 
     private ProcessFactory _processFactory;
     private EventBus _eventBus;
