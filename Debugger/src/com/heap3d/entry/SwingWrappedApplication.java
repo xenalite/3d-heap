@@ -1,11 +1,13 @@
 package com.heap3d.entry;
 
 import com.google.common.eventbus.EventBus;
+import com.graphics.RenderEngine;
 import com.heap3d.implementations.factories.ControllerFactory;
 import com.heap3d.implementations.factories.ProcessFactory;
 import com.heap3d.implementations.factories.ThreadBuilder;
 import com.heap3d.implementations.factories.VirtualMachineProvider;
 import com.heap3d.implementations.layout.HeapGraph;
+import com.heap3d.implementations.layout.IRenderEngine;
 import com.heap3d.implementations.layout.RenderEngineAdapter;
 import com.heap3d.implementations.viewmodels.ApplicationTabViewModel;
 import com.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
@@ -92,9 +94,55 @@ public class SwingWrappedApplication {
     private void initialiseFrame() {
         Canvas canvas = new Canvas();
         canvas.setSize(MIN_CANVAS_WIDTH, MIN_CANVAS_HEIGHT);
-        canvas.setVisible(true);
 
         RenderEngineAdapter renderEngine = new RenderEngineAdapter(canvas);
+        initialiseRenderEngine(renderEngine);
+        _injector.as(CACHE).addComponent(renderEngine);
+
+        JFrame frame = new JFrame();
+        JSplitPane pane = new JSplitPane();
+        JSplitPane leftPane = new JSplitPane();
+
+        JFXPanel jfxSidebar = new JFXPanel();
+        JFXPanel jfxBottomPanel = new JFXPanel();
+
+        Platform.runLater(() -> {
+            jfxSidebar.setScene(initialiseJFXElement("Sidebar.fxml"));
+            jfxBottomPanel.setScene(initialiseJFXElement("BottomPanel.fxml"));
+        });
+
+        leftPane.setTopComponent(canvas);
+        leftPane.setBottomComponent(jfxBottomPanel);
+        leftPane.setDividerSize(0);
+        leftPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+
+        pane.setLeftComponent(leftPane);
+        pane.setRightComponent(jfxSidebar);
+        pane.setDividerSize(0);
+
+        frame.add(pane);
+        frame.setSize(MIN_FRAME_WIDTH, MIN_FRAME_HEIGHT);
+        frame.setTitle(WINDOW_TITLE);
+        frame.setVisible(true);
+
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        runRenderEngine(renderEngine);
+    }
+
+    private void runRenderEngine(Runnable renderEngine) {
+        ExecutorService service = ThreadBuilder.createService("lwjgl");
+        service.submit(() -> {
+            try {
+                renderEngine.run();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        service.shutdown();
+    }
+
+    private void initialiseRenderEngine(RenderEngineAdapter renderEngine) {
         HeapGraph heapGraph = new HeapGraph(renderEngine);
 
 //        final Shape[] logo = new Shape[1];
@@ -111,46 +159,5 @@ public class SwingWrappedApplication {
 //        duringCommands.add(() -> logo[0].getEntity().increaseRotation(0, 1, 0));
         duringCommands.add(heapGraph::inLoop);
         renderEngine.during(duringCommands);
-
-        _injector.as(CACHE).addComponent(renderEngine);
-
-        JFrame frame = new JFrame();
-        JSplitPane pane = new JSplitPane();
-        JSplitPane leftPane = new JSplitPane();
-
-        JFXPanel fxSidebar = new JFXPanel();
-        JFXPanel fxBottomPanel = new JFXPanel();
-
-        Platform.runLater(() -> {
-            fxSidebar.setScene(initialiseJFXElement("Sidebar.fxml"));
-            fxBottomPanel.setScene(initialiseJFXElement("BottomPanel.fxml"));
-        });
-
-        leftPane.setTopComponent(canvas);
-        leftPane.setBottomComponent(fxBottomPanel);
-        leftPane.setDividerSize(0);
-        leftPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-
-        pane.setLeftComponent(leftPane);
-        pane.setRightComponent(fxSidebar);
-        pane.setDividerSize(0);
-
-        frame.add(pane);
-        frame.setSize(MIN_FRAME_WIDTH, MIN_FRAME_HEIGHT);
-        frame.setTitle(WINDOW_TITLE);
-        frame.setVisible(true);
-
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        ExecutorService service = ThreadBuilder.createService("lwjgl");
-        service.submit(() -> {
-            try {
-                renderEngine.run();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        service.shutdown();
     }
 }
