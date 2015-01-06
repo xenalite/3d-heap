@@ -1,7 +1,8 @@
-package com.heap3d.implementations.layout.animation;
+package com.heap3d.implementations.animation;
 
 import com.graphics.shapes.Shape;
-import com.heap3d.implementations.snapshot.Node;
+import com.heap3d.implementations.node.Node;
+import com.heap3d.interfaces.animation.IAnimation;
 
 import java.util.ArrayList;
 import java.util.List;

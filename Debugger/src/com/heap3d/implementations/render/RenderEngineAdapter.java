@@ -1,8 +1,9 @@
-package com.heap3d.implementations.layout;
+package com.heap3d.implementations.render;
 
 import com.graphics.RenderEngine;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
+import com.heap3d.interfaces.render.IRenderEngine;
 
 import java.awt.*;
 import java.util.ArrayList;

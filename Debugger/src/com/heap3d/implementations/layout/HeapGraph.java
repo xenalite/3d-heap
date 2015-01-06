@@ -3,12 +3,13 @@ package com.heap3d.implementations.layout;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
+import com.heap3d.interfaces.render.IRenderEngine;
 import com.heap3d.layout.GraphImpl;
-import com.heap3d.implementations.layout.animation.Animation;
-import com.heap3d.implementations.layout.animation.IAnimation;
-import com.heap3d.implementations.layout.animation.NullAnimation;
-import com.heap3d.implementations.snapshot.Node;
-import com.heap3d.implementations.snapshot.StackNode;
+import com.heap3d.implementations.animation.Animation;
+import com.heap3d.interfaces.animation.IAnimation;
+import com.heap3d.implementations.animation.NullAnimation;
+import com.heap3d.implementations.node.Node;
+import com.heap3d.implementations.node.StackNode;
 import com.heap3d.utilities.NodesComparator;
 import com.heap3d.utilities.Pair;
 

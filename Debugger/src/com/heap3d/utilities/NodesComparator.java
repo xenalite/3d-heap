@@ -1,6 +1,6 @@
 package com.heap3d.utilities;
 
-import com.heap3d.implementations.snapshot.Node;
+import com.heap3d.implementations.node.Node;
 
 import java.util.HashSet;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-package com.heap3d.implementations.snapshot;
+package com.heap3d.implementations.node;
 
 import com.graphics.shapes.Shape;
 import com.heap3d.utilities.GeometryUtils;

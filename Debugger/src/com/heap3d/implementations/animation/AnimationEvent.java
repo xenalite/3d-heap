@@ -1,4 +1,4 @@
-package com.heap3d.implementations.layout.animation;
+package com.heap3d.implementations.animation;
 
 public abstract class AnimationEvent {
 

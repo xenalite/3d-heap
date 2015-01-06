@@ -1,4 +1,4 @@
-package com.heap3d.implementations.layout;
+package com.heap3d.interfaces.render;
 
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;

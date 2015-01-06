@@ -1,8 +1,8 @@
 package tests.unit.utilities;
 
-import com.heap3d.implementations.snapshot.Node;
-import com.heap3d.implementations.snapshot.ObjectNode;
-import com.heap3d.implementations.snapshot.StackNode;
+import com.heap3d.implementations.node.Node;
+import com.heap3d.implementations.node.ObjectNode;
+import com.heap3d.implementations.node.StackNode;
 import com.heap3d.utilities.NodesComparator;
 import org.junit.Before;
 import org.junit.Test;

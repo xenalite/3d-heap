@@ -1,7 +1,7 @@
 package com.heap3d.implementations.application;
 
 import com.heap3d.implementations.layout.Bridge;
-import com.heap3d.implementations.snapshot.StackNode;
+import com.heap3d.implementations.node.StackNode;
 import com.heap3d.interfaces.application.IVariableAnalyser;
 import com.heap3d.interfaces.factories.INodeBuilder;
 import com.heap3d.utilities.Check;

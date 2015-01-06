@@ -7,9 +7,11 @@ import com.heap3d.implementations.events.NodeEvent;
 import com.heap3d.implementations.events.NodeSelectionEvent;
 import com.heap3d.implementations.events.ProcessEvent;
 import com.heap3d.implementations.events.ProcessEventType;
-import com.heap3d.implementations.layout.animation.SelectedAnimation;
-import com.heap3d.implementations.snapshot.Node;
-import com.heap3d.implementations.snapshot.StackNode;
+import com.heap3d.implementations.animation.SelectedAnimation;
+import com.heap3d.interfaces.render.IRenderEngine;
+import com.heap3d.implementations.render.InsideObject;
+import com.heap3d.implementations.node.Node;
+import com.heap3d.implementations.node.StackNode;
 import com.heap3d.utilities.Check;
 
 import java.util.ArrayList;
@@ -43,14 +45,14 @@ public class Bridge {
     private SelectedAnimation selectedAnimation;
     private InsideObject io;
     private Node selectedNode;
-    
+
     private void selectionMethod() {
         Shape selected = _renderEngine.getSelectedShape();
-        
+
         if (selected != null && selected != lastSelectedShape) {
             lastSelectedShape = selected;
 
-            for (Entry<Node,Shape> entry : _heapGraph.getCurrentNodes()) {
+            for (Entry<Node, Shape> entry : _heapGraph.getCurrentNodes()) {
                 Node node = entry.getKey();
                 Shape s = entry.getValue();
                 if (s == selected) {
@@ -71,30 +73,30 @@ public class Bridge {
                 }
             }
         }
-        
-        if(selectedAnimation != null){
-        	
-        	selectedAnimation.step();
-        	
-        	if(io != null){
-        		io.enter();
-        	}
-        	
-        	if(_renderEngine.isDoubleClick()){
-        		if(io == null){
-        			if(selected == null) return;
-        			io = new InsideObject(_renderEngine, selected, _renderEngine.getCameraPos(), selectedNode);
-        		}else if(io.inObject()){
-        			io.exit();
-        			io = null;
-        		}
-        	}
+
+        if (selectedAnimation != null) {
+
+            selectedAnimation.step();
+
+            if (io != null) {
+                io.enter();
+            }
+
+            if (_renderEngine.isDoubleClick()) {
+                if (io == null) {
+                    if (selected == null) return;
+                    io = new InsideObject(_renderEngine, selected, _renderEngine.getCameraPos(), selectedNode);
+                } else if (io.inObject()) {
+                    io.exit();
+                    io = null;
+                }
+            }
         }
     }
 
     @Subscribe
     public void handleProcessEvent(ProcessEvent e) {
-        if(e.type == STARTED) {
+        if (e.type == STARTED) {
             _renderEngine.clear3DSpace();
         }
     }

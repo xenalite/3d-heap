@@ -3,7 +3,7 @@ package com.heap3d.interfaces.viewmodels;
 import com.heap3d.implementations.events.NodeEvent;
 import com.heap3d.implementations.events.NodeSelectionEvent;
 import com.heap3d.implementations.events.ProcessEvent;
-import com.heap3d.implementations.snapshot.Node;
+import com.heap3d.implementations.node.Node;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TreeItem;

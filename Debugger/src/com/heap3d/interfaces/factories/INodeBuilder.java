@@ -1,6 +1,6 @@
 package com.heap3d.interfaces.factories;
 
-import com.heap3d.implementations.snapshot.StackNode;
+import com.heap3d.implementations.node.StackNode;
 import com.sun.jdi.StackFrame;
 
 import java.util.Collection;

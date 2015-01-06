@@ -1,8 +1,8 @@
 package com.heap3d.implementations.layout;
 
 import com.heap3d.layout.*;
-import com.heap3d.implementations.snapshot.Node;
-import com.heap3d.implementations.snapshot.StackNode;
+import com.heap3d.implementations.node.Node;
+import com.heap3d.implementations.node.StackNode;
 
 import javax.vecmath.Vector3f;
 import java.awt.*;

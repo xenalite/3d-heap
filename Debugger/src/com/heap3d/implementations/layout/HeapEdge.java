@@ -8,6 +8,7 @@ import com.graphics.shapes.Cube;
 import com.graphics.shapes.Line;
 import com.graphics.shapes.Pyramid;
 import com.graphics.shapes.Shape;
+import com.heap3d.interfaces.render.IRenderEngine;
 import com.heap3d.utilities.GeometryUtils;
 import org.lwjgl.util.vector.Vector3f;
 

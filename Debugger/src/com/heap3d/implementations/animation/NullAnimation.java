@@ -1,4 +1,6 @@
-package com.heap3d.implementations.layout.animation;
+package com.heap3d.implementations.animation;
+
+import com.heap3d.interfaces.animation.IAnimation;
 
 /**
  * Created by oskar on 04/12/14.

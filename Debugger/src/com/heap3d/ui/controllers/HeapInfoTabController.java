@@ -2,7 +2,7 @@ package com.heap3d.ui.controllers;
 
 import com.graphics.shapes.Colour;
 import com.heap3d.implementations.layout.Bridge;
-import com.heap3d.implementations.snapshot.Node;
+import com.heap3d.implementations.node.Node;
 import com.heap3d.interfaces.viewmodels.IHeapInfoTabViewModel;
 import com.heap3d.utilities.ColorConverter;
 import javafx.application.Platform;

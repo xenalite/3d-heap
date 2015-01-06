@@ -1,6 +1,6 @@
 package com.heap3d.implementations.events;
 
-import com.heap3d.implementations.snapshot.Node;
+import com.heap3d.implementations.node.Node;
 
 public class NodeSelectionEvent {
 

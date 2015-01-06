@@ -1,4 +1,4 @@
-package com.heap3d.implementations.layout.animation;
+package com.heap3d.implementations.animation;
 
 import com.graphics.shapes.Shape;
 import org.lwjgl.util.vector.Vector3f;

@@ -1,6 +1,6 @@
 package com.heap3d.implementations.factories;
 
-import com.heap3d.implementations.snapshot.*;
+import com.heap3d.implementations.node.*;
 import com.heap3d.interfaces.factories.INodeBuilder;
 import com.heap3d.utilities.Pair;
 import com.sun.jdi.*;

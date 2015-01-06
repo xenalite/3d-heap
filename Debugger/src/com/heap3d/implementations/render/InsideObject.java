@@ -1,12 +1,13 @@
-package com.heap3d.implementations.layout;
+package com.heap3d.implementations.render;
 
 import java.util.Map.Entry;
 import java.util.Set;
 
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
-import com.heap3d.implementations.snapshot.ArrayNode;
-import com.heap3d.implementations.snapshot.Node;
+import com.heap3d.implementations.node.ArrayNode;
+import com.heap3d.implementations.node.Node;
+import com.heap3d.interfaces.render.IRenderEngine;
 
 public class InsideObject {
 

@@ -1,4 +1,4 @@
-package com.heap3d.implementations.layout.animation;
+package com.heap3d.implementations.animation;
 
 import com.graphics.entities.Entity;
 import com.graphics.shapes.Shape;

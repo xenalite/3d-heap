@@ -6,7 +6,7 @@ import com.heap3d.implementations.factories.ProcessFactory;
 import com.heap3d.implementations.factories.ThreadBuilder;
 import com.heap3d.implementations.factories.VirtualMachineProvider;
 import com.heap3d.implementations.layout.HeapGraph;
-import com.heap3d.implementations.layout.RenderEngineAdapter;
+import com.heap3d.implementations.render.RenderEngineAdapter;
 import com.heap3d.implementations.viewmodels.ApplicationTabViewModel;
 import com.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
 import com.heap3d.implementations.viewmodels.HeapInfoTabViewModel;

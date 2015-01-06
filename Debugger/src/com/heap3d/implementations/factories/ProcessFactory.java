@@ -5,7 +5,7 @@ import com.heap3d.implementations.application.*;
 import com.heap3d.implementations.events.StartDefinition;
 import com.heap3d.implementations.jdi.DVirtualMachine;
 import com.heap3d.implementations.layout.Bridge;
-import com.heap3d.implementations.layout.IRenderEngine;
+import com.heap3d.interfaces.render.IRenderEngine;
 import com.heap3d.interfaces.application.IBreakpointManager;
 import com.heap3d.interfaces.application.IStepManager;
 import com.heap3d.interfaces.application.IVariableAnalyser;
