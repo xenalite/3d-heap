@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+
+
+<SplitPane dividerPositions="0.5" orientation="VERTICAL" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.heap3d.ui.controllers.HeapInfoTabController">
+    <items>
+        <TreeView fx:id="treeView">
+
+        </TreeView>
+      <TextArea fx:id="infoText" editable="false" promptText="Heap Info Goes Here" wrapText="true"/>
+
+    </items>
+
+
+</SplitPane>

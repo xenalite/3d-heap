@@ -1,10 +1,10 @@
 package tests.unit.viewmodels;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.implementations.events.ControlEvent;
-import com.imperial.heap3d.implementations.events.ProcessEvent;
-import com.imperial.heap3d.implementations.events.ProcessEventType;
-import com.imperial.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
+import com.heap3d.implementations.events.ControlEvent;
+import com.heap3d.implementations.events.ProcessEvent;
+import com.heap3d.implementations.events.ProcessEventType;
+import com.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
 import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -12,8 +12,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.imperial.heap3d.implementations.events.ProcessEventType.STARTED;
-import static com.imperial.heap3d.implementations.events.ProcessEventType.STOPPED;
+import static com.heap3d.implementations.events.ProcessEventType.STARTED;
+import static com.heap3d.implementations.events.ProcessEventType.STOPPED;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
