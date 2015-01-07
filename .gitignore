@@ -13,6 +13,7 @@ HeapVisualizer/bin/*
 build
 */screenshots/*
 */systemreports/*
+KinectHeap3D/KinectHeap3D/bin/*
 
 # Eclipse files
 .classpath
@@ -26,3 +27,4 @@ build
 #Temp files
 *~
 .*~
+
