@@ -104,7 +104,6 @@ public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
     //region RenderEngine-Loop
     @Override
     protected void beforeLoop() {
-    	super.enableKinectSupport(true);
         for(Runnable r : _before)
             r.run();
     }
