@@ -4,9 +4,6 @@ import com.graphics.entities.Camera;
 import com.graphics.entities.Light;
 import com.graphics.models.Loader;
 import com.graphics.models.RawModel;
-import com.graphics.movement.Input;
-import com.graphics.movement.KinectInput;
-import com.graphics.movement.MouseKeyboardInput;
 import com.graphics.raycasting.RayCastUtil;
 import com.graphics.rendering.MasterRenderer;
 import com.graphics.shapes.Colour;
@@ -14,6 +11,9 @@ import com.graphics.shapes.Line;
 import com.graphics.shapes.Model;
 import com.graphics.shapes.Shape;
 import com.graphics.text.Text3D;
+import com.graphics.userinput.Input;
+import com.graphics.userinput.KinectInput;
+import com.graphics.userinput.MouseKeyboardInput;
 import com.graphics.utils.OBJLoader;
 
 import org.lwjgl.Sys;
@@ -284,5 +284,9 @@ public abstract class RenderEngine implements Runnable {
 		}
 		userInput = new MouseKeyboardInput();
 		
+	}
+	
+	protected Input getInput() {
+		return userInput;
 	}
 }

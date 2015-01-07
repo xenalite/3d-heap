@@ -1,5 +1,6 @@
 ﻿namespace KinectHeap3D
 {
+    using Microsoft.Kinect.Wpf.Controls;
     using System;
     using System.Windows;
 
@@ -8,5 +9,6 @@
     /// </summary>
     public partial class App : Application
     {
+        internal KinectRegion KinectRegion { get; set; }
     }
 }

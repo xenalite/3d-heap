@@ -55,6 +55,7 @@ public class SimpleTest extends RenderEngine {
         }catch(Exception e){
         	e.printStackTrace();
         }
+        super.enableKinectSupport(true);
     }
 
     

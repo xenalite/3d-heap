@@ -10,6 +10,7 @@ import com.heap3d.implementations.events.ProcessEventType;
 import com.heap3d.implementations.animation.SelectedAnimation;
 import com.heap3d.interfaces.render.IRenderEngine;
 import com.heap3d.implementations.render.InsideObject;
+import com.heap3d.implementations.render.UserInput;
 import com.heap3d.implementations.node.Node;
 import com.heap3d.implementations.node.StackNode;
 import com.heap3d.utilities.Check;
@@ -35,8 +36,10 @@ public class Bridge {
         _eventBus = Check.notNull(eventBus, "eventBus");
         _eventBus.register(this);
         _heapGraph = new HeapGraph(_renderEngine);
+        UserInput ui = new UserInput(_renderEngine, _eventBus);
         List<Runnable> commands = new ArrayList<>();
         commands.add(_heapGraph::inLoop);
+        commands.add(ui::inLoop);
         commands.add(this::selectionMethod);
         _renderEngine.during(commands);
     }

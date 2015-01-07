@@ -2,6 +2,7 @@ package com.heap3d.interfaces.render;
 
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
+import com.graphics.userinput.Input;
 
 import java.util.List;
 
@@ -42,4 +43,6 @@ public interface IRenderEngine {
 	public void switchActiveLayer(int layer);
 	
 	public boolean isDoubleClick();
+	
+	public Input getInput();
 }

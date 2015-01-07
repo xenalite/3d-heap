@@ -1,6 +1,8 @@
 package com.heap3d.entry;
 
 import com.google.common.eventbus.EventBus;
+import com.graphics.shapes.Colour;
+import com.graphics.shapes.Shape;
 import com.heap3d.implementations.factories.ControllerFactory;
 import com.heap3d.implementations.factories.ProcessFactory;
 import com.heap3d.implementations.factories.ThreadBuilder;
@@ -18,17 +20,20 @@ import com.heap3d.ui.controllers.BottomPanelController;
 import com.heap3d.ui.controllers.BreakpointsTabController;
 import com.heap3d.ui.controllers.HeapInfoTabController;
 import com.heap3d.utilities.PathUtils;
+
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.behaviors.OptInCaching;
 
 import javax.swing.*;
-import java.awt.*;
+
+import java.awt.Canvas;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -147,19 +152,20 @@ public class SwingWrappedApplication {
     private void initialiseRenderEngine(RenderEngineAdapter renderEngine) {
         HeapGraph heapGraph = new HeapGraph(renderEngine);
 
-//        final Shape[] logo = new Shape[1];
+        
+        final Shape[] logo = new Shape[1];
         List<Runnable> beforeCommands = new ArrayList<>();
         beforeCommands.add(() -> {
-//            logo[0] = renderEngine.createShapeFromModel("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
-//            renderEngine.addTo3DSpace(logo[0]);
+            logo[0] = renderEngine.createShapeFromModel("res/models/logo.obj", 0, 0, 80, 1, Colour.AQUA);
+            renderEngine.addShapeTo3DSpace(logo[0]);
 
             renderEngine.setBackgroundColour(0.1f, 0.1f, 0.1f, 1f);
         });
 
         List<Runnable> duringCommands = new ArrayList<>();
-//        duringCommands.add(() -> logo[0].getEntity().increaseRotation(0, 1, 0));
+        duringCommands.add(() -> logo[0].getEntity().increaseRotation(0, 1, 0));
         duringCommands.add(heapGraph::inLoop);
-
+        
         renderEngine.before(beforeCommands);
         renderEngine.during(duringCommands);
     }

@@ -3,6 +3,7 @@ package com.heap3d.implementations.render;
 import com.graphics.RenderEngine;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
+import com.graphics.userinput.Input;
 import com.heap3d.interfaces.render.IRenderEngine;
 
 import java.awt.*;
@@ -94,11 +95,16 @@ public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
     	super.switchActiveLayer(layer);
     }
     
+    public Input getInput(){
+    	return super.getInput();
+    }
+    
     //endregion
 
     //region RenderEngine-Loop
     @Override
     protected void beforeLoop() {
+    	super.enableKinectSupport(true);
         for(Runnable r : _before)
             r.run();
     }

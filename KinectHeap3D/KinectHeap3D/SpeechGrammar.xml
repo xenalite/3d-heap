@@ -31,6 +31,48 @@
           <item> slower </item>
         </one-of>
       </item>
+      <item>
+        <tag>START</tag>
+        <one-of>
+          <item> start </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>STOP</tag>
+        <one-of>
+          <item> stop </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>PAUSE</tag>
+        <one-of>
+          <item> pause </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>RESUME</tag>
+        <one-of>
+          <item> resume </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>STEP OVER</tag>
+        <one-of>
+          <item> step over </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>STEP INTO</tag>
+        <one-of>
+          <item> step into </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>STEP OUT</tag>
+        <one-of>
+          <item> step out </item>
+        </one-of>
+      </item>
     </one-of>
   </rule>
 </grammar>

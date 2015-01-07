@@ -1,6 +1,7 @@
 ﻿<Window x:Class="KinectHeap3D.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:k="http://schemas.microsoft.com/kinect/2014"
         Title="Kinect Heap3D Support" Height="600" Width="700"
         Loaded="MainWindow_Loaded"
         Closing="MainWindow_Closing">
@@ -9,6 +10,7 @@
         <SolidColorBrush x:Key="KinectPurpleBrush" Color="#ff52318f" />
         <SolidColorBrush x:Key="KinectBlueBrush" Color="#ff00BCF2" />
     </Window.Resources>
+    <k:KinectRegion x:Name="kinectRegion">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -17,11 +19,12 @@
         </Grid.RowDefinitions>
         
         <Viewbox Grid.Row="1" HorizontalAlignment="Center">
-            <Image Source="{Binding ImageSource}" Stretch="UniformToFill" />
+            <Image Source="{Binding ImageSource}" Stretch="UniformToFill"/>
         </Viewbox>
 
         <StatusBar Grid.Row="2" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
             <StatusBarItem Content="{Binding StatusText}" />
         </StatusBar>
     </Grid>
+    </k:KinectRegion>
 </Window>

@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Kinect;
 using System.Diagnostics;
+using Microsoft.Kinect.Wpf.Controls;
+using Microsoft.Kinect.Input;
 
 namespace KinectHeap3D
 {
@@ -87,6 +89,13 @@ namespace KinectHeap3D
         /// </summary>
         private int displayHeight;
 
+        /// <summary>
+        /// Keeps track of last time, so we know when we get a new set of pointers. Pointer events fire multiple times per timestamp, based on how
+        /// many pointers are present.
+        /// </summary>
+        private TimeSpan lastTime;
+
+
         private SocketCommunication javaCom;
         private Speech speech;
 
@@ -138,6 +147,42 @@ namespace KinectHeap3D
             this.speech = new Speech(kinectSensor);
 
             InitializeComponent();
+
+            KinectRegion.SetKinectRegion(this, kinectRegion);
+
+            App app = ((App)Application.Current);
+            app.KinectRegion = kinectRegion;
+
+            // Use the default sensor
+            this.kinectRegion.KinectSensor = this.kinectSensor;
+
+        }
+
+        /// <summary>
+        /// Handles kinect pointer events
+        /// </summary>
+        /// <param name="sender">the KinectCoreWindow</param>
+        /// <param name="args">Kinect pointer args</param>
+        private void kinectCoreWindow_PointerMoved(object sender, KinectPointerEventArgs args)
+        {
+            KinectPointerPoint kinectPointerPoint = args.CurrentPoint;
+            if (lastTime == TimeSpan.Zero || lastTime != kinectPointerPoint.Properties.BodyTimeCounter)
+            {
+                lastTime = kinectPointerPoint.Properties.BodyTimeCounter;
+            }
+
+            if (javaCom.isConnected())
+            {
+                string data =
+                     "engaged:" + kinectPointerPoint.Properties.IsEngaged +
+                     ":x:" + kinectPointerPoint.Properties.UnclampedPosition.X +
+                     ":y:" + kinectPointerPoint.Properties.UnclampedPosition.Y +
+                     ":reach:" + kinectPointerPoint.Properties.HandReachExtent +
+                     ":hand:" + kinectPointerPoint.Properties.HandType +
+                     ":primary:" + kinectPointerPoint.Properties.IsPrimary;
+                javaCom.sendMessage(data);
+            }
+
         }
 
         /// <summary>
@@ -192,6 +237,10 @@ namespace KinectHeap3D
             {
                 this.bodyFrameReader.FrameArrived += this.Reader_FrameArrived;
             }
+
+            KinectCoreWindow kinectCoreWindow = KinectCoreWindow.GetForCurrentThread();
+            kinectCoreWindow.PointerMoved += kinectCoreWindow_PointerMoved;
+
         }
 
         /// <summary>
@@ -289,7 +338,7 @@ namespace KinectHeap3D
                                          ":rh_x:" + rightHandPoint.X +
                                          ":rh_y:" + rightHandPoint.Y;
 
-                                    javaCom.sendMessage(data);
+                              //      javaCom.sendMessage(data);
                                 }
 
                             }
