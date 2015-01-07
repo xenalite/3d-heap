@@ -1,10 +1,10 @@
 package tests.unit.viewmodels;
 
 import com.google.common.eventbus.EventBus;
-import com.imperial.heap3d.implementations.events.ControlEvent;
-import com.imperial.heap3d.implementations.events.ProcessEvent;
-import com.imperial.heap3d.implementations.events.ProcessEventType;
-import com.imperial.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
+import com.heap3d.implementations.events.ControlEvent;
+import com.heap3d.implementations.events.ProcessEvent;
+import com.heap3d.implementations.events.ProcessEventType;
+import com.heap3d.implementations.viewmodels.BreakpointsTabViewModel;
 import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -12,8 +12,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.imperial.heap3d.implementations.events.ProcessEventType.STARTED;
-import static com.imperial.heap3d.implementations.events.ProcessEventType.STOPPED;
+import static com.heap3d.implementations.events.ProcessEventType.STARTED;
+import static com.heap3d.implementations.events.ProcessEventType.STOPPED;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -63,49 +63,49 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
 
         //assert
         assertTrue(SystemUnderTest.getBreakpointsProperty().getValue().isEmpty());
-        assertEquals("", SystemUnderTest.getBreakpointClassProperty().get());
-        assertEquals("", SystemUnderTest.getBreakpointMethodProperty().get());
+        assertEquals("", SystemUnderTest.getBreakpointClassProperty().getValue());
+        assertEquals("", SystemUnderTest.getBreakpointMethodProperty().getValue());
     }
 
     @Test
     public void Test_AddBreakpoint_NoMethodName_NotAdded() {
         //arrange
-        SystemUnderTest.getBreakpointClassProperty().set(VALUE);
+        SystemUnderTest.getBreakpointClassProperty().setValue(VALUE);
         //act
         SystemUnderTest.addBreakpointAction();
 
         //assert
         assertTrue(SystemUnderTest.getBreakpointsProperty().getValue().isEmpty());
-        assertEquals(VALUE, SystemUnderTest.getBreakpointClassProperty().get());
-        assertEquals("", SystemUnderTest.getBreakpointMethodProperty().get());
+        assertEquals(VALUE, SystemUnderTest.getBreakpointClassProperty().getValue());
+        assertEquals("", SystemUnderTest.getBreakpointMethodProperty().getValue());
     }
 
     @Test
     public void Test_AddBreakpoint_NoClassName_NotAdded() {
         //arrange
-        SystemUnderTest.getBreakpointMethodProperty().set(VALUE);
+        SystemUnderTest.getBreakpointMethodProperty().setValue(VALUE);
         //act
         SystemUnderTest.addBreakpointAction();
 
         //assert
         assertTrue(SystemUnderTest.getBreakpointsProperty().getValue().isEmpty());
-        assertEquals("", SystemUnderTest.getBreakpointClassProperty().get());
-        assertEquals(VALUE, SystemUnderTest.getBreakpointMethodProperty().get());
+        assertEquals("", SystemUnderTest.getBreakpointClassProperty().getValue());
+        assertEquals(VALUE, SystemUnderTest.getBreakpointMethodProperty().getValue());
     }
 
     @Test
     public void Test_AddBreakpoint_ValidArguments_Added() {
         //arrange
-        SystemUnderTest.getBreakpointClassProperty().set(VALUE);
-        SystemUnderTest.getBreakpointMethodProperty().set(VALUE);
+        SystemUnderTest.getBreakpointClassProperty().setValue(VALUE);
+        SystemUnderTest.getBreakpointMethodProperty().setValue(VALUE);
 
         //act
         SystemUnderTest.addBreakpointAction();
 
         //assert
         assertEquals(1, SystemUnderTest.getBreakpointsProperty().getValue().size());
-        assertEquals("", SystemUnderTest.getBreakpointClassProperty().get());
-        assertEquals("", SystemUnderTest.getBreakpointMethodProperty().get());
+        assertEquals("", SystemUnderTest.getBreakpointClassProperty().getValue());
+        assertEquals("", SystemUnderTest.getBreakpointMethodProperty().getValue());
     }
 
     @Test
@@ -264,49 +264,49 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
 
         //assert
         assertTrue(SystemUnderTest.getWatchpointsProperty().getValue().isEmpty());
-        assertEquals("", SystemUnderTest.getWatchpointClassProperty().get());
-        assertEquals("", SystemUnderTest.getWatchpointFieldProperty().get());
+        assertEquals("", SystemUnderTest.getWatchpointClassProperty().getValue());
+        assertEquals("", SystemUnderTest.getWatchpointFieldProperty().getValue());
     }
 
     @Test
     public void Test_AddWatchpoint_noMethodName_NotAdded() {
         //arrange
-        SystemUnderTest.getWatchpointClassProperty().set(VALUE);
+        SystemUnderTest.getWatchpointClassProperty().setValue(VALUE);
         //act
         SystemUnderTest.addWatchpointAction();
 
         //assert
         assertTrue(SystemUnderTest.getWatchpointsProperty().getValue().isEmpty());
-        assertEquals(VALUE, SystemUnderTest.getWatchpointClassProperty().get());
-        assertEquals("", SystemUnderTest.getWatchpointFieldProperty().get());
+        assertEquals(VALUE, SystemUnderTest.getWatchpointClassProperty().getValue());
+        assertEquals("", SystemUnderTest.getWatchpointFieldProperty().getValue());
     }
 
     @Test
     public void Test_AddWatchpoint_noClassName_NotAdded() {
         //arrange
-        SystemUnderTest.getWatchpointFieldProperty().set(VALUE);
+        SystemUnderTest.getWatchpointFieldProperty().setValue(VALUE);
         //act
         SystemUnderTest.addWatchpointAction();
 
         //assert
         assertTrue(SystemUnderTest.getWatchpointsProperty().getValue().isEmpty());
-        assertEquals("", SystemUnderTest.getWatchpointClassProperty().get());
-        assertEquals(VALUE, SystemUnderTest.getWatchpointFieldProperty().get());
+        assertEquals("", SystemUnderTest.getWatchpointClassProperty().getValue());
+        assertEquals(VALUE, SystemUnderTest.getWatchpointFieldProperty().getValue());
     }
 
     @Test
     public void Test_AddWatchpoint_validArguments_Added() {
         //arrange
-        SystemUnderTest.getWatchpointClassProperty().set(VALUE);
-        SystemUnderTest.getWatchpointFieldProperty().set(VALUE);
+        SystemUnderTest.getWatchpointClassProperty().setValue(VALUE);
+        SystemUnderTest.getWatchpointFieldProperty().setValue(VALUE);
 
         //act
         SystemUnderTest.addWatchpointAction();
 
         //assert
         assertEquals(1, SystemUnderTest.getWatchpointsProperty().getValue().size());
-        assertEquals("", SystemUnderTest.getWatchpointClassProperty().get());
-        assertEquals("", SystemUnderTest.getWatchpointFieldProperty().get());
+        assertEquals("", SystemUnderTest.getWatchpointClassProperty().getValue());
+        assertEquals("", SystemUnderTest.getWatchpointFieldProperty().getValue());
     }
 
     @Test
@@ -314,8 +314,8 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
         //expect -- no posts to event bus
         replayAll();
         //arrange
-        SystemUnderTest.getWatchpointFieldProperty().set(VALUE);
-        SystemUnderTest.getWatchpointClassProperty().set(VALUE);
+        SystemUnderTest.getWatchpointFieldProperty().setValue(VALUE);
+        SystemUnderTest.getWatchpointClassProperty().setValue(VALUE);
 
         //act
         SystemUnderTest.addWatchpointAction();
@@ -463,14 +463,14 @@ public class BreakpointsViewModelTests extends EasyMockSupport {
     //endregion
 
     private void setDefaultBreakpoint() {
-        SystemUnderTest.getBreakpointClassProperty().set(VALUE);
-        SystemUnderTest.getBreakpointMethodProperty().set(VALUE);
+        SystemUnderTest.getBreakpointClassProperty().setValue(VALUE);
+        SystemUnderTest.getBreakpointMethodProperty().setValue(VALUE);
         SystemUnderTest.addBreakpointAction();
     }
 
     private void setDefaultWatchpoint() {
-        SystemUnderTest.getWatchpointClassProperty().set(VALUE);
-        SystemUnderTest.getWatchpointFieldProperty().set(VALUE);
+        SystemUnderTest.getWatchpointClassProperty().setValue(VALUE);
+        SystemUnderTest.getWatchpointFieldProperty().setValue(VALUE);
         SystemUnderTest.addWatchpointAction();
     }
 }

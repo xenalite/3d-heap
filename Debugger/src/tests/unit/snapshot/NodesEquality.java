@@ -1,7 +1,7 @@
 package tests.unit.snapshot;
 
-import com.imperial.heap3d.implementations.snapshot.ObjectNode;
-import com.imperial.heap3d.implementations.snapshot.StackNode;
+import com.heap3d.implementations.node.ObjectNode;
+import com.heap3d.implementations.node.StackNode;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

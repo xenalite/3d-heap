@@ -1,6 +1,6 @@
 package tests.system.testprograms.one_node_two_paths_to_one_node;
 
-import com.imperial.heap3d.utilities.Pair;
+import com.heap3d.utilities.Pair;
 
 /**
  * Created by zhouyou_robert on 25/11/14.

@@ -4,7 +4,7 @@
 	<property name="build.dir" value="build" />
 	<property name="classes.dir" value="${build.dir}/classes" />
 	<property name="jar.dir" value="${build.dir}/jar" />
-	<property name="main-class" value="com.imperial.heap3d.entry.SwingWrappedApplication" />
+	<property name="main-class" value="com.heap3d.entry.SwingWrappedApplication" />
 	<property name="lib.dir" value="lib" />
 	<property name="src.unittests.dir" value="tests/unit" />
 	<property name="src.systemtests.dir" value="tests/system" />
