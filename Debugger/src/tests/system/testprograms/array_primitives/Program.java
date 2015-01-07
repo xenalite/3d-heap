@@ -4,19 +4,8 @@ public class Program {
 
     public static void main(String[] args) {
 
-        int[] primitiveArray = new int[100];
-        Integer[] ten = build(10);
-        Integer[] hundred = build(100);
-        Integer[] thousand = build(1000);
+        int[] primitiveArray = new int[10];
+        primitiveArray[0] = 1;
+        primitiveArray[5] = 1;
     }
-
-    static Integer[] build(int size)
-    {
-        Integer[] a = new Integer[size];
-        for (int i = 0; i < a.length; i++) {
-            a[i] = new Integer(i);
-        }
-        return a;
-    }
-
 }
