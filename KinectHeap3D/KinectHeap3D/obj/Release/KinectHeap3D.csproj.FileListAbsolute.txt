@@ -1,0 +1,17 @@
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\bin\Release\KinectHeap3D.exe.config
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\bin\Release\KinectHeap3D.exe
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\bin\Release\KinectHeap3D.pdb
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\bin\Release\Microsoft.Kinect.dll
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\bin\Release\Microsoft.Kinect.Wpf.Controls.dll
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\bin\Release\Microsoft.Kinect.xml
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\bin\Release\Microsoft.Kinect.Wpf.Controls.xml
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Release\KinectHeap3D.csprojResolveAssemblyReference.cache
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Release\MainWindow.baml
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Release\MainWindow.g.cs
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Release\App.g.cs
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Release\KinectHeap3D_MarkupCompile.cache
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Release\KinectHeap3D.g.resources
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Release\KinectHeap3D.Properties.Resources.resources
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Release\KinectHeap3D.csproj.GenerateResource.Cache
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Release\KinectHeap3D.exe
+C:\Users\Stephen\Documents\Programming\Uni\Year3\GroupProject\3d-heap\KinectHeap3D\KinectHeap3D\obj\Release\KinectHeap3D.pdb

@@ -23,6 +23,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.Canvas;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +59,7 @@ public abstract class RenderEngine implements Runnable {
 	private boolean doubleClick;
 
 	public static boolean breakFromLoop;
+	private Process kinectProcess;
 	
 	public RenderEngine(String title, int width, int height, boolean resizable) {
 		this.title = title;
@@ -189,6 +192,9 @@ public abstract class RenderEngine implements Runnable {
 		renderer.cleanUp();
 		userInput.cleanup();
 		DisplayManager.closeDisplay();
+		
+		if(kinectProcess != null && kinectProcess.isAlive())
+			kinectProcess.destroy();
 	}
 
 	private void updateFPS() {
@@ -277,13 +283,21 @@ public abstract class RenderEngine implements Runnable {
 	
 	protected void enableKinectSupport(boolean enable){
 		if(enable){
-			userInput = new KinectInput();
-			if(userInput.isEnabled())
-				return;
-			
+			String path = System.getProperty("user.dir") + "/res/exes/KinectHeap3D/KinectHeap3D.exe";
+			File exeFile = new File(path);
+			if( exeFile.exists() ){
+				try {
+					kinectProcess = new ProcessBuilder(exeFile.toString()).start();
+					userInput = new KinectInput();
+					if(kinectProcess.isAlive() && userInput.isEnabled())
+						return;
+				} catch (IOException e) {
+					e.printStackTrace();
+					userInput = new MouseKeyboardInput();	
+				}
+			}
 		}
-		userInput = new MouseKeyboardInput();
-		
+		userInput = new MouseKeyboardInput();	
 	}
 	
 	protected Input getInput() {
