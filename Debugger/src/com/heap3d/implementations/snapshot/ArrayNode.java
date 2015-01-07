@@ -19,8 +19,6 @@ public class ArrayNode extends Node {
         this._primitives = new HashMap<>();
     }
 
-    public void addElement(Node element, String index) { _references.add(Pair.create(element, index)); }
-
     @Override
     public List<Object> getPrimitives() {
         List<Object> primitives = new LinkedList<>();
