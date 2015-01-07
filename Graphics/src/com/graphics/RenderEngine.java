@@ -58,7 +58,7 @@ public abstract class RenderEngine implements Runnable {
 	private long lastClickTime = 0;
 	private boolean doubleClick;
 
-	public static boolean breakFromLoop;
+	private boolean breakFromLoop;
 	private Process kinectProcess;
 	
 	public RenderEngine(String title, int width, int height, boolean resizable) {

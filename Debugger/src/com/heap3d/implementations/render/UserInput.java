@@ -44,6 +44,8 @@ public class UserInput {
 		}else if(userInput.hasStepedOut()){
 			System.out.println("Command: Step Out");
 			_eventBus.post(ControlEventFactory.createEventOfType(EventType.STEPOUT));
+		}else if(userInput.hasExited()){
+			System.out.println("Command: Exit");
 		}
 		
 	}

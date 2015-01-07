@@ -114,5 +114,10 @@ public class MouseKeyboardInput extends Input{
 		return pressed;
 	}
 
+	@Override
+	public boolean hasExited() {
+		return false;
+	}
+
 	
 }

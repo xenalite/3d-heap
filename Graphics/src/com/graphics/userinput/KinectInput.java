@@ -2,11 +2,8 @@ package com.graphics.userinput;
 
 import java.io.IOException;
 import java.util.Map;
-
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
-
-import com.graphics.RenderEngine;
 import com.graphics.entities.Camera;
 import com.graphics.utils.ParseKinectData;
 import com.graphics.utils.SocketHandler;
@@ -23,7 +20,7 @@ public class KinectInput extends Input{
 	
 	private float speedInc = 0;
 	
-	private boolean started, stopped, paused, resumed, stepedOver, stepedInto, stepedOut;
+	private boolean started, stopped, paused, resumed, stepedOver, stepedInto, stepedOut, exit;
 	
 	public KinectInput() {
 		try {
@@ -73,7 +70,7 @@ public class KinectInput extends Input{
 					speedInc-=0.1f;
 				break;
 			case "EXIT":
-				RenderEngine.breakFromLoop = true;
+				exit = true;
 				break;
 			case "START":
 				started = true;
@@ -118,18 +115,9 @@ public class KinectInput extends Input{
 		movementHandler.stop();
 		speechHandler.stop();
 	}
-
-	
 	
 	private void method1(Camera camera, Map<String, String> dic){
-		/*
-		"engaged:" + kinectPointerPoint.Properties.IsEngaged +
-        ":x:" + kinectPointerPoint.Position.X +
-        ":y:" + kinectPointerPoint.Position.Y +
-        ":reach:" + kinectPointerPoint.Properties.HandReachExtent +
-        ":hand:" + kinectPointerPoint.Properties.HandType +
-        ":primary:" + kinectPointerPoint.Properties.IsPrimary;
-		*/
+		
 		if(!Boolean.parseBoolean(dic.get("engaged"))){
 			firstReading = true;
 			return;
@@ -206,6 +194,13 @@ public class KinectInput extends Input{
 	public boolean hasStepedOut() {
 		boolean res = stepedOut;
 		stepedOut = false;
+		return res;
+	}
+	
+	@Override
+	public boolean hasExited() {
+		boolean res = exit;
+		exit = false;
 		return res;
 	}
 }

@@ -19,4 +19,5 @@ public abstract class Input {
 	public abstract boolean hasStepedOver();
 	public abstract boolean hasStepedInto();
 	public abstract boolean hasStepedOut();
+	public abstract boolean hasExited();
 }
