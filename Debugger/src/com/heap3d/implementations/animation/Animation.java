@@ -15,7 +15,8 @@ public class Animation implements IAnimation {
 	private List<AnimationEvent> deleteEvents = new ArrayList<>();
 	private List<AnimationEvent> moveEvents = new ArrayList<>();
 	private List<AnimationEvent> addEvents = new ArrayList<>();
-
+	private boolean anythingChanged = false;
+	
 	public Animation(Set<Entry<Node,Shape>> startingNodes, Set<Entry<Node,Shape>> finishingNodes) {
 		alreadyDone = false;
 		createEvents(startingNodes, finishingNodes);
@@ -54,20 +55,27 @@ public class Animation implements IAnimation {
 		}
 		return true;
 	}
-
-	private void createEvents(Set<Entry<Node, Shape>> startingEntries, Set<Entry<Node, Shape>> finishingEntries) {
+	
+	private boolean createEvents(Set<Entry<Node, Shape>> startingEntries, Set<Entry<Node, Shape>> finishingEntries) {
+		anythingChanged = false;
 		for (Entry<Node,Shape> fromEntry : startingEntries) {
 			boolean moveAnimation = false;
 			for (Entry<Node,Shape> toEntry : finishingEntries) {
 				if (toEntry.getKey().equals(fromEntry.getKey())) {
 					moveAnimation = true;
-					moveEvents.add(new MoveAnimation(fromEntry.getValue(), toEntry.getValue()));
+					Shape from = fromEntry.getValue();
+					Shape to = toEntry.getValue();
+					if(!samePosition(from.getPosition(), to.getPosition())){
+						moveEvents.add(new MoveAnimation(fromEntry.getValue(), toEntry.getValue()));
+						anythingChanged = true;
+					}
 					break;
 				}
 			}
 
 			if (!moveAnimation) {
 				deleteEvents.add(new DeleteAnimation(fromEntry.getValue()));
+				anythingChanged = true;
 			}
 		}
 
@@ -81,8 +89,17 @@ public class Animation implements IAnimation {
 
 			if (!moveAnimation) {
 				addEvents.add(new AddAnimation(toEntry.getValue()));
+				anythingChanged = true;
 			}
 		}
-
+		return anythingChanged;
+	}
+	
+	private boolean samePosition(float[] a, float[] b){
+		return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+	}
+	
+	public boolean hasAnythingChanged(){
+		return anythingChanged;
 	}
 }

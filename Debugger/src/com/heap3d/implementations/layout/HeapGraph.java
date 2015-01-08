@@ -6,6 +6,7 @@ import com.graphics.shapes.Shape;
 import com.heap3d.interfaces.render.IRenderEngine;
 import com.heap3d.layout.GraphImpl;
 import com.heap3d.implementations.animation.Animation;
+import com.heap3d.implementations.animation.NothingChangedAnimation;
 import com.heap3d.interfaces.animation.IAnimation;
 import com.heap3d.implementations.animation.NullAnimation;
 import com.heap3d.implementations.node.Node;
@@ -14,9 +15,9 @@ import com.heap3d.utilities.NodesComparator;
 import com.heap3d.utilities.Pair;
 
 import javax.vecmath.Vector3f;
+
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -87,6 +88,10 @@ public class HeapGraph {
             resetStack();
             animation.finalise();
             animation = new Animation(oldNodes, nodeToShape.entrySet());
+            if(!animation.hasAnythingChanged()){
+            	System.out.println("here");
+            	animation = new NothingChangedAnimation();
+            }
         }
     }
 

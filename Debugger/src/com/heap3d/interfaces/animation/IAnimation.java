@@ -8,4 +8,6 @@ public interface IAnimation {
     public boolean executeStepAndCheckIfDone();
 
     public void finalise();
+    
+    public boolean hasAnythingChanged();
 }
