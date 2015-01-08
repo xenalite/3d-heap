@@ -43,7 +43,7 @@ public class Bridge {
         _heapGraph = new HeapGraph(_renderEngine);
         UserInput ui = new UserInput(_renderEngine, _eventBus);
         
-        runAutomaticStepper(new AutomaticStepper(500, _eventBus));
+        //runAutomaticStepper(new AutomaticStepper(500, _eventBus));
         
         List<Runnable> commands = new ArrayList<>();
         commands.add(_heapGraph::inLoop);

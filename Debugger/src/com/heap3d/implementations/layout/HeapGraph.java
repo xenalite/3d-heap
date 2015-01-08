@@ -70,11 +70,13 @@ public class HeapGraph {
             	Shape s = e.getValue();
             	float[] pos = s.getPosition();
                 float[] rot = s.getRotation();
+                
                 //TODO
-//                if(n instanceof StackNode)
-//                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+3, rot[0], rot[1], rot[2], 0.2f, n.getName());
-//                else
-//                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+0.4f, rot[0], rot[1], rot[2], 0.05f, n.getName());
+                if(n instanceof StackNode){
+                	StackNode sn = (StackNode)n;
+                	if(sn.getReferences()!= null && sn.getReferences().isEmpty())
+                		_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+3, rot[0], rot[1], rot[2], 0.2f, ((StackNode) n).getName());
+                }
             }
             animation = new NullAnimation();
         }
