@@ -10,14 +10,10 @@ import java.util.*;
 @SuppressWarnings("ALL")
 public class Program {
 
-    public static void main(String[] args) {
-        Collection<String> reallyLongName = createCollection();
-    }
+    private static String[] array = {"hello", "hello2", "hello3"};
 
-    private static Collection<String> createCollection() {
-        Collection<String> collection = new HashSet<>();
-        for(int i = 0; i < 100; ++i)
-            collection.add(String.valueOf(i));
-        return collection;
+    public static void main(String[] args) {
+        Program p = new Program();
+        System.out.println("hello");
     }
 }
