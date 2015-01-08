@@ -13,10 +13,11 @@ import java.util.*;
 public class NodeBuilder implements INodeBuilder {
 
     private Map<Long, Node> _uniqueNodes = new HashMap<>();
+    private Collection<StackNode> _savedNodes = new ArrayList<>();
     private Map<String, StaticNode> _staticNodesMap = new HashMap<>();
 
     public Collection<StackNode> build(StackFrame stackFrame) {
-        Collection<StackNode> stackNodes = new LinkedList<>();
+        Collection<StackNode> stackNodes = new ArrayList<>();
         if (stackFrame == null)
             return stackNodes;
 
@@ -24,7 +25,8 @@ public class NodeBuilder implements INodeBuilder {
         try {
             localVariables = stackFrame.visibleVariables();
         } catch (AbsentInformationException ignored) {
-            return stackNodes;
+            return _savedNodes;
+//            return stackNodes;
         }
 
         ObjectReference thisObject = stackFrame.thisObject();
@@ -50,6 +52,7 @@ public class NodeBuilder implements INodeBuilder {
         }
 
         _uniqueNodes.clear();
+        _savedNodes = stackNodes;
         return stackNodes;
     }
 
