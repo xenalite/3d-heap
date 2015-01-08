@@ -13,6 +13,8 @@ import com.heap3d.implementations.factories.ThreadBuilder;
 import com.heap3d.utilities.Check;
 import com.heap3d.utilities.ICommand;
 import com.heap3d.utilities.RelayCommand;
+import com.sun.jdi.Locatable;
+import com.sun.jdi.event.LocatableEvent;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -45,6 +47,12 @@ public class ApplicationTabViewModel implements IApplicationTabViewModel {
     private StringProperty _arguments;
     private StringProperty _debuggerConsole;
 
+    private static final String CommonFormat =
+            "[Thread]:%s\n" +
+                    "[Class]:%s\n" +
+                    "[Method]:%s\n" +
+                    "[Line #]:%s";
+
     public ApplicationTabViewModel(EventBus eventBus, ProcessFactory processFactory) {
         _processFactory = Check.notNull(processFactory, "processFactory");
         _eventBus = Check.notNull(eventBus, "eventBus");
@@ -75,7 +83,11 @@ public class ApplicationTabViewModel implements IApplicationTabViewModel {
             }
             break;
             case DEBUG_MSG: {
-                Platform.runLater(() -> _debuggerConsole.set(pe.message));
+                LocatableEvent event = pe.event;
+                String message = String.format(CommonFormat, event.thread().name(),
+                event.location().declaringType().name(), event.location().method(), event.location().lineNumber());
+
+                Platform.runLater(() -> _debuggerConsole.set(message));
             }
             break;
             case PROCESS_MSG: {

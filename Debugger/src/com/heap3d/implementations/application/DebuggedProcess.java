@@ -23,12 +23,6 @@ public class DebuggedProcess implements IDebuggedProcess {
     private IBreakpointManager _breakpointManager;
     private IStepManager _stepManager;
 
-    private static final String CommonFormat =
-            "[Thread]:%s\n" +
-            "[Class]:%s\n" +
-            "[Method]:%s\n" +
-            "[Line #]:%s";
-
     public DebuggedProcess(Process process, IBreakpointManager breakpointManager, IStepManager stepManager,
                            IVariableAnalyser variableAnalyser, EventBus generalEventBus, EventBus processStateEventBus) {
         _state = RUNNING;
@@ -64,17 +58,17 @@ public class DebuggedProcess implements IDebuggedProcess {
                 eventSet = eventQueue.remove(0);
             } catch (InterruptedException e) {return true;}
             for (Event e : eventSet) {
-                System.out.println(e);
+//                System.out.println(e);
                 if (e instanceof VMDeathEvent)
                     return false;
                 else if (e instanceof ClassPrepareEvent)
                     _breakpointManager.notifyClassLoaded(((ClassPrepareEvent) e).referenceType());
                 else if (e instanceof ModificationWatchpointEvent)
-                    hitLocatableEvent((LocatableEvent) e, "Watchpoint hit at:\n" + CommonFormat);
+                    hitLocatableEvent((LocatableEvent) e);
                 else if (e instanceof BreakpointEvent)
-                    hitLocatableEvent((LocatableEvent) e, "Breakpoint hit at:\n" + CommonFormat);
+                    hitLocatableEvent((LocatableEvent) e);
                 else if (e instanceof StepEvent)
-                    hitLocatableEvent((LocatableEvent) e, "Stepped to:\n" + CommonFormat);
+                    hitLocatableEvent((LocatableEvent) e);
             }
             if (_state == RUNNING)
                 eventSet.resume();
@@ -82,13 +76,11 @@ public class DebuggedProcess implements IDebuggedProcess {
         return true;
     }
 
-    private void hitLocatableEvent(LocatableEvent event, String format) {
+    private void hitLocatableEvent(LocatableEvent event) {
         _processStateEventBus.post(PAUSED_AT_LOCATION);
         _stepManager.notifyPausedAtLocation(event);
 
-        _generalEventBus.post(new ProcessEvent(ProcessEventType.DEBUG_MSG, String.format(format, event.thread().name(),
-                event.location().declaringType().name(), event.location().method(), event.location().lineNumber())));
-
         _variableAnalyser.analyseVariables(event);
+        _generalEventBus.post(new ProcessEvent(ProcessEventType.DEBUG_MSG, event));
     }
 }
