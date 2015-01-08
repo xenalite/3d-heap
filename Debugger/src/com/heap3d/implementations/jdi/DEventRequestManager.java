@@ -33,6 +33,7 @@ public class DEventRequestManager implements IEventRequestManager {
         ThreadReference reference = Check.notNull(threadReference, "threadReference");
         StepRequest stepRequest = _jdiEventRequestManager.createStepRequest(reference, size, depth);
         stepRequest.addCountFilter(1);
+        stepRequest.addClassExclusionFilter("java.*");
         stepRequest.enable();
     }
 

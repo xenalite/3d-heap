@@ -41,6 +41,7 @@ public class StepManager implements IStepManager {
             eventRequestManager.disableAllStepRequests(_threadReference);
             eventRequestManager.createStepRequest(_threadReference, size, depth);
 
+
             _virtualMachine.resume();
         }
     }
