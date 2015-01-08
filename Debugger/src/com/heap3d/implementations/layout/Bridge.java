@@ -7,7 +7,9 @@ import com.heap3d.implementations.events.NodeEvent;
 import com.heap3d.implementations.events.NodeSelectionEvent;
 import com.heap3d.implementations.events.ProcessEvent;
 import com.heap3d.implementations.events.ProcessEventType;
+import com.heap3d.implementations.factories.ThreadBuilder;
 import com.heap3d.implementations.animation.SelectedAnimation;
+import com.heap3d.implementations.application.AutomaticStepper;
 import com.heap3d.interfaces.render.IRenderEngine;
 import com.heap3d.implementations.render.InsideObject;
 import com.heap3d.implementations.render.UserInput;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
 
 import static com.heap3d.implementations.events.ProcessEventType.STARTED;
 
@@ -31,12 +34,17 @@ public class Bridge {
     private final EventBus _eventBus;
     private HeapGraph _heapGraph;
 
+    private AutomaticStepper automaticStepper;
+    
     public Bridge(IRenderEngine adapter, EventBus eventBus) {
         _renderEngine = Check.notNull(adapter, "adapter");
         _eventBus = Check.notNull(eventBus, "eventBus");
         _eventBus.register(this);
         _heapGraph = new HeapGraph(_renderEngine);
         UserInput ui = new UserInput(_renderEngine, _eventBus);
+        
+        runAutomaticStepper(new AutomaticStepper(500, _eventBus));
+        
         List<Runnable> commands = new ArrayList<>();
         commands.add(_heapGraph::inLoop);
         commands.add(ui::inLoop);
@@ -108,5 +116,18 @@ public class Bridge {
         stackNodes = Check.notNull(stackNodes, "stackNodes");
         _heapGraph.giveNodes(stackNodes);
         _eventBus.post(new NodeEvent(stackNodes));
+    }
+    
+    private void runAutomaticStepper(Runnable automaticStepper) {
+        ExecutorService service = ThreadBuilder.createService("lwjgl");
+        service.submit(() -> {
+            try {
+            	automaticStepper.run();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        service.shutdown();
     }
 }
