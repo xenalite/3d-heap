@@ -11,7 +11,7 @@ public class MouseKeyboardInput extends Input{
 	private static final float SENSITIVITY = 0.05f;
 	private static int MOUSE_LEFT = 0;
 	
-	private boolean started, stopped, paused, resumed, stepedOver, stepedInto, stepedOut;
+	private boolean started, stopped, paused, resumed, stepedOver, stepedInto, stepedOut, reset;
 	
 	@Override
 	public void move(Camera camera) {
@@ -117,6 +117,14 @@ public class MouseKeyboardInput extends Input{
 	@Override
 	public boolean hasExited() {
 		return false;
+	}
+
+	@Override
+	public boolean hasReset() {
+		boolean down = Keyboard.isKeyDown(Keyboard.KEY_0);
+		boolean pressed = reset && !down;
+		reset = down;
+		return pressed;
 	}
 
 	

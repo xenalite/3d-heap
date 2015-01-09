@@ -20,7 +20,7 @@ public class KinectInput extends Input{
 	
 	private float speedInc = 0;
 	
-	private boolean started, stopped, paused, resumed, stepedOver, stepedInto, stepedOut, exit;
+	private boolean started, stopped, paused, resumed, stepedOver, stepedInto, stepedOut, exit, hasReset;
 	
 	public KinectInput() {
 		try {
@@ -60,6 +60,7 @@ public class KinectInput extends Input{
 			
 			switch(value){
 			case "CENTER":
+				hasReset = true;
 				camera.setPositionSmooth(new Vector3f(0, 0, 120));
 				break;
 			case "SPEED UP":
@@ -201,6 +202,13 @@ public class KinectInput extends Input{
 	public boolean hasExited() {
 		boolean res = exit;
 		exit = false;
+		return res;
+	}
+	
+	@Override
+	public boolean hasReset() {
+		boolean res = hasReset;
+		hasReset = false;
 		return res;
 	}
 }

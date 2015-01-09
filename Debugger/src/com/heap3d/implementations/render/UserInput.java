@@ -46,6 +46,9 @@ public class UserInput {
 			_eventBus.post(ControlEventFactory.createEventOfType(EventType.STEPOUT));
 		}else if(userInput.hasExited()){
 			System.out.println("Command: Exit");
+		}else if(userInput.hasReset()){
+			System.out.println("Command: Reset");
+			_renderEngine.setCameraPositionSmooth(0, 0, 100);
 		}
 		
 	}
