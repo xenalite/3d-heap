@@ -3,6 +3,7 @@ package com.heap3d.implementations.layout;
 import com.graphics.shapes.Colour;
 import com.graphics.shapes.Line;
 import com.graphics.shapes.Shape;
+import com.heap3d.implementations.animation.NothingChangedAnimation;
 import com.heap3d.implementations.node.StaticNode;
 import com.heap3d.interfaces.render.IRenderEngine;
 import com.heap3d.layout.GraphImpl;
@@ -115,7 +116,12 @@ public class HeapGraph {
             resetStack();
             animation.finalise();
             animation = new Animation(oldNodes, nodeToShape.entrySet());
+            if (!animation.hasAnythingChanged()) {
+                System.out.println("here");
+                animation = new NothingChangedAnimation();
+            }
         }
+
     }
 
     private void updatePosition(Node node) {
