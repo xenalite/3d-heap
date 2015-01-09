@@ -26,7 +26,7 @@ public class NodeBuilder implements INodeBuilder {
             localVariables = stackFrame.visibleVariables();
         } catch (AbsentInformationException ignored) {
             return _savedNodes;
-//            return stackNodes;
+            // return stackNodes;
         }
 
         ObjectReference thisObject = stackFrame.thisObject();
@@ -52,14 +52,17 @@ public class NodeBuilder implements INodeBuilder {
         }
 
         _uniqueNodes.clear();
+        _staticNodesMap.clear();
         _savedNodes = stackNodes;
+
         return stackNodes;
     }
 
     private Pair<Node,String> drillDown(String name, ObjectReference reference) {
         long id = reference.uniqueID();
-        if (_uniqueNodes.containsKey(id))
+        if (_uniqueNodes.containsKey(id)) {
             return Pair.create(_uniqueNodes.get(id), name);
+        }
 
         Node node;
         if (reference instanceof ArrayReference) {
@@ -72,14 +75,6 @@ public class NodeBuilder implements INodeBuilder {
                 ++index;
             }
             return Pair.create(arrayNode, name);
-
-        /* Remove StringNodes for the moment as they are not really needed.
-         * } else if (reference instanceof StringReference) {
-         * StringReference stringReference = (StringReference) reference;
-         * node = new StringNode(id, stringReference.toString());
-         * _uniqueNodes.put(id, node);
-         */
-
         } else {
             ObjectNode objectNode = new ObjectNode(id);
             _uniqueNodes.put(id, objectNode);
@@ -94,30 +89,29 @@ public class NodeBuilder implements INodeBuilder {
             }
             return Pair.create(objectNode, name);
         }
-        // return Pair.create(node, name);
     }
 
     private void staticDrillDown(String name, ObjectReference reference, Field field) {
         String referenceTypeName = reference.referenceType().name();
-        StaticNode ssn;
+        StaticNode sn;
 
         if (_staticNodesMap.containsKey(referenceTypeName)) {
-            ssn = _staticNodesMap.get(referenceTypeName);
+            sn = _staticNodesMap.get(referenceTypeName);
         } else {
-            ssn = new StaticNode(referenceTypeName, referenceTypeName.hashCode());
-            _staticNodesMap.put(referenceTypeName, ssn);
+            sn = new StaticNode(referenceTypeName, referenceTypeName.hashCode());
+            _staticNodesMap.put(referenceTypeName, sn);
         }
 
-        ssn.addReferencingVar(name);
+        sn.addReferencingVar(name);
         Value fieldValue = reference.getValue(field);
 
         if (fieldValue == null || fieldValue instanceof PrimitiveValue) {
-            ssn.addPrimitive(field.name(), fieldValue);
+            sn.addPrimitive(field.name(), fieldValue);
         } else if (fieldValue instanceof ArrayReference) {
             ArrayReference arrayReference = (ArrayReference) fieldValue;
             long id = arrayReference.uniqueID();
             ArrayNode arrayNode = new ArrayNode(id);
-            ssn.addReference(arrayNode, field.name());
+            sn.addReference(arrayNode, field.name());
             int index = 0;
 
             for (Value arrayValue : arrayReference.getValues()) {
@@ -128,17 +122,18 @@ public class NodeBuilder implements INodeBuilder {
             ObjectReference objectReference = (ObjectReference) fieldValue;
             long id = objectReference.uniqueID();
             ObjectNode node = new ObjectNode(id);
-            ssn.addReference(node, field.name());
+            sn.addReference(node, field.name());
 
             for (Field f : objectReference.referenceType().fields()) {
                 String fName = f.name();
                 Value fValue = objectReference.getValue(f);
 
                 if (f.isStatic()) {
-                    // TODO: Handle this.
-                    // drillDown(fName, objectReference);
-                    // staticDrillDown(fName, objectReference, f);
+                    // This breaks for a "Random" object... Gets stuck in an infinite loop.
+                    // staticDrillDown(field.name(), objectReference, f);
+                    // System.out.println("====>   " + fName + " " + fValue);
                 } else {
+                    // System.out.println("****>   " + fName + " " + fValue);
                     addValueToObjectNode(node, fName, fValue);
                 }
             }

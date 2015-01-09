@@ -40,6 +40,13 @@ public class StaticNode extends StackNode {
     }
 
     @Override
+    public boolean equals(Object o) {
+        return this == o || o instanceof StaticNode &&
+                getId() == ((StaticNode) o).getId() &&
+                Objects.equals(getName(), ((StaticNode) o).getName());
+    }
+
+    @Override
     public boolean hasReference() {
         return getReferences().size() > 0;
     }

@@ -27,6 +27,7 @@ public class GeometryUtils {
     //region Factory Methods
     public static final float STACK_NODE_SCALE = 5f;
     public static final float HEAP_NODE_SCALE = 0.5f;
+    public static final float STATIC_NODE_SCALE = 0.5f;
 
     public static Shape createCubeForStackNode() {
         return new Cube(0, 0, 0, 0, 0, 0, STACK_NODE_SCALE, ColorConverter.randomColour());
@@ -52,7 +53,7 @@ public class GeometryUtils {
     }
 
     public static Shape createCubeForStaticStackNode() {
-        return new Cube(0, 0, 0, 0, 0, 0, STACK_NODE_SCALE, Colour.WHITE);
+        return new Cube(0, 0, 0, 0, 0, 0, STATIC_NODE_SCALE, Colour.WHITE);
     }
     //endregion
 

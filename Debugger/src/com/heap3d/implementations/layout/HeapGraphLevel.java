@@ -1,5 +1,6 @@
 package com.heap3d.implementations.layout;
 
+import com.heap3d.implementations.node.StaticNode;
 import com.heap3d.layout.*;
 import com.heap3d.implementations.node.Node;
 import com.heap3d.implementations.node.StackNode;
@@ -11,13 +12,13 @@ import java.util.Collection;
 
 public class HeapGraphLevel {
 
-	private final static float SPACING = 10f;
-	private int _id;
-	private Graph<Node, HeapEdge> _graph;
-	private Layout<Node, HeapEdge> _layout;
-	public static float levelOffset = 5f;
-	private StackNode root;
-	private boolean updated = false;
+	protected final static float SPACING = 10f;
+	protected int _id;
+	protected Graph<Node, HeapEdge> _graph;
+	protected Layout<Node, HeapEdge> _layout;
+	protected static float levelOffset = 5f;
+	protected StackNode root;
+	protected boolean updated = false;
 
 	public HeapGraphLevel(int id) {
 		_id = id;
@@ -77,6 +78,8 @@ public class HeapGraphLevel {
 
 	public Vector3f getPosition(Node n)
 	{
+		// int direction = (n.getStaticFlag() == true) ? -1 : 1;
+
 		float x = (float) _layout.transform(n).getX();
 		float y = levelOffset * _id;
 		float z = (float) _layout.transform(n).getY();
