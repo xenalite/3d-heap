@@ -6,9 +6,9 @@ public class Program {
     	
         LinkedList sortedList = new LinkedList();
         
-        sortedList.add(2);
-        sortedList.add(4);
-        sortedList.add(6);
+        sortedList.addCorrectly(2);
+        sortedList.addCorrectly(4);
+        sortedList.addCorrectly(6);
         sortedList.add(5);
     }
 }
@@ -50,4 +50,24 @@ class LinkedList{
 		toBeAdded.next = last.next;
 	}
 	
+	public void addCorrectly(int xalue){
+		
+		if(head == null){
+			head = new ListNode(value);
+			return;
+		}
+		
+		ListNode n = head;
+		ListNode last = null;
+		
+		while(n != null && n.value <= value){
+			 last = n;
+			 n = n.next;
+		}
+		
+		ListNode toBeAdded = new ListNode(value);
+		
+		toBeAdded.next = last.next;
+		last.next = toBeAdded;
+	}
 }
