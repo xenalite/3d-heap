@@ -76,7 +76,7 @@ public class HeapInfoTabController implements Initializable {
             cell.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             // TODO -- fix names
             cell.itemProperty().addListener((obs, oldItem, newItem) ->
-                    label.setText(newItem != null ? newItem.toString()+": "+String.valueOf(newItem) : ""));
+                    label.setText(newItem != null ? newItem.getTreeName() : ""));
             return cell ;
         });
 

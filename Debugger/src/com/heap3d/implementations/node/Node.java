@@ -14,11 +14,22 @@ public abstract class Node {
     private long id;
     private HeapGraphLevel level;
 
+    public void setTreeName(String treeName) {
+        this.treeName = treeName;
+    }
+
+    public String getTreeName() {
+
+        return treeName;
+    }
+
+    protected String treeName = "";
+
     public Colour getColour() {
         return colour;
     }
 
-    protected Colour colour = Colour.AQUA;
+    protected Colour colour = Colour.WHITE;
 
     public Node(long id) {
         this.id = id;

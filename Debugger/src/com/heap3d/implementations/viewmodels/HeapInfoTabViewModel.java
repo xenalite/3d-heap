@@ -55,7 +55,7 @@ public class HeapInfoTabViewModel implements IHeapInfoTabViewModel {
         _eventBus = eventBus;
         _eventBus.register(this);
 
-        _HeapInfo = new SimpleStringProperty(this, "", "Data from the ViewModel");
+        _HeapInfo = new SimpleStringProperty(this, "", "");
         _TreeView = new SimpleObjectProperty<>(this, "", new TreeItem<>());
         _selectedNode = new SimpleObjectProperty<>(this, "", new TreeItem<>());
     }
@@ -85,7 +85,7 @@ public class HeapInfoTabViewModel implements IHeapInfoTabViewModel {
             root.setExpanded(true);
             ObservableList<TreeItem<Node>> children = root.getChildren();
             for (StackNode node : nodeEvent.nodes) {
-                children.add(0, createNode(node));
+                children.add(0, createNode(node, node.getName()));
             }
             _TreeView.setValue(root);
         });
@@ -99,7 +99,7 @@ public class HeapInfoTabViewModel implements IHeapInfoTabViewModel {
      * @param n The given node.
      * @return  A TreeItem corresponding to the given StackNode.
      */
-    private TreeItem<Node> createNode(final Node n) {
+    private TreeItem<Node> createNode(final Node n, final String name) {
         TreeItem<Node> treeItem = new TreeItem<Node>(n) {
             private boolean isLeaf;
             private boolean isFirstTimeChildren = true;
@@ -132,7 +132,7 @@ public class HeapInfoTabViewModel implements IHeapInfoTabViewModel {
                     if (references != null && !references.isEmpty()) {
                         ObservableList<TreeItem<Node>> children = FXCollections.observableArrayList();
 
-                        children.addAll(references.stream().map(child -> createNode(child.first)).collect(Collectors.toList()));
+                        children.addAll(references.stream().map(child -> createNode(child.first, child.second)).collect(Collectors.toList()));
                         children.stream().forEach(item -> nodeToTreeItem.put(item.getValue(), item));
 
                         return children;
@@ -143,6 +143,8 @@ public class HeapInfoTabViewModel implements IHeapInfoTabViewModel {
             }
         };
 
+
+        treeItem.getValue().setTreeName(name);
         nodeToTreeItem.put(n, treeItem);
         return treeItem;
     }
