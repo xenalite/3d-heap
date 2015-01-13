@@ -78,8 +78,6 @@ public class HeapGraphLevel {
 
 	public Vector3f getPosition(Node n)
 	{
-		// int direction = (n.getStaticFlag() == true) ? -1 : 1;
-
 		float x = (float) _layout.transform(n).getX();
 		float y = levelOffset * _id;
 		float z = (float) _layout.transform(n).getY();

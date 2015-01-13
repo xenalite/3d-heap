@@ -53,7 +53,7 @@ public class GeometryUtils {
     }
 
     public static Shape createCubeForStaticStackNode() {
-        return new Cube(0, 0, 0, 0, 0, 0, STATIC_NODE_SCALE, Colour.WHITE);
+        return new Cube(0, 0, 0, 0, 0, 0, STATIC_NODE_SCALE, Colour.AQUA);
     }
     //endregion
 
