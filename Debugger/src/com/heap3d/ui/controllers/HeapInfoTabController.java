@@ -66,8 +66,7 @@ public class HeapInfoTabController implements Initializable {
 
                         if(item != null) {
                             // TODO -- this is silly, but will need to send more information. perhaps entry(node,shape)
-                            anotherLabel.setTextFill(ColorConverter.convertToPaint(Colour.RED));
-//                                    item.getColour()));
+                            anotherLabel.setTextFill(ColorConverter.convertToPaint(item.getColour()));
                         }
                             setGraphic(hbox);
 

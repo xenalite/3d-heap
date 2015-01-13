@@ -58,7 +58,9 @@ public class StackNode extends Node {
 
     @Override
     public Shape createShape() {
-        return GeometryUtils.createCubeForStackNode(getLevel().getId());
+        Shape shape = GeometryUtils.createCubeForStackNode(getLevel().getId());
+        colour = shape.getColour();
+        return shape;
     }
 
     @Override
