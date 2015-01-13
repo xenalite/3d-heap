@@ -1,7 +1,11 @@
 package tests.system.testprograms.presentation;
 
+import sun.reflect.generics.tree.Tree;
 import tests.system.testprograms.utilities.ListNode;
 import tests.system.testprograms.utilities.TreeNode;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("ALL")
 public class Program {
@@ -10,10 +14,12 @@ public class Program {
     private TreeNode tree;
     private int[] primitiveArray;
     private Integer[] objectArray;
+
     public static void main(String[] args) {
         ListNode root = buildLinkedList();
         TreeNode binaryTree = buildBinaryTree();
         Integer[] smallArray = buildArray(10);
+        Map<String,String> map = populate(new HashMap<>());
     }
 
     protected Program()
@@ -36,10 +42,20 @@ public class Program {
     }
 
     private static TreeNode buildBinaryTree() {
+
+        TreeNode t1 = new TreeNode(new TreeNode(), new TreeNode());
+        TreeNode t2 = new TreeNode(new TreeNode(), new TreeNode());
+        TreeNode t3 = new TreeNode(t1, t2);
+        TreeNode t4 = new TreeNode(t1, t2);
+        TreeNode t5 = new TreeNode(t3, t4);
+
+        return t5;
+        /*
         return new TreeNode(new TreeNode(new TreeNode(new TreeNode(), new TreeNode()),
                 new TreeNode(new TreeNode(), new TreeNode())),
                 new TreeNode(new TreeNode(new TreeNode(), new TreeNode()),
                         new TreeNode(new TreeNode(), new TreeNode())));
+        */
     }
 
     static Integer[] buildArray(int size)
@@ -51,5 +67,11 @@ public class Program {
         return a;
     }
 
+    private static Map<String, String> populate(Map<String, String> map) {
+        for(int i = 0; i < 40; ++i) {
+            map.put(String.valueOf(i), String.valueOf(i));
+        }
+        return map;
+    }
 
 }
