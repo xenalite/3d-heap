@@ -47,17 +47,10 @@ public class Program {
 
         TreeNode t1 = new TreeNode(new TreeNode(), new TreeNode());
         TreeNode t2 = new TreeNode(new TreeNode(), new TreeNode());
-        TreeNode t3 = new TreeNode(t1, t2);
-        TreeNode t4 = new TreeNode(t1, t2);
-        TreeNode t5 = new TreeNode(t3, t4);
+        TreeNode t3 = new TreeNode(t1, new TreeNode());
+        TreeNode t4 = new TreeNode(t3, t2);
 
-        return t5;
-        /*
-        return new TreeNode(new TreeNode(new TreeNode(new TreeNode(), new TreeNode()),
-                new TreeNode(new TreeNode(), new TreeNode())),
-                new TreeNode(new TreeNode(new TreeNode(), new TreeNode()),
-                        new TreeNode(new TreeNode(), new TreeNode())));
-        */
+        return t4;
     }
 
     static Integer[] buildArray(int size)
