@@ -87,8 +87,6 @@ public class HeapGraph {
     int count = 0;
     
     public void inLoop() {
- 
-    	System.out.println("fps: "+_renderEngine.getFPS());
     	
         if (animation.executeStepAndCheckIfDone()) {
             buildEdges();
