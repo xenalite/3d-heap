@@ -23,13 +23,9 @@ public class Program {
     }
 
     private static void testLinkedList(){
+    	
         LinkedList sortedList = new LinkedList();
-
-        sortedList.addCorrectly(2);
-        sortedList.addCorrectly(4);
-        sortedList.addCorrectly(6);
-        sortedList.addCorrectly(8);
-        sortedList.addCorrectly(10);
+        sortedList.addCorrectly(2, 4, 6, 8, 10, 12, 14, 16, 18, 20);
         
         sortedList.add(5);
     }
@@ -86,12 +82,17 @@ class ListNode{
         this.value = value;
     }
 
+    public ListNode(int value, ListNode next) {
+        this.value = value;
+        this.next = next;
+    }
+    
     public ListNode(ListNode next) { this.next = next; }
 }
 
 class LinkedList{
 
-    public ListNode head;
+    private ListNode head;
 
     public void add(int value){
 
@@ -118,6 +119,18 @@ class LinkedList{
         toBeAdded.next = n.next;
     }
 
+    
+    
+    public void addCorrectly(int... args){
+    	head = new ListNode(args[0]);
+    	ListNode n = head;
+    	for(int i = 1; i < args.length; i++){
+    		ListNode newNode = new ListNode(args[i]);
+    		n.next = newNode;
+    		n = n.next;
+    	}
+    }
+    
     public void addCorrectly(int value){
 
         if(head == null){
