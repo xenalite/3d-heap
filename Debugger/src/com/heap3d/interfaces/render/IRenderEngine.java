@@ -12,6 +12,8 @@ import java.util.List;
 public interface IRenderEngine {
 
     public void clear3DSpace();
+    
+    public int getFPS();
 
     public void addTo3DSpace(Shape shape);
 

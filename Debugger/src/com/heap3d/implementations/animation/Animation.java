@@ -102,4 +102,8 @@ public class Animation implements IAnimation {
 	public boolean hasAnythingChanged(){
 		return anythingChanged;
 	}
+	
+	public boolean hasMoveEvents(){
+		return !moveEvents.isEmpty();
+	}
 }

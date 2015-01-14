@@ -27,6 +27,7 @@ public class HeapEdge {
     public void connect(Shape from, Shape to, Colour color, IRenderEngine renderEngine) {
         if (lines != null) {
             lines.forEach(renderEngine::removeFrom3DSpace);
+            lines.clear();
             renderEngine.removeFrom3DSpace(arrow);
         } else
             lines = new ArrayList<>();

@@ -32,6 +32,11 @@ public class RenderEngineAdapter extends RenderEngine implements IRenderEngine {
     }
     
     @Override
+    public int getFPS() {
+    	return super.getFPS();
+    };
+    
+    @Override
     public boolean isDoubleClick(){
     	return super.isDoubleClick();
     }

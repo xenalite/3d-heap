@@ -84,7 +84,12 @@ public class HeapGraph {
         }
     }
 
+    int count = 0;
+    
     public void inLoop() {
+ 
+    	System.out.println("fps: "+_renderEngine.getFPS());
+    	
         if (animation.executeStepAndCheckIfDone()) {
             buildEdges();
             Set<Entry<Node, Shape>> nodes = nodeToShape.entrySet();
@@ -93,11 +98,7 @@ public class HeapGraph {
                 Shape s = e.getValue();
                 float[] pos = s.getPosition();
                 float[] rot = s.getRotation();
-                //TODO
-//                if(n instanceof StackNode)
-//                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+3, rot[0], rot[1], rot[2], 0.2f, n.getName());
-//                else
-//                	_renderEngine.printTo3DSpace(pos[0], pos[1], pos[2]+0.4f, rot[0], rot[1], rot[2], 0.05f, n.getName());
+                
                 if (n instanceof StackNode) {
                     StackNode sn = (StackNode)n;
                     if(sn.getReferences()!= null && sn.getReferences().isEmpty()) {
@@ -108,6 +109,11 @@ public class HeapGraph {
                 }
             }
             animation = new NullAnimation();
+        }else if(animation instanceof Animation){
+        	if(((Animation) animation).hasMoveEvents()){
+        		_renderEngine.removeText();
+        		buildEdges();
+        	}
         }
 
         boolean newNodes = receiveNodes();
@@ -117,7 +123,6 @@ public class HeapGraph {
             animation.finalise();
             animation = new Animation(oldNodes, nodeToShape.entrySet());
             if (!animation.hasAnythingChanged()) {
-                System.out.println("here");
                 animation = new NothingChangedAnimation();
             }
         }
