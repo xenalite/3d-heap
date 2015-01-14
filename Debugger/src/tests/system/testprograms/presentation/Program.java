@@ -22,15 +22,19 @@ public class Program {
         testLinkedList();
     }
 
-    private static void testLinkedList()
-    {
+    private static void testLinkedList(){
         LinkedList sortedList = new LinkedList();
 
         sortedList.addCorrectly(2);
         sortedList.addCorrectly(4);
         sortedList.addCorrectly(6);
+        sortedList.addCorrectly(8);
+        sortedList.addCorrectly(10);
+        
         sortedList.add(5);
     }
+    
+    
 
     private static ListNode buildLinkedList() {
         ListNode n1 = new ListNode();
@@ -87,7 +91,7 @@ class ListNode{
 
 class LinkedList{
 
-    private ListNode head;
+    public ListNode head;
 
     public void add(int value){
 
@@ -97,17 +101,21 @@ class LinkedList{
         }
 
         ListNode n = head;
-        ListNode last = null;
+        
+        if(n.value >= value){
+        	head = new ListNode(value);
+        	head.next = n;
+        	return;
+        }
 
-        while(n != null && n.value <= value){
-            last = n;
+        while(n.next != null && n.next.value <= value){
             n = n.next;
         }
 
         ListNode toBeAdded = new ListNode(value);
 
-        last.next = toBeAdded;
-        toBeAdded.next = last.next;
+        n.next = toBeAdded;
+        toBeAdded.next = n.next;
     }
 
     public void addCorrectly(int value){
@@ -118,16 +126,21 @@ class LinkedList{
         }
 
         ListNode n = head;
-        ListNode last = null;
+        
+        if(n.value >= value){
+        	head = new ListNode(value);
+        	head.next = n;
+        	return;
+        }
 
-        while(n != null && n.value <= value){
-            last = n;
+        while(n.next != null && n.next.value <= value){
             n = n.next;
         }
 
         ListNode toBeAdded = new ListNode(value);
 
-        toBeAdded.next = last.next;
-        last.next = toBeAdded;
+
+        toBeAdded.next = n.next;
+        n.next = toBeAdded;
     }
 }
