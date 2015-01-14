@@ -1,5 +1,6 @@
 package com.heap3d.implementations.node;
 
+import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 import com.heap3d.utilities.GeometryUtils;
 import com.heap3d.utilities.Pair;
@@ -20,6 +21,7 @@ public class ObjectNode extends Node {
         super(id);
         _references = new ArrayList<>();
         _primitives = new HashMap<>();
+        this.colour = Colour.ORANGE;
     }
 
     public void addPrimitive(String name, Object value) {

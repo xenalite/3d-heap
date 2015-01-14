@@ -50,7 +50,7 @@ class LinkedList{
 		toBeAdded.next = last.next;
 	}
 	
-	public void addCorrectly(int xalue){
+	public void addCorrectly(int value){
 		
 		if(head == null){
 			head = new ListNode(value);

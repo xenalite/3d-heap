@@ -1,7 +1,5 @@
 package tests.system.testprograms.presentation;
 
-import sun.reflect.generics.tree.Tree;
-import tests.system.testprograms.utilities.ListNode;
 import tests.system.testprograms.utilities.TreeNode;
 
 import java.util.HashMap;
@@ -20,14 +18,18 @@ public class Program {
         TreeNode binaryTree = buildBinaryTree();
         Integer[] smallArray = buildArray(10);
         Map<String,String> map = populate(new HashMap<>());
+
+        testLinkedList();
     }
 
-    protected Program()
+    private static void testLinkedList()
     {
-        list = buildLinkedList();
-        tree = buildBinaryTree();
-        primitiveArray = new int[10];
-        objectArray = buildArray(10);
+        LinkedList sortedList = new LinkedList();
+
+        sortedList.addCorrectly(2);
+        sortedList.addCorrectly(4);
+        sortedList.addCorrectly(6);
+        sortedList.add(5);
     }
 
     private static ListNode buildLinkedList() {
@@ -45,17 +47,10 @@ public class Program {
 
         TreeNode t1 = new TreeNode(new TreeNode(), new TreeNode());
         TreeNode t2 = new TreeNode(new TreeNode(), new TreeNode());
-        TreeNode t3 = new TreeNode(t1, t2);
-        TreeNode t4 = new TreeNode(t1, t2);
-        TreeNode t5 = new TreeNode(t3, t4);
+        TreeNode t3 = new TreeNode(t1, new TreeNode());
+        TreeNode t4 = new TreeNode(t3, t2);
 
-        return t5;
-        /*
-        return new TreeNode(new TreeNode(new TreeNode(new TreeNode(), new TreeNode()),
-                new TreeNode(new TreeNode(), new TreeNode())),
-                new TreeNode(new TreeNode(new TreeNode(), new TreeNode()),
-                        new TreeNode(new TreeNode(), new TreeNode())));
-        */
+        return t4;
     }
 
     static Integer[] buildArray(int size)
@@ -74,4 +69,65 @@ public class Program {
         return map;
     }
 
+}
+
+class ListNode{
+
+    public ListNode next;
+    public int value;
+
+    public ListNode() {}
+
+    public ListNode(int value) {
+        this.value = value;
+    }
+
+    public ListNode(ListNode next) { this.next = next; }
+}
+
+class LinkedList{
+
+    private ListNode head;
+
+    public void add(int value){
+
+        if(head == null){
+            head = new ListNode(value);
+            return;
+        }
+
+        ListNode n = head;
+        ListNode last = null;
+
+        while(n != null && n.value <= value){
+            last = n;
+            n = n.next;
+        }
+
+        ListNode toBeAdded = new ListNode(value);
+
+        last.next = toBeAdded;
+        toBeAdded.next = last.next;
+    }
+
+    public void addCorrectly(int value){
+
+        if(head == null){
+            head = new ListNode(value);
+            return;
+        }
+
+        ListNode n = head;
+        ListNode last = null;
+
+        while(n != null && n.value <= value){
+            last = n;
+            n = n.next;
+        }
+
+        ListNode toBeAdded = new ListNode(value);
+
+        toBeAdded.next = last.next;
+        last.next = toBeAdded;
+    }
 }

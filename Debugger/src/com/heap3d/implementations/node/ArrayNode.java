@@ -1,5 +1,6 @@
 package com.heap3d.implementations.node;
 
+import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 import com.heap3d.utilities.GeometryUtils;
 import com.heap3d.utilities.Pair;
@@ -17,6 +18,7 @@ public class ArrayNode extends Node {
         super(id);
         this._references = new ArrayList<>();
         this._primitives = new HashMap<>();
+        this.colour = Colour.YELLOW;
     }
 
     @Override

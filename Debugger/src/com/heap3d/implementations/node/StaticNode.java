@@ -1,5 +1,6 @@
 package com.heap3d.implementations.node;
 
+import com.graphics.shapes.Colour;
 import com.graphics.shapes.Shape;
 import com.heap3d.utilities.GeometryUtils;
 import com.heap3d.utilities.Pair;
@@ -20,6 +21,8 @@ public class StaticNode extends StackNode {
         referencingVars = new HashSet<>();
         _references = new ArrayList<>();
         _primitives = new HashMap<>();
+        colour = Colour.AQUA;
+        treeName = name;
     }
 
     public void addReferencingVar(String instance) {

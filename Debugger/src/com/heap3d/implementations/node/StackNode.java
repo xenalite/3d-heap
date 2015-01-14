@@ -19,6 +19,7 @@ public class StackNode extends Node {
     public StackNode(String name, long id) {
         super(id);
         _name = name;
+        treeName = name;
     }
 
     public StackNode(String name, Object value) {
@@ -26,6 +27,7 @@ public class StackNode extends Node {
         _value = value;
         _name = name;
         _hasReference = false;
+        treeName = name;
     }
 
     public StackNode(String name, Pair<Node,String> value) {
@@ -33,6 +35,7 @@ public class StackNode extends Node {
         _value = value;
         _name = name;
         _hasReference = true;
+        treeName = name;
     }
     
     public boolean hasReference(){
@@ -58,7 +61,9 @@ public class StackNode extends Node {
 
     @Override
     public Shape createShape() {
-        return GeometryUtils.createCubeForStackNode(getLevel().getId());
+        Shape shape = GeometryUtils.createCubeForStackNode(getLevel().getId());
+        colour = shape.getColour();
+        return shape;
     }
 
     @Override

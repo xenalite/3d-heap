@@ -43,8 +43,28 @@ public class BreakpointsTabViewModel implements IBreakpointsTabViewModel {
         _cachedElements = new ArrayList<>();
 
         // ---- This is for convenience only. ----
-        _breakpointClass.setValue(PathUtils.TEST_PROGRAM_CLASS_NAME);
-        _breakpointMethod.setValue(PathUtils.TEST_PROGRAM_BREAKPOINT_METHOD_NAME);
+//        _breakpointClass.setValue(PathUtils.TEST_PROGRAM_CLASS_NAME);
+//        _breakpointMethod.setValue(PathUtils.TEST_PROGRAM_BREAKPOINT_METHOD_NAME);
+//        addBreakpointAction();
+
+        _breakpointClass.setValue("tests.system.testprograms.presentation.Program");
+        _breakpointMethod.setValue("main");
+        addBreakpointAction();
+
+        _breakpointClass.setValue("tests.system.testprograms.presentation.Program");
+        _breakpointMethod.setValue("buildLinkedList");
+        addBreakpointAction();
+
+        _breakpointClass.setValue("tests.system.testprograms.presentation.Program");
+        _breakpointMethod.setValue("buildBinaryTree");
+        addBreakpointAction();
+
+        _breakpointClass.setValue("tests.system.testprograms.presentation.Program");
+        _breakpointMethod.setValue("testLinkedList");
+        addBreakpointAction();
+
+        _breakpointClass.setValue("tests.system.testprograms.presentation.LinkedList");
+        _breakpointMethod.setValue("add");
         addBreakpointAction();
     }
 
