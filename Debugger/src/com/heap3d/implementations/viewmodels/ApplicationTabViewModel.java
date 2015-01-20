@@ -2,23 +2,22 @@ package com.heap3d.implementations.viewmodels;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.heap3d.interfaces.viewmodels.IApplicationTabViewModel;
-import com.heap3d.utilities.PathUtils;
 import com.heap3d.implementations.application.ControlEventHandler;
 import com.heap3d.implementations.events.ControlEventFactory;
 import com.heap3d.implementations.events.ProcessEvent;
 import com.heap3d.implementations.events.StartDefinition;
 import com.heap3d.implementations.factories.ProcessFactory;
 import com.heap3d.implementations.factories.ThreadBuilder;
+import com.heap3d.interfaces.viewmodels.IApplicationTabViewModel;
 import com.heap3d.utilities.Check;
 import com.heap3d.utilities.ICommand;
 import com.heap3d.utilities.RelayCommand;
-import com.sun.jdi.Locatable;
 import com.sun.jdi.event.LocatableEvent;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 
 import static com.heap3d.implementations.events.EventType.*;
@@ -66,9 +65,9 @@ public class ApplicationTabViewModel implements IApplicationTabViewModel {
         _stepOverActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPOVER)));
         _stepIntoActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPINTO)));
         _stepOutActionCommand = new RelayCommand(() -> _eventBus.post(ControlEventFactory.createEventOfType(STEPOUT)));
-        _className = new SimpleStringProperty(this, "", PathUtils.TEST_PROGRAM_CLASS_NAME);
-        _classPath = new SimpleStringProperty(this, "", PathUtils.TEST_PROGRAM_CLASSPATH);
-        _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + "/bin/java");
+        _className = new SimpleStringProperty(this, "", "");
+        _classPath = new SimpleStringProperty(this, "", "");
+        _javaPath = new SimpleStringProperty(this, "", System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
         _processConsole = new SimpleStringProperty("this", "", "");
         _debugeeInput = new SimpleStringProperty("this", "", "");
         _arguments = new SimpleStringProperty(this, "", "");
